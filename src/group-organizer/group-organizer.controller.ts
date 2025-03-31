@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 
 import { GroupOrganizerService } from '@/group/group-organizer.service';
 import { AddPlayersQueueRequest } from '@/group/dtos/add-players.request';
@@ -9,15 +16,19 @@ export class GroupOrganizerController {
   constructor(private readonly groupOrganizerService: GroupOrganizerService) {}
 
   @Post('queue')
-  public async QueuePlayers(
+  public async queuePlayers(
     @Body() request: AddPlayersQueueRequest
-  ): Promise<unknown> {
-    throw 'not implemented';
+  ): Promise<void> {
+    try {
+      await this.groupOrganizerService.queuePlayers(request);
+    } catch (error) {
+      throw new HttpException((error as any).message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Post('remove')
   @HttpCode(200)
-  public async RemovePlayers(
+  public async removePlayers(
     @Body() request: RemovePlayersRequest
   ): Promise<unknown> {
     throw 'not implemented';

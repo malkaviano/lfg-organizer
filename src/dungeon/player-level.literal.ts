@@ -1,4 +1,4 @@
-export type DungeonLevel =
+export type PlayerLevel =
   | 10
   | 11
   | 12
