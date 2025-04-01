@@ -18,6 +18,16 @@ describe('DungeonService', () => {
   });
 
   it('have list of dungeons', () => {
-    expect(DungeonService.Dungeons.length).toBeGreaterThan(0);
+    expect(DungeonService.Dungeons.size).toBeGreaterThan(0);
+  });
+
+  it('check player level for dungeon', () => {
+    expect(
+      DungeonService.checkPlayerLevel(['RagefireChasm', 'WailingCaverns'], 19)
+    ).toEqual(true);
+
+    expect(
+      DungeonService.checkPlayerLevel(['Deadmines', 'RagefireChasm'], 19)
+    ).toEqual(false);
   });
 });

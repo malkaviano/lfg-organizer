@@ -1,1 +1,1 @@
-export type DungeonRole = 'Tank' | 'Healer' | 'Damage';
+export type PlayerRole = 'Tank' | 'Healer' | 'Damage';
