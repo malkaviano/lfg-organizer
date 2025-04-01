@@ -76,7 +76,8 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^@/group/(.*)$": "<rootDir>/src/group-organizer/$1",
-      "^@/dungeon/(.*)$": "<rootDir>/src/dungeon/$1"
+      "^@/dungeon/(.*)$": "<rootDir>/src/dungeon/$1",
+      "^@/helper/(.*)$": "<rootDir>/src/helper/$1"
     }
   }
 }

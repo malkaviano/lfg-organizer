@@ -3,14 +3,18 @@ import { Injectable } from '@nestjs/common';
 import { AddPlayersQueueRequest } from '@/group/dto/add-players.request';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from './entity/queued-player.entity';
+import { DateTimeHelper } from '@/helper/datetime.helper';
 
 @Injectable()
 export class GroupOrganizerService {
   constructor(
-    private readonly queuePlayersRepository: QueuedPlayersRepository
+    private readonly queuePlayersRepository: QueuedPlayersRepository,
+    private readonly dateTimeHelper: DateTimeHelper
   ) {}
 
   async queuePlayers(request: AddPlayersQueueRequest): Promise<void> {
+    const timestamp = this.dateTimeHelper.timestamp();
+
     const players = request.players.map((p) => {
       const roles = new Set(p.roles);
 
@@ -20,7 +24,8 @@ export class GroupOrganizerService {
         p.id,
         p.level,
         [...roles],
-        [...dungeons]
+        [...dungeons],
+        timestamp
       );
 
       return entity;

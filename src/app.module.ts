@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GroupOrganizerModule } from './group-organizer/group-organizer.module';
-import { DungeonModule } from './dungeon/dungeon.module';
+import { GroupOrganizerModule } from '@/group/group-organizer.module';
 
 @Module({
-  imports: [GroupOrganizerModule, DungeonModule],
+  imports: [GroupOrganizerModule],
   controllers: [AppController],
   providers: [AppService],
 })

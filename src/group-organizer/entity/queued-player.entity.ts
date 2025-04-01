@@ -7,6 +7,7 @@ export class QueuedPlayerEntity {
     public readonly id: string,
     public readonly level: PlayerLevel,
     public readonly roles: DungeonRole[],
-    public readonly dungeons: DungeonName[]
+    public readonly dungeons: DungeonName[],
+    public readonly queuedAt: string
   ) {}
 }

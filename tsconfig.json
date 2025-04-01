@@ -19,12 +19,9 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "paths": {
-      "@/group/*": [
-        "src/group-organizer/*"
-      ],
-      "@/dungeon/*": [
-        "src/dungeon/*"
-      ]
+      "@/group/*": ["src/group-organizer/*"],
+      "@/dungeon/*": ["src/dungeon/*"],
+      "@/helper/*": ["src/helper/*"]
     }
   }
 }
