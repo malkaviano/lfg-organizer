@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { HttpException } from '@nestjs/common';
+
 import { mock } from 'ts-jest-mocker';
 
 import { GroupOrganizerController } from '@/group/group-organizer.controller';
 import { GroupOrganizerService } from '@/group/group-organizer.service';
-import { AddPlayersQueueRequest } from '@/group/dtos/add-players.request';
-import { HttpException } from '@nestjs/common';
+import { AddPlayersQueueRequest } from '@/group/dto/add-players.request';
 
 describe('GroupOrganizerController', () => {
   let controller: GroupOrganizerController;

@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 
 import { GroupOrganizerService } from '@/group/group-organizer.service';
-import { AddPlayersQueueRequest } from '@/group/dtos/add-players.request';
-import { RemovePlayersRequest } from '@/group/dtos/remove-players.request';
+import { AddPlayersQueueRequest } from '@/group/dto/add-players.request';
+import { RemovePlayersRequest } from '@/group/dto/remove-players.request';
 
 @Controller('group')
 export class GroupOrganizerController {
