@@ -32,37 +32,45 @@ export class QueuedPlayersRepository {
   public async waiting(
     dungeonName: DungeonName
   ): Promise<QueuedPlayerEntity[]> {
-    return [...this.queuedPlayersStore.values()]
-      .filter(
-        (model) =>
-          model.dungeons.some((name) => name === dungeonName) &&
-          model.status === 'WAITING'
-      )
-      .map((model) => {
-        return new QueuedPlayerEntity(
-          model.id,
-          model.level,
-          model.roles,
-          model.dungeons,
-          model.queuedAt
-        );
-      });
+    return Promise.resolve(
+      [...this.queuedPlayersStore.values()]
+        .filter(
+          (model) =>
+            model.dungeons.some((name) => name === dungeonName) &&
+            model.status === 'WAITING'
+        )
+        .map((model) => {
+          return new QueuedPlayerEntity(
+            model.id,
+            model.level,
+            model.roles,
+            model.dungeons,
+            model.queuedAt
+          );
+        })
+    );
   }
 
   public async changeStatus(
     playerIds: string[],
     newStatus: PlayerStatus
-  ): Promise<void> {
+  ): Promise<string[]> {
+    let changedIds: string[] = [];
+
     playerIds.forEach((playerId) => {
       const player = this.queuedPlayersStore.get(playerId);
 
       if (player) {
         player.status = newStatus;
+
+        changedIds.push(player.id);
       }
     });
+
+    return Promise.resolve(changedIds);
   }
 
-  public async remove(playerIds: string[]): Promise<boolean> {
+  public async remove(playerIds: string[]): Promise<string[]> {
     throw 'not implemented';
   }
 }

@@ -131,8 +131,8 @@ describe('QueuedPlayersRepository', () => {
     });
   });
 
-  describe('changing player status', () => {
-    it('filter SELECTED players', async () => {
+  describe('changeStatus', () => {
+    it('return changed ids', async () => {
       const player1 = new QueuedPlayerEntity(
         'id8',
         20,
@@ -156,9 +156,12 @@ describe('QueuedPlayersRepository', () => {
         player2,
       ]);
 
-      await service.changeStatus(['id8', 'id9'], 'SELECTED');
+      const result = await service.changeStatus(
+        ['id8', 'id9', 'id10'],
+        'SELECTED'
+      );
 
-      await expect(service.waiting('Deadmines')).resolves.toEqual([]);
+      expect(result).toEqual(['id8', 'id9']);
     });
   });
 
