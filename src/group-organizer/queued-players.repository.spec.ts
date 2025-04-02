@@ -141,13 +141,42 @@ describe('QueuedPlayersRepository', () => {
         timestamp
       );
 
-      await service.queue([player1]);
+      const player2 = new QueuedPlayerEntity(
+        'id9',
+        20,
+        ['Healer', 'Damage'],
+        ['Deadmines'],
+        timestamp
+      );
 
-      await expect(service.waiting('Deadmines')).resolves.toEqual([player1]);
+      await service.queue([player1, player2]);
 
-      await service.changeStatus('id8', 'SELECTED');
+      await expect(service.waiting('Deadmines')).resolves.toEqual([
+        player1,
+        player2,
+      ]);
+
+      await service.changeStatus(['id8', 'id9'], 'SELECTED');
 
       await expect(service.waiting('Deadmines')).resolves.toEqual([]);
     });
   });
+
+  // describe('remove', () => {
+  //   describe('when player is waiting', () => {
+  //     it('remove player', async () => {
+  //       const player1 = new QueuedPlayerEntity(
+  //         'id9',
+  //         20,
+  //         ['Tank', 'Damage'],
+  //         ['Deadmines'],
+  //         timestamp
+  //       );
+
+  //       await service.queue([player1]);
+
+  //       await expect(service.remove(['id8'])).resolves.toEqual(true);
+  //     });
+  //   });
+  // });
 });

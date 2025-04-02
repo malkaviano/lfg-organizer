@@ -50,13 +50,19 @@ export class QueuedPlayersRepository {
   }
 
   public async changeStatus(
-    id: string,
+    playerIds: string[],
     newStatus: PlayerStatus
   ): Promise<void> {
-    const player = this.queuedPlayersStore.get(id);
+    playerIds.forEach((playerId) => {
+      const player = this.queuedPlayersStore.get(playerId);
 
-    if (player) {
-      player.status = newStatus;
-    }
+      if (player) {
+        player.status = newStatus;
+      }
+    });
+  }
+
+  public async remove(playerIds: string[]): Promise<boolean> {
+    throw 'not implemented';
   }
 }
