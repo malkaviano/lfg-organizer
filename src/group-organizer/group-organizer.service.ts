@@ -5,6 +5,7 @@ import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from './entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonService } from '@/dungeon/dungeon.service';
+import { error } from 'console';
 
 @Injectable()
 export class GroupOrganizerService {
@@ -13,10 +14,16 @@ export class GroupOrganizerService {
     private readonly dateTimeHelper: DateTimeHelper
   ) {}
 
-  async queuePlayers(request: AddPlayersQueueRequest): Promise<void> {
+  async queueParty(
+    request: AddPlayersQueueRequest
+  ): Promise<{ result: boolean; errorMsg?: string }> {
     const timestamp = this.dateTimeHelper.timestamp();
 
     const party = { tank: 0, healer: 0, damage: 0 };
+
+    const obj: { result: boolean; errorMsg?: string } = {
+      result: true,
+    };
 
     const players = request.players.map((p) => {
       const roles = [...new Set(p.roles)];
@@ -40,9 +47,9 @@ export class GroupOrganizerService {
       const dungeons = [...new Set(request.dungeons)];
 
       if (!DungeonService.checkPlayerLevel(dungeons, p.level)) {
-        throw new Error(
-          'one or more players have incorrect level for selected dungeons'
-        );
+        obj.result = false;
+        obj.errorMsg =
+          'one or more players have incorrect level for selected dungeons';
       }
 
       const entity = new QueuedPlayerEntity(
@@ -57,13 +64,30 @@ export class GroupOrganizerService {
     });
 
     if (party.tank > 1) {
-      throw new Error('a group cannot have more than one tank');
+      obj.result = false;
+      obj.errorMsg = 'a group cannot have more than one tank';
     } else if (party.healer > 1) {
-      throw new Error('a group cannot have more than one healer');
+      obj.result = false;
+      obj.errorMsg = 'a group cannot have more than one healer';
     } else if (party.damage > 3) {
-      throw new Error('a group cannot have more than three damage dealers');
+      obj.result = false;
+      obj.errorMsg = 'a group cannot have more than three damage dealers';
     }
 
-    await this.queuePlayersRepository.queue(players);
+    if (!obj.result) {
+      return Promise.resolve(obj);
+    }
+
+    obj.result = await this.queuePlayersRepository.queue(players);
+
+    if (!obj.result) {
+      obj.errorMsg = 'one or more players are already queued';
+    }
+
+    return Promise.resolve(obj);
+  }
+
+  async dequeueParty(): Promise<void> {
+    throw 'not implemented';
   }
 }

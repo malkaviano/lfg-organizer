@@ -19,10 +19,14 @@ export class GroupOrganizerController {
   public async queuePlayers(
     @Body() request: AddPlayersQueueRequest
   ): Promise<void> {
-    try {
-      await this.groupOrganizerService.queuePlayers(request);
-    } catch (error) {
-      throw new HttpException((error as any).message, HttpStatus.BAD_REQUEST);
+    const { result, errorMsg } =
+      await this.groupOrganizerService.queueParty(request);
+
+    if (!result) {
+      throw new HttpException(
+        errorMsg ?? 'unknow error',
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 

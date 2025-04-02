@@ -83,11 +83,9 @@ describe('GroupOrganizerService', () => {
 
       mockedQueuedPlayersRepository.queue.mockResolvedValueOnce(true);
 
-      await service.queuePlayers(body);
+      const result = await service.queueParty(body);
 
-      expect(mockedQueuedPlayersRepository.queue).toHaveBeenCalledWith(
-        expected
-      );
+      expect(result).toEqual({ result: true });
     });
 
     it('validate player level', async () => {
@@ -109,9 +107,13 @@ describe('GroupOrganizerService', () => {
 
       mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-      await expect(service.queuePlayers(body)).rejects.toThrow(
-        'one or more players have incorrect level for selected dungeons'
-      );
+      const result = await service.queueParty(body);
+
+      expect(result).toEqual({
+        result: false,
+        errorMsg:
+          'one or more players have incorrect level for selected dungeons',
+      });
     });
 
     [
@@ -129,7 +131,10 @@ describe('GroupOrganizerService', () => {
           },
         ],
         dungeons: ['Deadmines'] as DungeonName[],
-        error: 'a group cannot have more than one tank',
+        expected: {
+          result: false,
+          errorMsg: 'a group cannot have more than one tank',
+        },
       },
       {
         players: [
@@ -145,7 +150,10 @@ describe('GroupOrganizerService', () => {
           },
         ],
         dungeons: ['Deadmines'] as DungeonName[],
-        error: 'a group cannot have more than one healer',
+        expected: {
+          result: false,
+          errorMsg: 'a group cannot have more than one healer',
+        },
       },
       {
         players: [
@@ -171,15 +179,18 @@ describe('GroupOrganizerService', () => {
           },
         ],
         dungeons: ['Deadmines'] as DungeonName[],
-        error: 'a group cannot have more than three damage dealers',
+        expected: {
+          result: false,
+          errorMsg: 'a group cannot have more than three damage dealers',
+        },
       },
-    ].forEach(({ players, dungeons, error }) => {
+    ].forEach(({ players, dungeons, expected }) => {
       it('validate roles', async () => {
         mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-        await expect(
-          service.queuePlayers({ players, dungeons })
-        ).rejects.toThrow(error);
+        const result = await service.queueParty({ players, dungeons });
+
+        expect(result).toEqual(expected);
       });
     });
   });

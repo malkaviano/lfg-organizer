@@ -45,36 +45,41 @@ describe('GroupOrganizerController', () => {
         dungeons: ['Deadmines'],
       };
 
-      mockedGroupOrganizerService.queuePlayers.mockResolvedValueOnce();
+      mockedGroupOrganizerService.queueParty.mockResolvedValueOnce({
+        result: true,
+      });
 
       await controller.queuePlayers(body);
 
-      expect(mockedGroupOrganizerService.queuePlayers).toHaveBeenCalled();
+      expect(mockedGroupOrganizerService.queueParty).toHaveBeenCalled();
     });
 
-    it('throw error', async () => {
-      const body: AddPlayersQueueRequest = {
-        players: [
-          {
-            id: 'id1',
-            level: 15,
-            roles: ['Tank', 'Damage'],
-          },
-        ],
-        dungeons: ['Deadmines'],
-      };
+    describe('when service fails', () => {
+      it('throw HttpException', async () => {
+        const body: AddPlayersQueueRequest = {
+          players: [
+            {
+              id: 'id1',
+              level: 15,
+              roles: ['Tank', 'Damage'],
+            },
+          ],
+          dungeons: ['Deadmines'],
+        };
 
-      mockedGroupOrganizerService.queuePlayers.mockRejectedValue(
-        new Error('Player cannot be queued')
-      );
+        mockedGroupOrganizerService.queueParty.mockResolvedValue({
+          result: false,
+          errorMsg: 'Player cannot be queued',
+        });
 
-      await expect(controller.queuePlayers(body)).rejects.toThrow(
-        'Player cannot be queued'
-      );
+        await expect(controller.queuePlayers(body)).rejects.toThrow(
+          'Player cannot be queued'
+        );
 
-      await expect(controller.queuePlayers(body)).rejects.toThrow(
-        HttpException
-      );
+        await expect(controller.queuePlayers(body)).rejects.toThrow(
+          HttpException
+        );
+      });
     });
   });
 });
