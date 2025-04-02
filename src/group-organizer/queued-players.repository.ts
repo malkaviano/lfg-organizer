@@ -29,18 +29,6 @@ export class QueuedPlayersRepository {
     return Promise.resolve(true);
   }
 
-  public async waiting(
-    dungeonName: DungeonName
-  ): Promise<QueuedPlayerEntity[]> {
-    return this.get(dungeonName, 'WAITING');
-  }
-
-  public async grouped(
-    dungeonName: DungeonName
-  ): Promise<QueuedPlayerEntity[]> {
-    return this.get(dungeonName, 'GROUPED');
-  }
-
   public async changeStatus(
     playerIds: string[],
     newStatus: PlayerStatus
@@ -54,27 +42,20 @@ export class QueuedPlayersRepository {
     });
   }
 
-  public async leave(playerIds: string[]): Promise<void> {
+  public async remove(
+    playerIds: string[],
+    playerStatus: PlayerStatus
+  ): Promise<void> {
     playerIds.forEach((playerId) => {
       const player = this.queuedPlayersStore.get(playerId);
 
-      if (player && player.status === 'WAITING') {
+      if (player && player.status === playerStatus) {
         this.queuedPlayersStore.delete(playerId);
       }
     });
   }
 
-  public async remove(playerIds: string[]): Promise<void> {
-    playerIds.forEach((playerId) => {
-      const player = this.queuedPlayersStore.get(playerId);
-
-      if (player && player.status === 'GROUPED') {
-        this.queuedPlayersStore.delete(playerId);
-      }
-    });
-  }
-
-  private async get(
+  public async get(
     dungeonName: DungeonName,
     playerStatus: PlayerStatus
   ): Promise<QueuedPlayerEntity[]> {
