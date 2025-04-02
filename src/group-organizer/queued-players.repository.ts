@@ -10,14 +10,14 @@ export class QueuedPlayersRepository {
     this.queuedPlayersStore = new Map<string, QueuedPlayerModel>();
   }
 
-  public async queue(playerEntities: QueuedPlayerEntity[]): Promise<boolean> {
-    for (const playerEntity of playerEntities) {
+  public async queue(party: QueuedPlayerEntity[]): Promise<boolean> {
+    for (const playerEntity of party) {
       if (this.queuedPlayersStore.has(playerEntity.id)) {
         return Promise.resolve(false);
       }
     }
 
-    playerEntities.forEach((playerEntity) => {
+    party.forEach((playerEntity) => {
       const playerModel = new QueuedPlayerModel({
         ...playerEntity,
         status: 'WAITING',
@@ -32,12 +32,58 @@ export class QueuedPlayersRepository {
   public async waiting(
     dungeonName: DungeonName
   ): Promise<QueuedPlayerEntity[]> {
+    return this.get(dungeonName, 'WAITING');
+  }
+
+  public async grouped(
+    dungeonName: DungeonName
+  ): Promise<QueuedPlayerEntity[]> {
+    return this.get(dungeonName, 'GROUPED');
+  }
+
+  public async changeStatus(
+    playerIds: string[],
+    newStatus: PlayerStatus
+  ): Promise<void> {
+    playerIds.forEach((playerId) => {
+      const player = this.queuedPlayersStore.get(playerId);
+
+      if (player) {
+        player.status = newStatus;
+      }
+    });
+  }
+
+  public async leave(playerIds: string[]): Promise<void> {
+    playerIds.forEach((playerId) => {
+      const player = this.queuedPlayersStore.get(playerId);
+
+      if (player && player.status === 'WAITING') {
+        this.queuedPlayersStore.delete(playerId);
+      }
+    });
+  }
+
+  public async remove(playerIds: string[]): Promise<void> {
+    playerIds.forEach((playerId) => {
+      const player = this.queuedPlayersStore.get(playerId);
+
+      if (player && player.status === 'GROUPED') {
+        this.queuedPlayersStore.delete(playerId);
+      }
+    });
+  }
+
+  private async get(
+    dungeonName: DungeonName,
+    playerStatus: PlayerStatus
+  ): Promise<QueuedPlayerEntity[]> {
     return Promise.resolve(
       [...this.queuedPlayersStore.values()]
         .filter(
           (model) =>
             model.dungeons.some((name) => name === dungeonName) &&
-            model.status === 'WAITING'
+            model.status === playerStatus
         )
         .map((model) => {
           return new QueuedPlayerEntity(
@@ -49,40 +95,5 @@ export class QueuedPlayersRepository {
           );
         })
     );
-  }
-
-  public async changeStatus(
-    playerIds: string[],
-    newStatus: PlayerStatus
-  ): Promise<string[]> {
-    let changedIds: string[] = [];
-
-    playerIds.forEach((playerId) => {
-      const player = this.queuedPlayersStore.get(playerId);
-
-      if (player) {
-        player.status = newStatus;
-
-        changedIds.push(player.id);
-      }
-    });
-
-    return Promise.resolve(changedIds);
-  }
-
-  public async leave(playerIds: string[]): Promise<string[]> {
-    let removedIds: string[] = [];
-
-    playerIds.forEach((playerId) => {
-      const player = this.queuedPlayersStore.get(playerId);
-
-      if (player && player.status === 'WAITING') {
-        this.queuedPlayersStore.delete(playerId);
-
-        removedIds.push(player.id);
-      }
-    });
-
-    return Promise.resolve(removedIds);
   }
 }

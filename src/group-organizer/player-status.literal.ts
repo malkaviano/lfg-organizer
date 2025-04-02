@@ -1,1 +1,1 @@
-export type PlayerStatus = 'WAITING' | 'SELECTED';
+export type PlayerStatus = 'WAITING' | 'GROUPED';

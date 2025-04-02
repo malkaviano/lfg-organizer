@@ -100,7 +100,7 @@ describe('QueuedPlayersRepository', () => {
   });
 
   describe('waiting', () => {
-    it('filters by dungeon', async () => {
+    it('get players by dungeon', async () => {
       const player1 = new QueuedPlayerEntity(
         'id6',
         20,
@@ -131,6 +131,38 @@ describe('QueuedPlayersRepository', () => {
     });
   });
 
+  describe('grouped', () => {
+    it('get players by dungeon', async () => {
+      const player1 = new QueuedPlayerEntity(
+        'id6',
+        20,
+        ['Tank', 'Damage'],
+        ['Deadmines'],
+        timestamp
+      );
+
+      const player2 = new QueuedPlayerEntity(
+        'id7',
+        20,
+        ['Tank', 'Damage'],
+        ['RagefireChasm'],
+        timestamp
+      );
+
+      await service.queue([player1, player2]);
+
+      await service.changeStatus([player1.id, player2.id], 'GROUPED');
+
+      await expect(service.grouped('Deadmines')).resolves.toEqual([player1]);
+
+      await expect(service.grouped('RagefireChasm')).resolves.toEqual([
+        player2,
+      ]);
+
+      await expect(service.grouped('WailingCaverns')).resolves.toEqual([]);
+    });
+  });
+
   describe('changeStatus', () => {
     it('return changed ids', async () => {
       const player1 = new QueuedPlayerEntity(
@@ -156,17 +188,14 @@ describe('QueuedPlayersRepository', () => {
         player2,
       ]);
 
-      const result = await service.changeStatus(
-        ['id8', 'id9', 'id10'],
-        'SELECTED'
-      );
+      await service.changeStatus(['id8', 'id9'], 'GROUPED');
 
-      expect(result).toEqual(['id8', 'id9']);
+      await expect(service.waiting('Deadmines')).resolves.toEqual([]);
     });
   });
 
   describe('leave', () => {
-    it('return removed ids', async () => {
+    it('remove waiting player', async () => {
       const player1 = new QueuedPlayerEntity(
         'id10',
         20,
@@ -185,13 +214,43 @@ describe('QueuedPlayersRepository', () => {
 
       await service.queue([player1, player2]);
 
-      await service.changeStatus(['id11'], 'SELECTED');
+      await service.changeStatus(['id11'], 'GROUPED');
 
-      const result = await service.leave(['id10', 'id11', 'id12']);
-
-      expect(result).toEqual(['id10']);
+      await service.leave(['id10', 'id11']);
 
       await expect(service.waiting('Deadmines')).resolves.toEqual([]);
+
+      await expect(service.grouped('Deadmines')).resolves.toEqual([player2]);
+    });
+  });
+
+  describe('remove', () => {
+    it('remove grouped player', async () => {
+      const player1 = new QueuedPlayerEntity(
+        'id10',
+        20,
+        ['Tank', 'Damage'],
+        ['Deadmines'],
+        timestamp
+      );
+
+      const player2 = new QueuedPlayerEntity(
+        'id11',
+        20,
+        ['Healer', 'Damage'],
+        ['Deadmines'],
+        timestamp
+      );
+
+      await service.queue([player1, player2]);
+
+      await service.changeStatus(['id11'], 'GROUPED');
+
+      await service.remove(['id10', 'id11', 'id12']);
+
+      await expect(service.waiting('Deadmines')).resolves.toEqual([player1]);
+
+      await expect(service.grouped('Deadmines')).resolves.toEqual([]);
     });
   });
 });
