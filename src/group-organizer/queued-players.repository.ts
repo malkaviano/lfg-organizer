@@ -1,5 +1,6 @@
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { QueuedPlayerModel } from './model/queued-player.model';
+import { DungeonName } from '@/dungeon/dungeon-name.literal';
 
 export class QueuedPlayersRepository {
   private readonly queuedPlayersStore: Map<string, QueuedPlayerModel>;
@@ -27,15 +28,17 @@ export class QueuedPlayersRepository {
     return Promise.resolve(true);
   }
 
-  public async get(): Promise<QueuedPlayerEntity[]> {
-    return [...this.queuedPlayersStore.values()].map((model) => {
-      return new QueuedPlayerEntity(
-        model.id,
-        model.level,
-        model.roles,
-        model.dungeons,
-        model.queuedAt
-      );
-    });
+  public async get(dungeonName: DungeonName): Promise<QueuedPlayerEntity[]> {
+    return [...this.queuedPlayersStore.values()]
+      .filter((model) => model.dungeons.some((name) => name === dungeonName))
+      .map((model) => {
+        return new QueuedPlayerEntity(
+          model.id,
+          model.level,
+          model.roles,
+          model.dungeons,
+          model.queuedAt
+        );
+      });
   }
 }
