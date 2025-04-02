@@ -71,6 +71,16 @@ export class QueuedPlayersRepository {
   }
 
   public async remove(playerIds: string[]): Promise<string[]> {
-    throw 'not implemented';
+    let removedIds: string[] = [];
+
+    playerIds.forEach((playerId) => {
+      const player = this.queuedPlayersStore.get(playerId);
+
+      if (player && player.status === 'WAITING') {
+        removedIds.push(player.id);
+      }
+    });
+
+    return Promise.resolve(removedIds);
   }
 }
