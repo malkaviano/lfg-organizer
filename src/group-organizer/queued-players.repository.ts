@@ -70,13 +70,15 @@ export class QueuedPlayersRepository {
     return Promise.resolve(changedIds);
   }
 
-  public async remove(playerIds: string[]): Promise<string[]> {
+  public async leave(playerIds: string[]): Promise<string[]> {
     let removedIds: string[] = [];
 
     playerIds.forEach((playerId) => {
       const player = this.queuedPlayersStore.get(playerId);
 
       if (player && player.status === 'WAITING') {
+        this.queuedPlayersStore.delete(playerId);
+
         removedIds.push(player.id);
       }
     });

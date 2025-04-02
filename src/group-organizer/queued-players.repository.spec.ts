@@ -165,7 +165,7 @@ describe('QueuedPlayersRepository', () => {
     });
   });
 
-  describe('remove', () => {
+  describe('leave', () => {
     it('return removed ids', async () => {
       const player1 = new QueuedPlayerEntity(
         'id10',
@@ -187,9 +187,11 @@ describe('QueuedPlayersRepository', () => {
 
       await service.changeStatus(['id11'], 'SELECTED');
 
-      const result = await service.remove(['id10', 'id11', 'id12']);
+      const result = await service.leave(['id10', 'id11', 'id12']);
 
       expect(result).toEqual(['id10']);
+
+      await expect(service.waiting('Deadmines')).resolves.toEqual([]);
     });
   });
 });
