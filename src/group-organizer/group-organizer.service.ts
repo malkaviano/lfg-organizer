@@ -37,7 +37,7 @@ export class GroupOrganizerService {
         return acc;
       }, party);
 
-      const dungeons = [...new Set(p.dungeons)];
+      const dungeons = [...new Set(request.dungeons)];
 
       if (!DungeonService.checkPlayerLevel(dungeons, p.level)) {
         throw new Error(

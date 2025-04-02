@@ -4,11 +4,11 @@ import { PlayerRole } from '@/dungeon/dungeon-role.literal';
 
 export interface AddPlayersQueueRequest {
   readonly players: PlayerQueueRequest[];
+  readonly dungeons: DungeonName[];
 }
 
 interface PlayerQueueRequest {
   readonly id: string;
   readonly level: PlayerLevel;
   readonly roles: PlayerRole[];
-  readonly dungeons: DungeonName[];
 }

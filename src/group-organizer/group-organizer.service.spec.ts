@@ -52,15 +52,14 @@ describe('GroupOrganizerService', () => {
             id: 'id1',
             level: 20,
             roles: ['Tank', 'Damage', 'Damage'],
-            dungeons: ['Deadmines', 'Deadmines'],
           },
           {
             id: 'id2',
             level: 21,
             roles: ['Healer', 'Healer'],
-            dungeons: ['RagefireChasm', 'Deadmines'],
           },
         ],
+        dungeons: ['RagefireChasm', 'Deadmines', 'RagefireChasm', 'Deadmines'],
       };
 
       const expected: QueuedPlayerEntity[] = [
@@ -68,7 +67,7 @@ describe('GroupOrganizerService', () => {
           'id1',
           20,
           ['Tank', 'Damage'],
-          ['Deadmines'],
+          ['RagefireChasm', 'Deadmines'],
           timestamp
         ),
         new QueuedPlayerEntity(
@@ -82,7 +81,7 @@ describe('GroupOrganizerService', () => {
 
       mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-      mockedQueuedPlayersRepository.queue.mockResolvedValueOnce(true);
+      mockedQueuedPlayersRepository.queue.mockResolvedValueOnce();
 
       await service.queuePlayers(body);
 
@@ -98,15 +97,14 @@ describe('GroupOrganizerService', () => {
             id: 'id1',
             level: 15,
             roles: ['Tank', 'Damage'],
-            dungeons: ['Deadmines'],
           },
           {
             id: 'id2',
             level: 21,
             roles: ['Healer'],
-            dungeons: ['RagefireChasm', 'Deadmines'],
           },
         ],
+        dungeons: ['RagefireChasm', 'Deadmines'],
       };
 
       mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
@@ -123,15 +121,14 @@ describe('GroupOrganizerService', () => {
             id: 'id1',
             level: 20 as PlayerLevel,
             roles: ['Tank', 'Damage'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
           {
             id: 'id2',
             level: 20 as PlayerLevel,
             roles: ['Tank', 'Healer', 'Damage'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
         ],
+        dungeons: ['Deadmines'] as DungeonName[],
         error: 'a group cannot have more than one tank',
       },
       {
@@ -140,15 +137,14 @@ describe('GroupOrganizerService', () => {
             id: 'id1',
             level: 20 as PlayerLevel,
             roles: ['Healer'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
           {
             id: 'id2',
             level: 20 as PlayerLevel,
             roles: ['Tank', 'Healer', 'Damage'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
         ],
+        dungeons: ['Deadmines'] as DungeonName[],
         error: 'a group cannot have more than one healer',
       },
       {
@@ -157,34 +153,33 @@ describe('GroupOrganizerService', () => {
             id: 'id1',
             level: 20 as PlayerLevel,
             roles: ['Damage'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
           {
             id: 'id2',
             level: 20 as PlayerLevel,
             roles: ['Tank', 'Healer', 'Damage'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
           {
             id: 'id3',
             level: 20 as PlayerLevel,
             roles: ['Damage'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
           {
             id: 'id4',
             level: 20 as PlayerLevel,
             roles: ['Damage'] as PlayerRole[],
-            dungeons: ['Deadmines'] as DungeonName[],
           },
         ],
+        dungeons: ['Deadmines'] as DungeonName[],
         error: 'a group cannot have more than three damage dealers',
       },
-    ].forEach(({ players, error }) => {
+    ].forEach(({ players, dungeons, error }) => {
       it('validate roles', async () => {
         mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-        await expect(service.queuePlayers({ players })).rejects.toThrow(error);
+        await expect(
+          service.queuePlayers({ players, dungeons })
+        ).rejects.toThrow(error);
       });
     });
   });

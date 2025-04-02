@@ -40,9 +40,9 @@ describe('GroupOrganizerController', () => {
             id: 'id1',
             level: 15,
             roles: ['Tank', 'Damage'],
-            dungeons: ['Deadmines'],
           },
         ],
+        dungeons: ['Deadmines'],
       };
 
       mockedGroupOrganizerService.queuePlayers.mockResolvedValueOnce();
@@ -59,9 +59,9 @@ describe('GroupOrganizerController', () => {
             id: 'id1',
             level: 15,
             roles: ['Tank', 'Damage'],
-            dungeons: ['Deadmines'],
           },
         ],
+        dungeons: ['Deadmines'],
       };
 
       mockedGroupOrganizerService.queuePlayers.mockRejectedValue(
