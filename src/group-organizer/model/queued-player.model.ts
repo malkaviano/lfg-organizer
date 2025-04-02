@@ -25,7 +25,7 @@ export class QueuedPlayerModel {
       roles: [],
       dungeons: [],
       queuedAt: '',
-      status: 'QUEUED',
+      status: 'WAITING',
     }
   ) {
     const { id, level, roles, dungeons, queuedAt, status } = args;

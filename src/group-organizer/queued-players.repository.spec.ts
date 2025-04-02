@@ -9,8 +9,6 @@ describe('QueuedPlayersRepository', () => {
   const timestamp = '2025-04-01T11:42:19.088Z';
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [QueuedPlayersRepository],
     }).compile();
@@ -46,7 +44,7 @@ describe('QueuedPlayersRepository', () => {
 
         expect(result).toEqual(true);
 
-        const queuedPlayers = await service.get('Deadmines');
+        const queuedPlayers = await service.waiting('Deadmines');
 
         expect(queuedPlayers).toEqual(players);
       });
@@ -94,14 +92,14 @@ describe('QueuedPlayersRepository', () => {
 
         expect(result).toEqual(false);
 
-        const queuedPlayers = await service.get('Deadmines');
+        const queuedPlayers = await service.waiting('Deadmines');
 
         expect(queuedPlayers).toEqual(players1);
       });
     });
   });
 
-  describe('get', () => {
+  describe('waiting', () => {
     it('filters by dungeon', async () => {
       const player1 = new QueuedPlayerEntity(
         'id6',
@@ -123,11 +121,33 @@ describe('QueuedPlayersRepository', () => {
 
       await service.queue([player2]);
 
-      await expect(service.get('Deadmines')).resolves.toEqual([player1]);
+      await expect(service.waiting('Deadmines')).resolves.toEqual([player1]);
 
-      await expect(service.get('RagefireChasm')).resolves.toEqual([player2]);
+      await expect(service.waiting('RagefireChasm')).resolves.toEqual([
+        player2,
+      ]);
 
-      await expect(service.get('WailingCaverns')).resolves.toEqual([]);
+      await expect(service.waiting('WailingCaverns')).resolves.toEqual([]);
+    });
+  });
+
+  describe('changing player status', () => {
+    it('filter SELECTED players', async () => {
+      const player1 = new QueuedPlayerEntity(
+        'id8',
+        20,
+        ['Tank', 'Damage'],
+        ['Deadmines'],
+        timestamp
+      );
+
+      await service.queue([player1]);
+
+      await expect(service.waiting('Deadmines')).resolves.toEqual([player1]);
+
+      await service.changeStatus('id8', 'SELECTED');
+
+      await expect(service.waiting('Deadmines')).resolves.toEqual([]);
     });
   });
 });

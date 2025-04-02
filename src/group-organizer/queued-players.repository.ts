@@ -1,6 +1,7 @@
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import { QueuedPlayerModel } from './model/queued-player.model';
+import { QueuedPlayerModel } from '@/group/model/queued-player.model';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
+import { PlayerStatus } from '@/group/player-status.literal';
 
 export class QueuedPlayersRepository {
   private readonly queuedPlayersStore: Map<string, QueuedPlayerModel>;
@@ -19,7 +20,7 @@ export class QueuedPlayersRepository {
     playerEntities.forEach((playerEntity) => {
       const playerModel = new QueuedPlayerModel({
         ...playerEntity,
-        status: 'QUEUED',
+        status: 'WAITING',
       });
 
       this.queuedPlayersStore.set(playerModel.id, playerModel);
@@ -28,9 +29,15 @@ export class QueuedPlayersRepository {
     return Promise.resolve(true);
   }
 
-  public async get(dungeonName: DungeonName): Promise<QueuedPlayerEntity[]> {
+  public async waiting(
+    dungeonName: DungeonName
+  ): Promise<QueuedPlayerEntity[]> {
     return [...this.queuedPlayersStore.values()]
-      .filter((model) => model.dungeons.some((name) => name === dungeonName))
+      .filter(
+        (model) =>
+          model.dungeons.some((name) => name === dungeonName) &&
+          model.status === 'WAITING'
+      )
       .map((model) => {
         return new QueuedPlayerEntity(
           model.id,
@@ -40,5 +47,16 @@ export class QueuedPlayersRepository {
           model.queuedAt
         );
       });
+  }
+
+  public async changeStatus(
+    id: string,
+    newStatus: PlayerStatus
+  ): Promise<void> {
+    const player = this.queuedPlayersStore.get(id);
+
+    if (player) {
+      player.status = newStatus;
+    }
   }
 }
