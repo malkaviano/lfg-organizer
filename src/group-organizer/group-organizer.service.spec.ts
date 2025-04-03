@@ -10,6 +10,7 @@ import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerRole } from '@/dungeon/dungeon-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
+import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
 
 describe('GroupOrganizerService', () => {
   let service: GroupOrganizerService;
@@ -196,6 +197,105 @@ describe('GroupOrganizerService', () => {
   });
 
   describe('dequeueParty', () => {
-    it('remove waiting players', () => {});
+    it('remove waiting players', async () => {
+      const body: PartyDequeueRequest = {
+        playerIds: ['id1', 'id2'],
+      };
+
+      mockedQueuedPlayersRepository.getByDungeon.mockResolvedValueOnce([
+        new QueuedPlayerEntity(
+          'id1',
+          20,
+          ['Tank', 'Damage'],
+          ['RagefireChasm', 'Deadmines'],
+          timestamp
+        ),
+        new QueuedPlayerEntity(
+          'id2',
+          21,
+          ['Healer'],
+          ['RagefireChasm', 'Deadmines'],
+          timestamp
+        ),
+      ]);
+
+      mockedQueuedPlayersRepository.getById.mockResolvedValueOnce([
+        new QueuedPlayerEntity(
+          'id1',
+          20,
+          ['Tank', 'Damage'],
+          ['RagefireChasm', 'Deadmines'],
+          timestamp
+        ),
+        new QueuedPlayerEntity(
+          'id2',
+          21,
+          ['Healer'],
+          ['RagefireChasm', 'Deadmines'],
+          timestamp
+        ),
+      ]);
+
+      mockedQueuedPlayersRepository.remove.mockResolvedValueOnce(2);
+
+      const result = await service.dequeueParty(body);
+
+      expect(result).toEqual({ result: true });
+    });
+
+    it('return error if player not found', async () => {
+      const body: PartyDequeueRequest = {
+        playerIds: ['id1', 'id2'],
+      };
+
+      mockedQueuedPlayersRepository.getById.mockResolvedValueOnce([
+        new QueuedPlayerEntity(
+          'id1',
+          20,
+          ['Tank', 'Damage'],
+          ['RagefireChasm', 'Deadmines'],
+          timestamp
+        ),
+      ]);
+
+      const result = await service.dequeueParty(body);
+
+      expect(result).toEqual({
+        result: false,
+        errorMsg: 'one or more players could not be found',
+      });
+    });
+
+    it('return error if player not removed', async () => {
+      const body: PartyDequeueRequest = {
+        playerIds: ['id1', 'id2'],
+      };
+
+      mockedQueuedPlayersRepository.getById.mockResolvedValueOnce([
+        new QueuedPlayerEntity(
+          'id1',
+          20,
+          ['Tank', 'Damage'],
+          ['RagefireChasm', 'Deadmines'],
+          timestamp
+        ),
+        new QueuedPlayerEntity(
+          'id2',
+          21,
+          ['Healer'],
+          ['RagefireChasm', 'Deadmines'],
+          timestamp
+        ),
+      ]);
+
+      mockedQueuedPlayersRepository.remove.mockResolvedValueOnce(1);
+
+      const result = await service.dequeueParty(body);
+
+      expect(result).toEqual({
+        result: false,
+        errorMsg: 'one or more players could not be removed',
+      });
+    });
   });
 });

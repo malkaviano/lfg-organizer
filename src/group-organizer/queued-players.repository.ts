@@ -65,7 +65,7 @@ export class QueuedPlayersRepository {
     return Promise.resolve(total);
   }
 
-  public async get(
+  public async getByDungeon(
     dungeonName: DungeonName,
     playerStatus: PlayerStatus
   ): Promise<QueuedPlayerEntity[]> {
@@ -74,6 +74,29 @@ export class QueuedPlayersRepository {
         .filter(
           (model) =>
             model.dungeons.some((name) => name === dungeonName) &&
+            model.status === playerStatus
+        )
+        .map((model) => {
+          return new QueuedPlayerEntity(
+            model.id,
+            model.level,
+            model.roles,
+            model.dungeons,
+            model.queuedAt
+          );
+        })
+    );
+  }
+
+  public async getById(
+    playerIds: string[],
+    playerStatus: PlayerStatus
+  ): Promise<QueuedPlayerEntity[]> {
+    return Promise.resolve(
+      [...this.queuedPlayersStore.values()]
+        .filter(
+          (model) =>
+            playerIds.some((id) => id === model.id) &&
             model.status === playerStatus
         )
         .map((model) => {

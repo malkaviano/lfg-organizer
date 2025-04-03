@@ -91,6 +91,34 @@ export class GroupOrganizerService {
   async dequeueParty(
     request: PartyDequeueRequest
   ): Promise<{ result: boolean; errorMsg?: string }> {
-    throw 'not implemented';
+    const total = request.playerIds.length;
+
+    const { playerIds } = request;
+
+    const result = await this.queuePlayersRepository.getById(
+      playerIds,
+      'WAITING'
+    );
+
+    if (result.length != total) {
+      return {
+        result: false,
+        errorMsg: 'one or more players could not be found',
+      };
+    }
+
+    const removed = await this.queuePlayersRepository.remove(
+      playerIds,
+      'WAITING'
+    );
+
+    if (removed != total) {
+      return {
+        result: false,
+        errorMsg: 'one or more players could not be removed',
+      };
+    }
+
+    return Promise.resolve({ result: true });
   }
 }

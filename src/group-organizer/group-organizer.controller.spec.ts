@@ -6,7 +6,7 @@ import { mock } from 'ts-jest-mocker';
 import { GroupOrganizerController } from '@/group/group-organizer.controller';
 import { GroupOrganizerService } from '@/group/group-organizer.service';
 import { PartyQueueRequest } from '@/group/dto/party-queue.request';
-import { PartyDequeueRequest } from './dto/party-dequeue.request';
+import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
 
 describe('GroupOrganizerController', () => {
   let controller: GroupOrganizerController;
