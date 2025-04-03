@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { AddPlayersQueueRequest } from '@/group/dto/add-players.request';
+import { PartyQueueRequest as PlayersQueueRequest } from '@/group/dto/party-queue.request';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
-import { QueuedPlayerEntity } from './entity/queued-player.entity';
+import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonService } from '@/dungeon/dungeon.service';
-import { error } from 'console';
+import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
 
 @Injectable()
 export class GroupOrganizerService {
@@ -15,7 +15,7 @@ export class GroupOrganizerService {
   ) {}
 
   async queueParty(
-    request: AddPlayersQueueRequest
+    request: PlayersQueueRequest
   ): Promise<{ result: boolean; errorMsg?: string }> {
     const timestamp = this.dateTimeHelper.timestamp();
 
@@ -87,7 +87,9 @@ export class GroupOrganizerService {
     return Promise.resolve(obj);
   }
 
-  async dequeueParty(): Promise<void> {
+  async dequeueParty(
+    request: PartyDequeueRequest
+  ): Promise<{ result: boolean; errorMsg?: string }> {
     throw 'not implemented';
   }
 }

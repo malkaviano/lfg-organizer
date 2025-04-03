@@ -5,7 +5,8 @@ import { mock } from 'ts-jest-mocker';
 
 import { GroupOrganizerController } from '@/group/group-organizer.controller';
 import { GroupOrganizerService } from '@/group/group-organizer.service';
-import { AddPlayersQueueRequest } from '@/group/dto/add-players.request';
+import { PartyQueueRequest } from '@/group/dto/party-queue.request';
+import { PartyDequeueRequest } from './dto/party-dequeue.request';
 
 describe('GroupOrganizerController', () => {
   let controller: GroupOrganizerController;
@@ -32,14 +33,19 @@ describe('GroupOrganizerController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('queue', () => {
-    it('queue new player', async () => {
-      const body: AddPlayersQueueRequest = {
+  describe('queueParty', () => {
+    it('queue party', async () => {
+      const body: PartyQueueRequest = {
         players: [
           {
             id: 'id1',
-            level: 15,
+            level: 20,
             roles: ['Tank', 'Damage'],
+          },
+          {
+            id: 'id2',
+            level: 20,
+            roles: ['Damage'],
           },
         ],
         dungeons: ['Deadmines'],
@@ -49,14 +55,14 @@ describe('GroupOrganizerController', () => {
         result: true,
       });
 
-      await controller.queuePlayers(body);
+      await controller.queueParty(body);
 
       expect(mockedGroupOrganizerService.queueParty).toHaveBeenCalled();
     });
 
     describe('when service fails', () => {
       it('throw HttpException', async () => {
-        const body: AddPlayersQueueRequest = {
+        const body: PartyQueueRequest = {
           players: [
             {
               id: 'id1',
@@ -72,13 +78,52 @@ describe('GroupOrganizerController', () => {
           errorMsg: 'Player cannot be queued',
         });
 
-        await expect(controller.queuePlayers(body)).rejects.toThrow(
+        await expect(controller.queueParty(body)).rejects.toThrow(
           'Player cannot be queued'
         );
 
-        await expect(controller.queuePlayers(body)).rejects.toThrow(
+        await expect(controller.queueParty(body)).rejects.toThrow(
           HttpException
         );
+      });
+    });
+  });
+
+  describe('dequeueParty', () => {
+    describe('when party members are waiting', () => {
+      it('remove party members from queue', async () => {
+        const body: PartyDequeueRequest = {
+          playerIds: ['id1', 'id2'],
+        };
+
+        mockedGroupOrganizerService.dequeueParty.mockResolvedValueOnce({
+          result: true,
+        });
+
+        await controller.dequeueParty(body);
+
+        expect(mockedGroupOrganizerService.dequeueParty).toHaveBeenCalled();
+      });
+
+      describe('when not all member can be removed', () => {
+        it('throw error', async () => {
+          const body: PartyDequeueRequest = {
+            playerIds: ['id1', 'id2'],
+          };
+
+          mockedGroupOrganizerService.dequeueParty.mockResolvedValue({
+            result: false,
+            errorMsg: 'one or more players already selected for a group',
+          });
+
+          await expect(controller.dequeueParty(body)).rejects.toThrow(
+            'one or more players already selected for a group'
+          );
+
+          await expect(controller.dequeueParty(body)).rejects.toThrow(
+            HttpException
+          );
+        });
       });
     });
   });

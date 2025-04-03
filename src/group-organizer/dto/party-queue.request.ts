@@ -2,7 +2,7 @@ import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/dungeon-role.literal';
 
-export interface AddPlayersQueueRequest {
+export interface PartyQueueRequest {
   readonly players: PlayerQueueRequest[];
   readonly dungeons: DungeonName[];
 }

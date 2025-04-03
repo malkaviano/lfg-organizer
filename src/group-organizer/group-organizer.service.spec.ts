@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'ts-jest-mocker';
 
 import { GroupOrganizerService } from '@/group/group-organizer.service';
-import { AddPlayersQueueRequest } from '@/group/dto/add-players.request';
+import { PartyQueueRequest } from '@/group/dto/party-queue.request';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
@@ -44,9 +44,9 @@ describe('GroupOrganizerService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('queue', () => {
+  describe('queueParty', () => {
     it('sanitize values and queue', async () => {
-      const body: AddPlayersQueueRequest = {
+      const body: PartyQueueRequest = {
         players: [
           {
             id: 'id1',
@@ -89,7 +89,7 @@ describe('GroupOrganizerService', () => {
     });
 
     it('validate player level', async () => {
-      const body: AddPlayersQueueRequest = {
+      const body: PartyQueueRequest = {
         players: [
           {
             id: 'id1',
@@ -193,5 +193,9 @@ describe('GroupOrganizerService', () => {
         expect(result).toEqual(expected);
       });
     });
+  });
+
+  describe('dequeueParty', () => {
+    it('remove waiting players', () => {});
   });
 });

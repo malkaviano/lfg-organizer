@@ -8,33 +8,33 @@ import {
 } from '@nestjs/common';
 
 import { GroupOrganizerService } from '@/group/group-organizer.service';
-import { AddPlayersQueueRequest } from '@/group/dto/add-players.request';
-import { RemovePlayersRequest } from '@/group/dto/remove-players.request';
+import { PartyQueueRequest } from '@/group/dto/party-queue.request';
+import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
 
 @Controller('group')
 export class GroupOrganizerController {
   constructor(private readonly groupOrganizerService: GroupOrganizerService) {}
 
   @Post('queue')
-  public async queuePlayers(
-    @Body() request: AddPlayersQueueRequest
-  ): Promise<void> {
-    const { result, errorMsg } =
+  public async queueParty(@Body() request: PartyQueueRequest): Promise<void> {
+    const { result, errorMsg = 'unknow error' } =
       await this.groupOrganizerService.queueParty(request);
 
     if (!result) {
-      throw new HttpException(
-        errorMsg ?? 'unknow error',
-        HttpStatus.BAD_REQUEST
-      );
+      throw new HttpException(errorMsg, HttpStatus.BAD_REQUEST);
     }
   }
 
   @Post('remove')
   @HttpCode(200)
-  public async removePlayers(
-    @Body() request: RemovePlayersRequest
-  ): Promise<unknown> {
-    throw 'not implemented';
+  public async dequeueParty(
+    @Body() request: PartyDequeueRequest
+  ): Promise<void> {
+    const { result, errorMsg = 'unknow error' } =
+      await this.groupOrganizerService.dequeueParty(request);
+
+    if (!result) {
+      throw new HttpException(errorMsg, 400);
+    }
   }
 }
