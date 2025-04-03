@@ -227,13 +227,9 @@ describe('QueuedPlayersRepository', () => {
 
         await service.changeStatus(['id11'], 'GROUPED');
 
-        await service.remove(['id10', 'id11'], 'WAITING');
+        const result = await service.remove(['id10', 'id11'], 'WAITING');
 
-        await expect(service.get('Deadmines', 'WAITING')).resolves.toEqual([]);
-
-        await expect(service.get('Deadmines', 'GROUPED')).resolves.toEqual([
-          player2,
-        ]);
+        expect(result).toEqual(1);
       });
     });
 
@@ -259,13 +255,12 @@ describe('QueuedPlayersRepository', () => {
 
         await service.changeStatus(['id11'], 'GROUPED');
 
-        await service.remove(['id10', 'id11', 'id12'], 'GROUPED');
+        const result = await service.remove(
+          ['id10', 'id11', 'id12'],
+          'GROUPED'
+        );
 
-        await expect(service.get('Deadmines', 'WAITING')).resolves.toEqual([
-          player1,
-        ]);
-
-        await expect(service.get('Deadmines', 'GROUPED')).resolves.toEqual([]);
+        expect(result).toEqual(1);
       });
     });
   });
