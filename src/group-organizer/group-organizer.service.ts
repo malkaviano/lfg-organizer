@@ -78,9 +78,10 @@ export class GroupOrganizerService {
       return Promise.resolve(obj);
     }
 
-    obj.result = await this.queuePlayersRepository.queue(players);
-
-    if (!obj.result) {
+    try {
+      await this.queuePlayersRepository.queue(players);
+    } catch (error) {
+      obj.result = false;
       obj.errorMsg = 'one or more players are already queued';
     }
 

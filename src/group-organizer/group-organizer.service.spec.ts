@@ -81,7 +81,7 @@ describe('GroupOrganizerService', () => {
 
       mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-      mockedQueuedPlayersRepository.queue.mockResolvedValueOnce(true);
+      mockedQueuedPlayersRepository.queue.mockResolvedValueOnce();
 
       const result = await service.queueParty(body);
 

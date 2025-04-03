@@ -10,10 +10,10 @@ export class QueuedPlayersRepository {
     this.queuedPlayersStore = new Map<string, QueuedPlayerModel>();
   }
 
-  public async queue(party: QueuedPlayerEntity[]): Promise<boolean> {
+  public async queue(party: QueuedPlayerEntity[]): Promise<void> {
     for (const playerEntity of party) {
       if (this.queuedPlayersStore.has(playerEntity.id)) {
-        return Promise.resolve(false);
+        throw new Error('DB duplicated id');
       }
     }
 
@@ -25,21 +25,25 @@ export class QueuedPlayersRepository {
 
       this.queuedPlayersStore.set(playerModel.id, playerModel);
     });
-
-    return Promise.resolve(true);
   }
 
   public async changeStatus(
     playerIds: string[],
     newStatus: PlayerStatus
-  ): Promise<void> {
+  ): Promise<number> {
+    let total = 0;
+
     playerIds.forEach((playerId) => {
       const player = this.queuedPlayersStore.get(playerId);
 
       if (player) {
         player.status = newStatus;
+
+        total++;
       }
     });
+
+    return Promise.resolve(total);
   }
 
   public async remove(

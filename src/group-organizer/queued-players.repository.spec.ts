@@ -21,37 +21,27 @@ describe('QueuedPlayersRepository', () => {
   });
 
   describe('queue', () => {
-    describe('add new players to the repository', () => {
-      it('return true', async () => {
-        const players: QueuedPlayerEntity[] = [
-          new QueuedPlayerEntity(
-            'id1',
-            20,
-            ['Tank', 'Damage'],
-            ['Deadmines'],
-            timestamp
-          ),
-          new QueuedPlayerEntity(
-            'id2',
-            21,
-            ['Healer'],
-            ['Deadmines'],
-            timestamp
-          ),
-        ];
+    it('add new players to the repository', async () => {
+      const players: QueuedPlayerEntity[] = [
+        new QueuedPlayerEntity(
+          'id1',
+          20,
+          ['Tank', 'Damage'],
+          ['Deadmines'],
+          timestamp
+        ),
+        new QueuedPlayerEntity('id2', 21, ['Healer'], ['Deadmines'], timestamp),
+      ];
 
-        const result = await service.queue(players);
+      const result = await service.queue(players);
 
-        expect(result).toEqual(true);
+      const queuedPlayers = await service.get('Deadmines', 'WAITING');
 
-        const queuedPlayers = await service.get('Deadmines', 'WAITING');
-
-        expect(queuedPlayers).toEqual(players);
-      });
+      expect(queuedPlayers).toEqual(players);
     });
 
     describe('adding same players to the repository', () => {
-      it('return false', async () => {
+      it('throw error', async () => {
         const players1: QueuedPlayerEntity[] = [
           new QueuedPlayerEntity(
             'id3',
@@ -88,13 +78,9 @@ describe('QueuedPlayersRepository', () => {
 
         await service.queue(players1);
 
-        const result = await service.queue(players2);
-
-        expect(result).toEqual(false);
-
-        const queuedPlayers = await service.get('Deadmines', 'WAITING');
-
-        expect(queuedPlayers).toEqual(players1);
+        await expect(service.queue(players2)).rejects.toThrow(
+          'DB duplicated id'
+        );
       });
     });
   });
@@ -198,9 +184,9 @@ describe('QueuedPlayersRepository', () => {
         player2,
       ]);
 
-      await service.changeStatus(['id8', 'id9'], 'GROUPED');
+      const result = await service.changeStatus(['id8', 'id9'], 'GROUPED');
 
-      await expect(service.get('Deadmines', 'WAITING')).resolves.toEqual([]);
+      expect(result).toEqual(2);
     });
   });
 
