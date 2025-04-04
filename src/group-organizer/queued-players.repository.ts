@@ -71,24 +71,26 @@ export class QueuedPlayersRepository {
     playerStatus: PlayerStatus,
     playerRoles: PlayerRole[]
   ): Promise<QueuedPlayerEntity[]> {
-    return Promise.resolve(
-      [...this.queuedPlayersStore.values()]
-        .filter(
-          (model) =>
-            model.dungeons.some((name) => name === dungeonName) &&
-            model.status === playerStatus &&
-            model.roles.some((role) => playerRoles.some((r) => r === role))
-        )
-        .map((model) => {
-          return new QueuedPlayerEntity(
-            model.id,
-            model.level,
-            model.roles,
-            model.dungeons,
-            model.queuedAt
-          );
-        })
-    );
+    const result = [...this.queuedPlayersStore.values()]
+      .filter(
+        (model) =>
+          model.dungeons.some((name) => name === dungeonName) &&
+          model.status === playerStatus &&
+          model.roles.some((role) => playerRoles.some((r) => r === role))
+      )
+      .map((model) => {
+        return new QueuedPlayerEntity(
+          model.id,
+          model.level,
+          model.roles,
+          model.dungeons,
+          model.queuedAt
+        );
+      });
+
+    result.sort((a, b) => (a.queuedAt < b.queuedAt ? -1 : 1));
+
+    return Promise.resolve(result);
   }
 
   public async getById(

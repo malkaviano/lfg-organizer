@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 
@@ -7,6 +9,8 @@ describe('QueuedPlayersRepository', () => {
   let service: QueuedPlayersRepository;
 
   const timestamp = '2025-04-01T11:42:19.088Z';
+
+  const timestamp2 = '2025-04-02T11:42:19.088Z';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -92,33 +96,49 @@ describe('QueuedPlayersRepository', () => {
   describe('get', () => {
     describe('waiting', () => {
       it('get players by dungeon', async () => {
+        const id1 = uuidv4();
+
         const player1 = new QueuedPlayerEntity(
-          'id6',
+          id1,
           20,
           ['Tank', 'Damage'],
           ['Deadmines'],
           timestamp
         );
 
-        await service.queue([player1]);
+        const id2 = uuidv4();
 
         const player2 = new QueuedPlayerEntity(
-          'id7',
+          id2,
           20,
           ['Tank', 'Damage'],
+          ['RagefireChasm'],
+          timestamp2
+        );
+
+        const id3 = uuidv4();
+
+        const player3 = new QueuedPlayerEntity(
+          id3,
+          21,
+          ['Healer'],
           ['RagefireChasm'],
           timestamp
         );
 
+        await service.queue([player1]);
+
         await service.queue([player2]);
+
+        await service.queue([player3]);
 
         await expect(
           service.getByDungeon('Deadmines', 'WAITING', ['Tank', 'Damage'])
         ).resolves.toEqual([player1]);
 
         await expect(
-          service.getByDungeon('RagefireChasm', 'WAITING', ['Tank', 'Damage'])
-        ).resolves.toEqual([player2]);
+          service.getByDungeon('RagefireChasm', 'WAITING', ['Tank', 'Healer'])
+        ).resolves.toEqual([player3, player2]);
 
         await expect(
           service.getByDungeon('WailingCaverns', 'WAITING', ['Tank', 'Damage'])
