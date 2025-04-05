@@ -66,7 +66,7 @@ export class QueuedPlayersRepository {
     return Promise.resolve(total);
   }
 
-  public async getByDungeon(
+  public async nextInQueue(
     dungeonName: DungeonName,
     playerStatus: PlayerStatus,
     playerRoles: PlayerRole[]

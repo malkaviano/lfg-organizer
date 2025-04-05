@@ -39,7 +39,7 @@ describe('QueuedPlayersRepository', () => {
 
       const result = await service.queue(players);
 
-      const queuedPlayers = await service.getByDungeon('Deadmines', 'WAITING', [
+      const queuedPlayers = await service.nextInQueue('Deadmines', 'WAITING', [
         'Tank',
         'Damage',
         'Healer',
@@ -133,19 +133,19 @@ describe('QueuedPlayersRepository', () => {
         await service.queue([player3]);
 
         await expect(
-          service.getByDungeon('Deadmines', 'WAITING', ['Tank', 'Damage'])
+          service.nextInQueue('Deadmines', 'WAITING', ['Tank', 'Damage'])
         ).resolves.toEqual([player1]);
 
         await expect(
-          service.getByDungeon('RagefireChasm', 'WAITING', ['Tank', 'Healer'])
+          service.nextInQueue('RagefireChasm', 'WAITING', ['Tank', 'Healer'])
         ).resolves.toEqual([player3, player2]);
 
         await expect(
-          service.getByDungeon('WailingCaverns', 'WAITING', ['Tank', 'Damage'])
+          service.nextInQueue('WailingCaverns', 'WAITING', ['Tank', 'Damage'])
         ).resolves.toEqual([]);
 
         await expect(
-          service.getByDungeon('Deadmines', 'WAITING', ['Healer'])
+          service.nextInQueue('Deadmines', 'WAITING', ['Healer'])
         ).resolves.toEqual([]);
       });
     });
@@ -173,15 +173,15 @@ describe('QueuedPlayersRepository', () => {
         await service.changeStatus([player1.id, player2.id], 'GROUPED');
 
         await expect(
-          service.getByDungeon('Deadmines', 'GROUPED', ['Tank', 'Damage'])
+          service.nextInQueue('Deadmines', 'GROUPED', ['Tank', 'Damage'])
         ).resolves.toEqual([player1]);
 
         await expect(
-          service.getByDungeon('RagefireChasm', 'GROUPED', ['Tank', 'Damage'])
+          service.nextInQueue('RagefireChasm', 'GROUPED', ['Tank', 'Damage'])
         ).resolves.toEqual([player2]);
 
         await expect(
-          service.getByDungeon('WailingCaverns', 'GROUPED', ['Tank', 'Damage'])
+          service.nextInQueue('WailingCaverns', 'GROUPED', ['Tank', 'Damage'])
         ).resolves.toEqual([]);
       });
     });
@@ -208,7 +208,7 @@ describe('QueuedPlayersRepository', () => {
       await service.queue([player1, player2]);
 
       await expect(
-        service.getByDungeon('Deadmines', 'WAITING', ['Tank', 'Healer'])
+        service.nextInQueue('Deadmines', 'WAITING', ['Tank', 'Healer'])
       ).resolves.toEqual([player1, player2]);
 
       const result = await service.changeStatus(['id8', 'id9'], 'GROUPED');

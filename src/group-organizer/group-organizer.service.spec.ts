@@ -202,23 +202,6 @@ describe('GroupOrganizerService', () => {
         playerIds: ['id1', 'id2'],
       };
 
-      mockedQueuedPlayersRepository.getByDungeon.mockResolvedValueOnce([
-        new QueuedPlayerEntity(
-          'id1',
-          20,
-          ['Tank', 'Damage'],
-          ['RagefireChasm', 'Deadmines'],
-          timestamp
-        ),
-        new QueuedPlayerEntity(
-          'id2',
-          21,
-          ['Healer'],
-          ['RagefireChasm', 'Deadmines'],
-          timestamp
-        ),
-      ]);
-
       mockedQueuedPlayersRepository.get.mockResolvedValueOnce([
         new QueuedPlayerEntity(
           'id1',
