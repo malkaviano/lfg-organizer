@@ -93,7 +93,7 @@ export class QueuedPlayersRepository {
     return Promise.resolve(result);
   }
 
-  public async getById(
+  public async get(
     playerIds: string[],
     playerStatus: PlayerStatus
   ): Promise<QueuedPlayerEntity[]> {

@@ -219,7 +219,7 @@ describe('GroupOrganizerService', () => {
         ),
       ]);
 
-      mockedQueuedPlayersRepository.getById.mockResolvedValueOnce([
+      mockedQueuedPlayersRepository.get.mockResolvedValueOnce([
         new QueuedPlayerEntity(
           'id1',
           20,
@@ -248,7 +248,7 @@ describe('GroupOrganizerService', () => {
         playerIds: ['id1', 'id2'],
       };
 
-      mockedQueuedPlayersRepository.getById.mockResolvedValueOnce([
+      mockedQueuedPlayersRepository.get.mockResolvedValueOnce([
         new QueuedPlayerEntity(
           'id1',
           20,
@@ -271,7 +271,7 @@ describe('GroupOrganizerService', () => {
         playerIds: ['id1', 'id2'],
       };
 
-      mockedQueuedPlayersRepository.getById.mockResolvedValueOnce([
+      mockedQueuedPlayersRepository.get.mockResolvedValueOnce([
         new QueuedPlayerEntity(
           'id1',
           20,

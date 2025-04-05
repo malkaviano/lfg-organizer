@@ -95,10 +95,7 @@ export class GroupOrganizerService {
 
     const { playerIds } = request;
 
-    const result = await this.queuePlayersRepository.getById(
-      playerIds,
-      'WAITING'
-    );
+    const result = await this.queuePlayersRepository.get(playerIds, 'WAITING');
 
     if (result.length != total) {
       return {
