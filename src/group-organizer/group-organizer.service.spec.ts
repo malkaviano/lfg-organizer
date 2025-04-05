@@ -225,28 +225,5 @@ describe('GroupOrganizerService', () => {
 
       expect(result).toEqual({ result: true });
     });
-
-    it('return error if player not found', async () => {
-      const body: PartyDequeueRequest = {
-        playerIds: ['id1', 'id2'],
-      };
-
-      mockedQueuedPlayersRepository.get.mockResolvedValueOnce([
-        new QueuedPlayerEntity(
-          'id1',
-          20,
-          ['Tank', 'Damage'],
-          ['RagefireChasm', 'Deadmines'],
-          timestamp
-        ),
-      ]);
-
-      const result = await service.dequeueParty(body);
-
-      expect(result).toEqual({
-        result: false,
-        errorMsg: 'one or more players could not be found',
-      });
-    });
   });
 });

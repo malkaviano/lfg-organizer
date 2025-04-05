@@ -95,15 +95,6 @@ export class GroupOrganizerService {
 
     const { playerIds } = request;
 
-    const result = await this.queuePlayersRepository.get(playerIds, 'WAITING');
-
-    if (result.length != total) {
-      return {
-        result: false,
-        errorMsg: 'one or more players could not be found',
-      };
-    }
-
     await this.queuePlayersRepository.remove(playerIds);
 
     return Promise.resolve({ result: true });
