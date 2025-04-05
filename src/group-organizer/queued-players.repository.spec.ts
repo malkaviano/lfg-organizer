@@ -44,10 +44,7 @@ describe('QueuedPlayersRepository', () => {
 
       await service.queue([player1, player2]);
 
-      const queuedPlayers = await service.get(
-        [player1.id, player2.id],
-        'WAITING'
-      );
+      const queuedPlayers = await service.get([player1.id, player2.id]);
 
       expect(queuedPlayers).toEqual([player1, player2]);
     });
@@ -98,7 +95,7 @@ describe('QueuedPlayersRepository', () => {
   });
 
   describe('get', () => {
-    it('return waiting players', async () => {
+    it('return players', async () => {
       const id1 = uuidv4();
 
       const player1 = new QueuedPlayerEntity(
@@ -135,53 +132,9 @@ describe('QueuedPlayersRepository', () => {
 
       await service.queue([player3]);
 
-      const result = await service.get([id1, id2, id3], 'WAITING');
+      const result = await service.get([id1, id2, id3]);
 
       expect(result).toEqual([player1, player2, player3]);
-    });
-
-    it('return grouped players', async () => {
-      const id1 = uuidv4();
-
-      const player1 = new QueuedPlayerEntity(
-        id1,
-        20,
-        ['Tank', 'Damage'],
-        ['Deadmines'],
-        timestamp
-      );
-
-      const id2 = uuidv4();
-
-      const player2 = new QueuedPlayerEntity(
-        id2,
-        20,
-        ['Tank', 'Damage'],
-        ['RagefireChasm'],
-        timestamp2
-      );
-
-      const id3 = uuidv4();
-
-      const player3 = new QueuedPlayerEntity(
-        id3,
-        21,
-        ['Healer', 'Damage'],
-        ['RagefireChasm'],
-        timestamp
-      );
-
-      await service.queue([player1]);
-
-      await service.queue([player2]);
-
-      await service.queue([player3]);
-
-      service.changeStatus([id1, id2], 'GROUPED');
-
-      const result = await service.get([id1, id2, id3], 'GROUPED');
-
-      expect(result).toEqual([player1, player2]);
     });
   });
 
@@ -205,7 +158,7 @@ describe('QueuedPlayersRepository', () => {
 
       await service.queue([player1, player2]);
 
-      await expect(service.get(['id8', 'id9'], 'WAITING')).resolves.toEqual([
+      await expect(service.get(['id8', 'id9'])).resolves.toEqual([
         player1,
         player2,
       ]);
@@ -238,7 +191,7 @@ describe('QueuedPlayersRepository', () => {
 
       await service.remove(['id10', 'id11']);
 
-      const result = await service.get(['id10', 'id11'], 'WAITING');
+      const result = await service.get(['id10', 'id11']);
 
       expect(result).toEqual([]);
     });

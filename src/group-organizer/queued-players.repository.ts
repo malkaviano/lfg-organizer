@@ -81,17 +81,10 @@ export class QueuedPlayersRepository {
     return Promise.resolve(result[0]);
   }
 
-  public async get(
-    playerIds: string[],
-    playerStatus: PlayerStatus
-  ): Promise<QueuedPlayerEntity[]> {
+  public async get(playerIds: string[]): Promise<QueuedPlayerEntity[]> {
     return Promise.resolve(
       [...this.queuedPlayersStore.values()]
-        .filter(
-          (model) =>
-            playerIds.some((id) => id === model.id) &&
-            model.status === playerStatus
-        )
+        .filter((model) => playerIds.some((id) => id === model.id))
         .map((model) => {
           return new QueuedPlayerEntity(
             model.id,
