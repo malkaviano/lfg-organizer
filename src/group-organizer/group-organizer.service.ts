@@ -104,17 +104,7 @@ export class GroupOrganizerService {
       };
     }
 
-    const removed = await this.queuePlayersRepository.remove(
-      playerIds,
-      'WAITING'
-    );
-
-    if (removed != total) {
-      return {
-        result: false,
-        errorMsg: 'one or more players could not be removed',
-      };
-    }
+    await this.queuePlayersRepository.remove(playerIds);
 
     return Promise.resolve({ result: true });
   }

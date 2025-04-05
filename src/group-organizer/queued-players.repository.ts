@@ -47,23 +47,10 @@ export class QueuedPlayersRepository {
     return Promise.resolve(total);
   }
 
-  public async remove(
-    playerIds: string[],
-    playerStatus: PlayerStatus
-  ): Promise<number> {
-    let total = 0;
-
+  public async remove(playerIds: string[]): Promise<void> {
     playerIds.forEach((playerId) => {
-      const player = this.queuedPlayersStore.get(playerId);
-
-      if (player && player.status === playerStatus) {
-        if (this.queuedPlayersStore.delete(playerId)) {
-          total++;
-        }
-      }
+      this.queuedPlayersStore.delete(playerId);
     });
-
-    return Promise.resolve(total);
   }
 
   public async nextInQueue(

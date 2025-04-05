@@ -217,63 +217,30 @@ describe('QueuedPlayersRepository', () => {
   });
 
   describe('remove', () => {
-    describe('waiting', () => {
-      it('remove waiting player', async () => {
-        const player1 = new QueuedPlayerEntity(
-          'id10',
-          20,
-          ['Tank', 'Damage'],
-          ['Deadmines'],
-          timestamp
-        );
+    it('remove player', async () => {
+      const player1 = new QueuedPlayerEntity(
+        'id10',
+        20,
+        ['Tank', 'Damage'],
+        ['Deadmines'],
+        timestamp
+      );
 
-        const player2 = new QueuedPlayerEntity(
-          'id11',
-          20,
-          ['Healer', 'Damage'],
-          ['Deadmines'],
-          timestamp
-        );
+      const player2 = new QueuedPlayerEntity(
+        'id11',
+        20,
+        ['Healer', 'Damage'],
+        ['Deadmines'],
+        timestamp
+      );
 
-        await service.queue([player1, player2]);
+      await service.queue([player1, player2]);
 
-        await service.changeStatus(['id11'], 'GROUPED');
+      await service.remove(['id10', 'id11']);
 
-        const result = await service.remove(['id10', 'id11'], 'WAITING');
+      const result = await service.get(['id10', 'id11'], 'WAITING');
 
-        expect(result).toEqual(1);
-      });
-    });
-
-    describe('grouped', () => {
-      it('remove grouped player', async () => {
-        const player1 = new QueuedPlayerEntity(
-          'id10',
-          20,
-          ['Tank', 'Damage'],
-          ['Deadmines'],
-          timestamp
-        );
-
-        const player2 = new QueuedPlayerEntity(
-          'id11',
-          20,
-          ['Healer', 'Damage'],
-          ['Deadmines'],
-          timestamp
-        );
-
-        await service.queue([player1, player2]);
-
-        await service.changeStatus(['id11'], 'GROUPED');
-
-        const result = await service.remove(
-          ['id10', 'id11', 'id12'],
-          'GROUPED'
-        );
-
-        expect(result).toEqual(1);
-      });
+      expect(result).toEqual([]);
     });
   });
 
