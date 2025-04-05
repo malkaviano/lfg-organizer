@@ -68,15 +68,16 @@ export class QueuedPlayersRepository {
 
   public async nextInQueue(
     dungeonName: DungeonName,
-    playerStatus: PlayerStatus,
-    playerRoles: PlayerRole[]
-  ): Promise<QueuedPlayerEntity[]> {
+    playerRole: PlayerRole,
+    ignoreIds: string[] = []
+  ): Promise<QueuedPlayerEntity | undefined> {
     const result = [...this.queuedPlayersStore.values()]
       .filter(
         (model) =>
           model.dungeons.some((name) => name === dungeonName) &&
-          model.status === playerStatus &&
-          model.roles.some((role) => playerRoles.some((r) => r === role))
+          model.roles.some((role) => playerRole === role) &&
+          !ignoreIds.some((id) => id === model.id) &&
+          model.status === 'WAITING'
       )
       .map((model) => {
         return new QueuedPlayerEntity(
@@ -90,7 +91,7 @@ export class QueuedPlayersRepository {
 
     result.sort((a, b) => (a.queuedAt < b.queuedAt ? -1 : 1));
 
-    return Promise.resolve(result);
+    return Promise.resolve(result[0]);
   }
 
   public async get(
