@@ -17,11 +17,13 @@ describe('CoordinatorService', () => {
 
   const queuedPlayersRepository = new QueuedPlayersRepository();
 
-  const groupMakerService = new GroupMakerService(queuedPlayersRepository);
-
   const mockedPartyProduced = mock<GroupProducer>();
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    const groupMakerService = new GroupMakerService(queuedPlayersRepository);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoordinatorService,
@@ -38,66 +40,112 @@ describe('CoordinatorService', () => {
   });
 
   describe('run', () => {
-    it('form groups', async () => {
-      const tank = new QueuedPlayerEntity(
-        uuidv4(),
-        20,
-        ['Tank'],
-        ['WailingCaverns'],
-        new Date().toISOString()
-      );
+    groupFixtures().forEach(({ players, expected }) => {
+      it('form groups', async () => {
+        await queuedPlayersRepository.queue(players);
 
-      const healer = new QueuedPlayerEntity(
-        uuidv4(),
-        19,
-        ['Healer'],
-        ['WailingCaverns'],
-        new Date().toISOString()
-      );
+        mockedPartyProduced.send.mockResolvedValueOnce();
 
-      const damage1 = new QueuedPlayerEntity(
-        uuidv4(),
-        21,
-        ['Damage'],
-        ['WailingCaverns'],
-        new Date().toISOString()
-      );
+        await service.run();
 
-      const damage2 = new QueuedPlayerEntity(
-        uuidv4(),
-        21,
-        ['Damage'],
-        ['WailingCaverns'],
-        new Date().toISOString()
-      );
-
-      const damage3 = new QueuedPlayerEntity(
-        uuidv4(),
-        21,
-        ['Damage'],
-        ['WailingCaverns'],
-        new Date().toISOString()
-      );
-
-      await queuedPlayersRepository.queue([
-        tank,
-        healer,
-        damage1,
-        damage2,
-        damage3,
-      ]);
-
-      const expected: DungeonGroup = {
-        tank: tank.id,
-        healer: healer.id,
-        damage: [damage1.id, damage2.id, damage3.id],
-      };
-
-      mockedPartyProduced.send.mockResolvedValueOnce();
-
-      await service.run();
-
-      expect(mockedPartyProduced.send).toHaveBeenCalledWith(expected);
+        expect(mockedPartyProduced.send).toHaveBeenCalledWith(expected);
+      });
     });
   });
 });
+
+function groupFixtures(): {
+  players: QueuedPlayerEntity[];
+  expected: DungeonGroup;
+}[] {
+  return [
+    {
+      players: [
+        new QueuedPlayerEntity(
+          'player1a',
+          20,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player2a',
+          19,
+          ['Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player3a',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player4a',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player5a',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+      ],
+      expected: {
+        tank: 'player1a',
+        healer: 'player2a',
+        damage: ['player3a', 'player4a', 'player5a'],
+      },
+    },
+    // {
+    //   players: [
+    //     new QueuedPlayerEntity(
+    //       'player1b',
+    //       20,
+    //       ['Tank', 'Healer'],
+    //       ['WailingCaverns'],
+    //       new Date().toISOString()
+    //     ),
+    //     new QueuedPlayerEntity(
+    //       'player2b',
+    //       19,
+    //       ['Tank'],
+    //       ['WailingCaverns'],
+    //       new Date().toISOString()
+    //     ),
+    //     new QueuedPlayerEntity(
+    //       'player3b',
+    //       21,
+    //       ['Damage'],
+    //       ['WailingCaverns'],
+    //       new Date().toISOString()
+    //     ),
+    //     new QueuedPlayerEntity(
+    //       'player4b',
+    //       21,
+    //       ['Damage'],
+    //       ['WailingCaverns'],
+    //       new Date().toISOString()
+    //     ),
+    //     new QueuedPlayerEntity(
+    //       'player5b',
+    //       21,
+    //       ['Damage'],
+    //       ['WailingCaverns'],
+    //       new Date().toISOString()
+    //     ),
+    //   ],
+    //   expected: {
+    //     tank: 'player2b',
+    //     healer: 'player1b',
+    //     damage: ['player3b', 'player4b', 'player5b'],
+    //   },
+    // },
+  ];
+}

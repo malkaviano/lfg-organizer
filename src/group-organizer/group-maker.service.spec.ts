@@ -151,7 +151,7 @@ describe('GroupMakerService', () => {
 
           expect(
             mockedQueuedPlayersRepository.nextInQueue
-          ).toHaveBeenCalledWith(dungeonName, 'Tank');
+          ).toHaveBeenCalledWith(dungeonName, 'Tank', []);
 
           expect(
             mockedQueuedPlayersRepository.nextInQueue

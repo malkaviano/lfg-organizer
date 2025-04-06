@@ -26,6 +26,7 @@ export class CoordinatorService {
       this.logger.debug(`Running group maker for ${dungeon}`);
 
       const group = await this.groupMakerService.groupFor(dungeon);
+
       if (group) {
         const result = await this.groupMakerService.group([
           group.tank,

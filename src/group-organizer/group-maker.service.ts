@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
+import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
+import { PlayerRole } from '@/dungeon/dungeon-role.literal';
 
 export type DungeonGroup = {
   readonly tank: string;
@@ -35,48 +37,63 @@ export class GroupMakerService {
   }
 
   async groupFor(dungeonName: DungeonName): Promise<DungeonGroup | null> {
-    const tank = await this.queuePlayersRepository.nextInQueue(
+    return this.tankThenHealer(dungeonName);
+  }
+
+  private getPlayer(
+    dungeonName: DungeonName,
+    playerRole: PlayerRole,
+    ...ignored: string[]
+  ) {
+    return this.queuePlayersRepository.nextInQueue(
       dungeonName,
-      'Tank'
+      playerRole,
+      ignored
     );
+  }
+
+  private async tankThenHealer(dungeonName: DungeonName) {
+    const tank = await this.getPlayer(dungeonName, 'Tank');
 
     if (!tank) {
       return Promise.resolve(null);
     }
 
-    const healer = await this.queuePlayersRepository.nextInQueue(
-      dungeonName,
-      'Healer',
-      [tank.id]
-    );
+    const healer = await this.getPlayer(dungeonName, 'Healer', tank.id);
 
     if (!healer) {
       return Promise.resolve(null);
     }
 
-    const damage1 = await this.queuePlayersRepository.nextInQueue(
+    const damage1 = await this.getPlayer(
       dungeonName,
       'Damage',
-      [tank.id, healer.id]
+      tank.id,
+      healer.id
     );
 
     if (!damage1) {
       return Promise.resolve(null);
     }
-    const damage2 = await this.queuePlayersRepository.nextInQueue(
+    const damage2 = await this.getPlayer(
       dungeonName,
       'Damage',
-      [tank.id, healer.id, damage1.id]
+      tank.id,
+      healer.id,
+      damage1.id
     );
 
     if (!damage2) {
       return Promise.resolve(null);
     }
 
-    const damage3 = await this.queuePlayersRepository.nextInQueue(
+    const damage3 = await this.getPlayer(
       dungeonName,
       'Damage',
-      [tank.id, healer.id, damage1.id, damage2.id]
+      tank.id,
+      healer.id,
+      damage1.id,
+      damage2.id
     );
 
     if (!damage3) {
