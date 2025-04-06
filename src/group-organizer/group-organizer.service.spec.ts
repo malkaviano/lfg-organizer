@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { mock } from 'ts-jest-mocker';
 
-import { GroupOrganizerService } from '@/group/group-organizer.service';
+import { GroupQueueingService } from '@/group/group-queueing.service';
 import { PartyQueueRequest } from '@/group/dto/party-queue.request';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
@@ -12,8 +12,8 @@ import { PlayerRole } from '@/dungeon/dungeon-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
 
-describe('GroupOrganizerService', () => {
-  let service: GroupOrganizerService;
+describe('GroupQueueingService', () => {
+  let service: GroupQueueingService;
 
   const mockedQueuedPlayersRepository = mock(QueuedPlayersRepository);
 
@@ -26,7 +26,7 @@ describe('GroupOrganizerService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        GroupOrganizerService,
+        GroupQueueingService,
         {
           provide: QueuedPlayersRepository,
           useValue: mockedQueuedPlayersRepository,
@@ -38,7 +38,7 @@ describe('GroupOrganizerService', () => {
       ],
     }).compile();
 
-    service = module.get<GroupOrganizerService>(GroupOrganizerService);
+    service = module.get<GroupQueueingService>(GroupQueueingService);
   });
 
   it('should be defined', () => {

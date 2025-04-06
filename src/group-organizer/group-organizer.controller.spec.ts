@@ -4,14 +4,14 @@ import { HttpException } from '@nestjs/common';
 import { mock } from 'ts-jest-mocker';
 
 import { GroupOrganizerController } from '@/group/group-organizer.controller';
-import { GroupOrganizerService } from '@/group/group-organizer.service';
+import { GroupQueueingService } from '@/group/group-queueing.service';
 import { PartyQueueRequest } from '@/group/dto/party-queue.request';
 import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
 
 describe('GroupOrganizerController', () => {
   let controller: GroupOrganizerController;
 
-  const mockedGroupOrganizerService = mock(GroupOrganizerService);
+  const mockedGroupOrganizerService = mock(GroupQueueingService);
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -20,7 +20,7 @@ describe('GroupOrganizerController', () => {
       controllers: [GroupOrganizerController],
       providers: [
         {
-          provide: GroupOrganizerService,
+          provide: GroupQueueingService,
           useValue: mockedGroupOrganizerService,
         },
       ],

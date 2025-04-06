@@ -8,7 +8,7 @@ import { DungeonService } from '@/dungeon/dungeon.service';
 import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
 
 @Injectable()
-export class GroupOrganizerService {
+export class GroupQueueingService {
   constructor(
     private readonly queuePlayersRepository: QueuedPlayersRepository,
     private readonly dateTimeHelper: DateTimeHelper
@@ -98,5 +98,13 @@ export class GroupOrganizerService {
     await this.queuePlayersRepository.remove(playerIds);
 
     return Promise.resolve({ result: true });
+  }
+
+  async group(playerIds: string[]): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
+
+  async reset(playerIds: string[]): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }
