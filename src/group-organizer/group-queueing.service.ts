@@ -99,12 +99,4 @@ export class GroupQueueingService {
 
     return Promise.resolve({ result: true });
   }
-
-  async group(playerIds: string[]): Promise<boolean> {
-    throw new Error('Method not implemented.');
-  }
-
-  async reset(playerIds: string[]): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
 }
