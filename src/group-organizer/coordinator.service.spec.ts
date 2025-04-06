@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { v4 as uuidv4 } from 'uuid';
-import { mock, Mock } from 'ts-jest-mocker';
+import { mock } from 'ts-jest-mocker';
 
 import { CoordinatorService } from '@/group/coordinator.service';
 import { GroupMakerService, DungeonGroup } from '@/group/group-maker.service';
@@ -103,49 +102,137 @@ function groupFixtures(): {
         damage: ['player3a', 'player4a', 'player5a'],
       },
     },
-    // {
-    //   players: [
-    //     new QueuedPlayerEntity(
-    //       'player1b',
-    //       20,
-    //       ['Tank', 'Healer'],
-    //       ['WailingCaverns'],
-    //       new Date().toISOString()
-    //     ),
-    //     new QueuedPlayerEntity(
-    //       'player2b',
-    //       19,
-    //       ['Tank'],
-    //       ['WailingCaverns'],
-    //       new Date().toISOString()
-    //     ),
-    //     new QueuedPlayerEntity(
-    //       'player3b',
-    //       21,
-    //       ['Damage'],
-    //       ['WailingCaverns'],
-    //       new Date().toISOString()
-    //     ),
-    //     new QueuedPlayerEntity(
-    //       'player4b',
-    //       21,
-    //       ['Damage'],
-    //       ['WailingCaverns'],
-    //       new Date().toISOString()
-    //     ),
-    //     new QueuedPlayerEntity(
-    //       'player5b',
-    //       21,
-    //       ['Damage'],
-    //       ['WailingCaverns'],
-    //       new Date().toISOString()
-    //     ),
-    //   ],
-    //   expected: {
-    //     tank: 'player2b',
-    //     healer: 'player1b',
-    //     damage: ['player3b', 'player4b', 'player5b'],
-    //   },
-    // },
+    {
+      players: [
+        new QueuedPlayerEntity(
+          'player1b',
+          20,
+          ['Tank', 'Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player2b',
+          19,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player3b',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player4b',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player5b',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+      ],
+      expected: {
+        tank: 'player2b',
+        healer: 'player1b',
+        damage: ['player3b', 'player4b', 'player5b'],
+      },
+    },
+    {
+      players: [
+        new QueuedPlayerEntity(
+          'player1c',
+          20,
+          ['Tank', 'Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player2c',
+          19,
+          ['Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player3c',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player4c',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player5c',
+          21,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+      ],
+      expected: {
+        tank: 'player5c',
+        healer: 'player2c',
+        damage: ['player1c', 'player3c', 'player4c'],
+      },
+    },
+    {
+      players: [
+        new QueuedPlayerEntity(
+          'player1d',
+          20,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player2d',
+          19,
+          ['Healer', 'Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player3d',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player4d',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player5d',
+          21,
+          ['Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+      ],
+      expected: {
+        tank: 'player1d',
+        healer: 'player5d',
+        damage: ['player2d', 'player3d', 'player4d'],
+      },
+    },
   ];
 }

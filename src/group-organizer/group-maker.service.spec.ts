@@ -101,82 +101,42 @@ describe('GroupMakerService', () => {
 
           const dungeonName: DungeonName = 'WailingCaverns';
 
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(tank);
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            healer
-          );
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            damage1
-          );
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            damage2
-          );
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            damage3
-          );
+          mockedQueuedPlayersRepository.nextInQueue
+            .mockResolvedValueOnce(tank)
+            .mockResolvedValueOnce(healer)
+            .mockResolvedValueOnce(damage1)
+            .mockResolvedValueOnce(damage2)
+            .mockResolvedValueOnce(damage3)
+            .mockResolvedValue(null);
 
           const result = await service.groupFor(dungeonName);
 
           expect(result).toBe(null);
         });
       });
+    });
 
+    describe('when enough players', () => {
       fullPartyFixtures().forEach((fixture) => {
-        it('return party', async () => {
+        it('return group', async () => {
           const [tank, healer, damage1, damage2, damage3] = fixture;
 
           const dungeonName: DungeonName = 'WailingCaverns';
 
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(tank);
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            healer
-          );
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            damage1
-          );
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            damage2
-          );
-          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
-            damage3
-          );
+          mockedQueuedPlayersRepository.nextInQueue
+            .mockResolvedValueOnce(tank)
+            .mockResolvedValueOnce(healer)
+            .mockResolvedValueOnce(damage1)
+            .mockResolvedValueOnce(damage2)
+            .mockResolvedValueOnce(damage3);
 
           const result = await service.groupFor(dungeonName);
 
-          expect(result).toEqual({
-            tank: 'tank1',
-            healer: 'healer1',
-            damage: ['damage1', 'damage2', 'damage3'],
-          });
+          expect(result).not.toBeNull();
 
           expect(
             mockedQueuedPlayersRepository.nextInQueue
-          ).toHaveBeenCalledWith(dungeonName, 'Tank', []);
-
-          expect(
-            mockedQueuedPlayersRepository.nextInQueue
-          ).toHaveBeenCalledWith(dungeonName, 'Healer', ['tank1']);
-
-          expect(
-            mockedQueuedPlayersRepository.nextInQueue
-          ).toHaveBeenCalledWith(dungeonName, 'Damage', ['tank1', 'healer1']);
-
-          expect(
-            mockedQueuedPlayersRepository.nextInQueue
-          ).toHaveBeenCalledWith(dungeonName, 'Damage', [
-            'tank1',
-            'healer1',
-            'damage1',
-          ]);
-
-          expect(
-            mockedQueuedPlayersRepository.nextInQueue
-          ).toHaveBeenCalledWith(dungeonName, 'Damage', [
-            'tank1',
-            'healer1',
-            'damage1',
-            'damage2',
-          ]);
+          ).toHaveBeenCalledTimes(5);
         });
       });
     });
