@@ -6,7 +6,7 @@ import { GroupMakerService } from '@/group/group-maker.service';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { QueuedPlayerEntity } from './entity/queued-player.entity';
+import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 
 describe('GroupMakerService', () => {
   let service: GroupMakerService;
@@ -115,7 +115,7 @@ describe('GroupMakerService', () => {
             damage3
           );
 
-          const result = await service.partyFor(dungeonName);
+          const result = await service.groupFor(dungeonName);
 
           expect(result).toBe(null);
         });
@@ -141,7 +141,7 @@ describe('GroupMakerService', () => {
             damage3
           );
 
-          const result = await service.partyFor(dungeonName);
+          const result = await service.groupFor(dungeonName);
 
           expect(result).toEqual({
             tank: 'tank1',

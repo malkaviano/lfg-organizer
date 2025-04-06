@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 
-export type Party = {
+export type DungeonGroup = {
   readonly tank: string;
   readonly healer: string;
   readonly damage: string[];
@@ -34,7 +34,7 @@ export class GroupMakerService {
     await this.queuePlayersRepository.changeStatus(playerIds, 'WAITING');
   }
 
-  async partyFor(dungeonName: DungeonName): Promise<Party | null> {
+  async groupFor(dungeonName: DungeonName): Promise<DungeonGroup | null> {
     const tank = await this.queuePlayersRepository.nextInQueue(
       dungeonName,
       'Tank'
@@ -83,7 +83,7 @@ export class GroupMakerService {
       return Promise.resolve(null);
     }
 
-    const party: Party = {
+    const party: DungeonGroup = {
       tank: tank.id,
       healer: healer.id,
       damage: [damage1.id, damage2.id, damage3.id],
