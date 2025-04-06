@@ -5,6 +5,8 @@ import { mock } from 'ts-jest-mocker';
 import { GroupMakerService } from '@/group/group-maker.service';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { DateTimeHelper } from '@/helper/datetime.helper';
+import { DungeonName } from '@/dungeon/dungeon-name.literal';
+import { QueuedPlayerEntity } from './entity/queued-player.entity';
 
 describe('GroupMakerService', () => {
   let service: GroupMakerService;
@@ -12,8 +14,6 @@ describe('GroupMakerService', () => {
   const mockedQueuedPlayersRepository = mock(QueuedPlayersRepository);
 
   const mockedDateTimeHelper = mock(DateTimeHelper);
-
-  const timestamp = '2025-04-01T11:42:19.088Z';
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -92,4 +92,207 @@ describe('GroupMakerService', () => {
       });
     });
   });
+
+  describe('partyFor', () => {
+    describe('when not enough players', () => {
+      incompletePartyFixtures().forEach((fixture) => {
+        it('return null', async () => {
+          const [tank, healer, damage1, damage2, damage3] = fixture;
+
+          const dungeonName: DungeonName = 'WailingCaverns';
+
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(tank);
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            healer
+          );
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            damage1
+          );
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            damage2
+          );
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            damage3
+          );
+
+          const result = await service.partyFor(dungeonName);
+
+          expect(result).toBe(null);
+        });
+      });
+
+      fullPartyFixtures().forEach((fixture) => {
+        it('return party', async () => {
+          const [tank, healer, damage1, damage2, damage3] = fixture;
+
+          const dungeonName: DungeonName = 'WailingCaverns';
+
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(tank);
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            healer
+          );
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            damage1
+          );
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            damage2
+          );
+          mockedQueuedPlayersRepository.nextInQueue.mockResolvedValueOnce(
+            damage3
+          );
+
+          const result = await service.partyFor(dungeonName);
+
+          expect(result).toEqual({
+            tank: 'tank1',
+            healer: 'healer1',
+            damage: ['damage1', 'damage2', 'damage3'],
+          });
+
+          expect(
+            mockedQueuedPlayersRepository.nextInQueue
+          ).toHaveBeenCalledWith(dungeonName, 'Tank');
+
+          expect(
+            mockedQueuedPlayersRepository.nextInQueue
+          ).toHaveBeenCalledWith(dungeonName, 'Healer', ['tank1']);
+
+          expect(
+            mockedQueuedPlayersRepository.nextInQueue
+          ).toHaveBeenCalledWith(dungeonName, 'Damage', ['tank1', 'healer1']);
+
+          expect(
+            mockedQueuedPlayersRepository.nextInQueue
+          ).toHaveBeenCalledWith(dungeonName, 'Damage', [
+            'tank1',
+            'healer1',
+            'damage1',
+          ]);
+
+          expect(
+            mockedQueuedPlayersRepository.nextInQueue
+          ).toHaveBeenCalledWith(dungeonName, 'Damage', [
+            'tank1',
+            'healer1',
+            'damage1',
+            'damage2',
+          ]);
+        });
+      });
+    });
+  });
 });
+
+function timestamp() {
+  return '2025-04-01T11:42:19.088Z';
+}
+
+function fullPartyFixtures() {
+  return [
+    [
+      new QueuedPlayerEntity(
+        'tank1',
+        22,
+        ['Tank'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'healer1',
+        22,
+        ['Healer'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'damage1',
+        20,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'damage2',
+        21,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'damage3',
+        19,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+    ],
+  ];
+}
+
+function incompletePartyFixtures() {
+  return [
+    [
+      new QueuedPlayerEntity(
+        'tank1',
+        22,
+        ['Tank'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'healer1',
+        22,
+        ['Healer'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'damage1',
+        20,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'damage2',
+        21,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      null,
+    ],
+    [
+      new QueuedPlayerEntity(
+        'tank1',
+        22,
+        ['Tank'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      null,
+      new QueuedPlayerEntity(
+        'damage1',
+        20,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'damage2',
+        21,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+      new QueuedPlayerEntity(
+        'damage3',
+        19,
+        ['Damage'],
+        ['WailingCaverns'],
+        timestamp()
+      ),
+    ],
+    [null, null, null, null, null],
+  ];
+}

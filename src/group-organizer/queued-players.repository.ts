@@ -57,7 +57,7 @@ export class QueuedPlayersRepository {
     dungeonName: DungeonName,
     playerRole: PlayerRole,
     ignoreIds: string[] = []
-  ): Promise<QueuedPlayerEntity | undefined> {
+  ): Promise<QueuedPlayerEntity | null> {
     const result = [...this.queuedPlayersStore.values()]
       .filter(
         (model) =>
@@ -78,7 +78,7 @@ export class QueuedPlayersRepository {
 
     result.sort((a, b) => (a.queuedAt < b.queuedAt ? -1 : 1));
 
-    return Promise.resolve(result[0]);
+    return Promise.resolve(result[0] ?? null);
   }
 
   public async get(playerIds: string[]): Promise<QueuedPlayerEntity[]> {

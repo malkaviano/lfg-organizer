@@ -225,7 +225,7 @@ describe('QueuedPlayersRepository', () => {
         'id13',
       ]);
 
-      expect(result2).toBeUndefined();
+      expect(result2).toBeNull();
     });
   });
 });
