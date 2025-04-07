@@ -17,7 +17,7 @@ describe('CoordinatorService', () => {
 
   const queuedPlayersRepository = new QueuedPlayersRepository();
 
-  const mockedPartyProduced = mock<GroupProducer>();
+  const mockedGroupProducer = mock<GroupProducer>();
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -28,7 +28,7 @@ describe('CoordinatorService', () => {
       providers: [
         CoordinatorService,
         { provide: GroupMakerService, useValue: groupMakerService },
-        { provide: GroupProducedToken, useValue: mockedPartyProduced },
+        { provide: GroupProducedToken, useValue: mockedGroupProducer },
       ],
     }).compile();
 
@@ -44,11 +44,11 @@ describe('CoordinatorService', () => {
       it('form groups', async () => {
         await queuedPlayersRepository.queue(players);
 
-        mockedPartyProduced.send.mockResolvedValueOnce();
+        mockedGroupProducer.send.mockResolvedValueOnce();
 
         await service.run();
 
-        expect(mockedPartyProduced.send).toHaveBeenCalledWith(expected);
+        expect(mockedGroupProducer.send).toHaveBeenCalledWith(expected);
       });
     });
   });
