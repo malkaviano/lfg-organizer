@@ -10,6 +10,7 @@ export class QueuedPlayerModel {
   public dungeons: DungeonName[];
   public queuedAt: string;
   public status: PlayerStatus;
+  public playingWith: string[];
 
   constructor(
     args: {
@@ -19,6 +20,7 @@ export class QueuedPlayerModel {
       readonly dungeons: DungeonName[];
       readonly queuedAt: string;
       readonly status: PlayerStatus;
+      readonly playingWith: string[];
     } = {
       id: '',
       level: 10,
@@ -26,6 +28,7 @@ export class QueuedPlayerModel {
       dungeons: [],
       queuedAt: '',
       status: 'WAITING',
+      playingWith: [],
     }
   ) {
     const { id, level, roles, dungeons, queuedAt, status } = args;
@@ -36,5 +39,6 @@ export class QueuedPlayerModel {
     this.dungeons = dungeons;
     this.queuedAt = queuedAt;
     this.status = status;
+    this.playingWith = args.playingWith;
   }
 }

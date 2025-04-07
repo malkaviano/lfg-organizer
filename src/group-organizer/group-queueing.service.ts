@@ -25,6 +25,8 @@ export class GroupQueueingService {
       result: true,
     };
 
+    const playerIds = request.players.map((p) => p.id);
+
     const players = request.players.map((p) => {
       const roles = [...new Set(p.roles)];
 
@@ -57,7 +59,8 @@ export class GroupQueueingService {
         p.level,
         roles,
         dungeons,
-        timestamp
+        timestamp,
+        playerIds.filter((id) => id !== p.id)
       );
 
       return entity;

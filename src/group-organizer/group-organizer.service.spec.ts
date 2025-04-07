@@ -69,14 +69,16 @@ describe('GroupQueueingService', () => {
           20,
           ['Tank', 'Damage'],
           ['RagefireChasm', 'Deadmines'],
-          timestamp
+          timestamp,
+          ['id2']
         ),
         new QueuedPlayerEntity(
           'id2',
           21,
           ['Healer'],
           ['RagefireChasm', 'Deadmines'],
-          timestamp
+          timestamp,
+          ['id1']
         ),
       ];
 
@@ -87,6 +89,10 @@ describe('GroupQueueingService', () => {
       const result = await service.queueParty(body);
 
       expect(result).toEqual({ result: true });
+
+      expect(mockedQueuedPlayersRepository.queue).toHaveBeenCalledWith(
+        expected
+      );
     });
 
     it('validate player level', async () => {
