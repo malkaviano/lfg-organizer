@@ -1,4 +1,4 @@
-import { DungeonGroup } from '@/group/group-maker.service';
+import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 
 export const GroupProducedToken = Symbol('GroupProduced');
 

@@ -3,12 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/dungeon-role.literal';
-
-export type DungeonGroup = {
-  readonly tank: string;
-  readonly healer: string;
-  readonly damage: string[];
-};
+import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 
 @Injectable()
 export class GroupMakerService {
