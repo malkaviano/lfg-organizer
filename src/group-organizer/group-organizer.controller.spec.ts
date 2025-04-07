@@ -5,8 +5,8 @@ import { mock } from 'ts-jest-mocker';
 
 import { GroupOrganizerController } from '@/group/group-organizer.controller';
 import { GroupQueueingService } from '@/group/group-queueing.service';
-import { PartyQueueRequest } from '@/group/dto/party-queue.request';
-import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
+import { GroupQueueRequest } from '@/group/dto/group-queue.request';
+import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
 
 describe('GroupOrganizerController', () => {
   let controller: GroupOrganizerController;
@@ -35,7 +35,7 @@ describe('GroupOrganizerController', () => {
 
   describe('queueParty', () => {
     it('queue party', async () => {
-      const body: PartyQueueRequest = {
+      const body: GroupQueueRequest = {
         players: [
           {
             id: 'id1',
@@ -62,7 +62,7 @@ describe('GroupOrganizerController', () => {
 
     describe('when service fails', () => {
       it('throw HttpException', async () => {
-        const body: PartyQueueRequest = {
+        const body: GroupQueueRequest = {
           players: [
             {
               id: 'id1',
@@ -92,7 +92,7 @@ describe('GroupOrganizerController', () => {
   describe('dequeueParty', () => {
     describe('when party members are waiting', () => {
       it('remove party members from queue', async () => {
-        const body: PartyDequeueRequest = {
+        const body: GroupDequeueRequest = {
           playerIds: ['id1', 'id2'],
         };
 
@@ -107,7 +107,7 @@ describe('GroupOrganizerController', () => {
 
       describe('when not all member can be removed', () => {
         it('throw error', async () => {
-          const body: PartyDequeueRequest = {
+          const body: GroupDequeueRequest = {
             playerIds: ['id1', 'id2'],
           };
 

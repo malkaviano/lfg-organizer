@@ -8,15 +8,15 @@ import {
 } from '@nestjs/common';
 
 import { GroupQueueingService } from '@/group/group-queueing.service';
-import { PartyQueueRequest } from '@/group/dto/party-queue.request';
-import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
+import { GroupQueueRequest } from '@/group/dto/group-queue.request';
+import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
 
 @Controller('group')
 export class GroupOrganizerController {
   constructor(private readonly groupOrganizerService: GroupQueueingService) {}
 
   @Post('queue')
-  public async queueParty(@Body() request: PartyQueueRequest): Promise<void> {
+  public async queueParty(@Body() request: GroupQueueRequest): Promise<void> {
     const { result, errorMsg = 'unknown error' } =
       await this.groupOrganizerService.queueParty(request);
 
@@ -28,7 +28,7 @@ export class GroupOrganizerController {
   @Post('remove')
   @HttpCode(200)
   public async dequeueParty(
-    @Body() request: PartyDequeueRequest
+    @Body() request: GroupDequeueRequest
   ): Promise<void> {
     const { result, errorMsg = 'unknown error' } =
       await this.groupOrganizerService.dequeueParty(request);

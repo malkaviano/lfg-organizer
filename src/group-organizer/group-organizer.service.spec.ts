@@ -3,14 +3,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'ts-jest-mocker';
 
 import { GroupQueueingService } from '@/group/group-queueing.service';
-import { PartyQueueRequest } from '@/group/dto/party-queue.request';
+import { GroupQueueRequest } from '@/group/dto/group-queue.request';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerRole } from '@/dungeon/dungeon-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
+import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
 
 describe('GroupQueueingService', () => {
   let service: GroupQueueingService;
@@ -47,7 +47,7 @@ describe('GroupQueueingService', () => {
 
   describe('queueParty', () => {
     it('sanitize values and queue', async () => {
-      const body: PartyQueueRequest = {
+      const body: GroupQueueRequest = {
         players: [
           {
             id: 'id1',
@@ -96,7 +96,7 @@ describe('GroupQueueingService', () => {
     });
 
     it('validate player level', async () => {
-      const body: PartyQueueRequest = {
+      const body: GroupQueueRequest = {
         players: [
           {
             id: 'id1',
@@ -204,7 +204,7 @@ describe('GroupQueueingService', () => {
 
   describe('dequeueParty', () => {
     it('remove waiting players', async () => {
-      const body: PartyDequeueRequest = {
+      const body: GroupDequeueRequest = {
         playerIds: ['id1', 'id2'],
       };
 

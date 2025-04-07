@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { PartyQueueRequest as PlayersQueueRequest } from '@/group/dto/party-queue.request';
+import { GroupQueueRequest as PlayersQueueRequest } from '@/group/dto/group-queue.request';
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonService } from '@/dungeon/dungeon.service';
-import { PartyDequeueRequest } from '@/group/dto/party-dequeue.request';
+import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
 
 @Injectable()
 export class GroupQueueingService {
@@ -92,7 +92,7 @@ export class GroupQueueingService {
   }
 
   async dequeueParty(
-    request: PartyDequeueRequest
+    request: GroupDequeueRequest
   ): Promise<{ result: boolean; errorMsg?: string }> {
     const total = request.playerIds.length;
 
