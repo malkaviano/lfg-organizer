@@ -204,7 +204,8 @@ describe('QueuedPlayersRepository', () => {
         20,
         ['Tank', 'Damage'],
         ['Deadmines'],
-        timestamp
+        timestamp,
+        ['id13']
       );
 
       const player2 = new QueuedPlayerEntity(
@@ -212,7 +213,8 @@ describe('QueuedPlayersRepository', () => {
         20,
         ['Healer', 'Damage'],
         ['Deadmines'],
-        timestamp
+        timestamp,
+        ['id12']
       );
 
       await service.queue([player1, player2]);
