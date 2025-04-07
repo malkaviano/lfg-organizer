@@ -92,7 +92,8 @@ export class QueuedPlayersRepository {
             model.level,
             model.roles,
             model.dungeons,
-            model.queuedAt
+            model.queuedAt,
+            model.playingWith
           );
         })
     );

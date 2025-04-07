@@ -108,29 +108,29 @@ describe('QueuedPlayersRepository', () => {
 
       const id2 = uuidv4();
 
+      const id3 = uuidv4();
+
       const player2 = new QueuedPlayerEntity(
         id2,
         20,
         ['Tank', 'Damage'],
         ['RagefireChasm'],
-        timestamp2
+        timestamp2,
+        [id3]
       );
-
-      const id3 = uuidv4();
 
       const player3 = new QueuedPlayerEntity(
         id3,
         21,
         ['Healer', 'Damage'],
         ['RagefireChasm'],
-        timestamp
+        timestamp,
+        [id2]
       );
 
       await service.queue([player1]);
 
-      await service.queue([player2]);
-
-      await service.queue([player3]);
+      await service.queue([player2, player3]);
 
       const result = await service.get([id1, id2, id3]);
 
