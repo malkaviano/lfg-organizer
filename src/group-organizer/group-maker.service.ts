@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { PlayerRole } from '@/dungeon/dungeon-role.literal';
+import { PlayerRole } from '@/dungeon/player-role.literal';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 
 @Injectable()

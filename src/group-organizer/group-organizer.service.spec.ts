@@ -8,7 +8,7 @@ import { QueuedPlayersRepository } from '@/group/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
-import { PlayerRole } from '@/dungeon/dungeon-role.literal';
+import { PlayerRole } from '@/dungeon/player-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
 

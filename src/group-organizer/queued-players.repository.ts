@@ -2,7 +2,7 @@ import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { QueuedPlayerModel } from '@/group/model/queued-player.model';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerStatus } from '@/group/player-status.literal';
-import { PlayerRole } from '@/dungeon/dungeon-role.literal';
+import { PlayerRole } from '@/dungeon/player-role.literal';
 
 export class QueuedPlayersRepository {
   private readonly queuedPlayersStore: Map<string, QueuedPlayerModel>;
