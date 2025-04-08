@@ -20,7 +20,7 @@ export class CoordinatorService {
 
   @Cron('* * * * *')
   public async run() {
-    const dungeons: DungeonName[] = ['WailingCaverns'];
+    const dungeons: DungeonName[] = ['WailingCaverns', 'Deadmines'];
 
     for (const dungeon of dungeons) {
       this.logger.debug(`Running group maker for ${dungeon}`);

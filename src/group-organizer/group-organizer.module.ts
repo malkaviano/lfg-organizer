@@ -7,6 +7,7 @@ import { HelperModule } from '@/helper/helper.module';
 import { GroupMakerService } from '@/group/group-maker.service';
 import { CoordinatorService } from '@/group/coordinator.service';
 import { GroupProducedToken } from '@/group/interface/group-producer.interface';
+import { GroupFormedProducer } from '@/group/group-formed.producer';
 
 @Module({
   imports: [HelperModule],
@@ -18,7 +19,7 @@ import { GroupProducedToken } from '@/group/interface/group-producer.interface';
     CoordinatorService,
     {
       provide: GroupProducedToken,
-      useValue: {},
+      useClass: GroupFormedProducer,
     },
   ],
 })
