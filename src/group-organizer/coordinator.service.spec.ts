@@ -4,7 +4,6 @@ import { mock } from 'ts-jest-mocker';
 
 import { CoordinatorService } from '@/group/coordinator.service';
 import { GroupMakerService } from '@/group/group-maker.service';
-import { QueuedPlayersRepository } from './queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import {
   GroupProducer,
@@ -15,19 +14,17 @@ import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 describe('CoordinatorService', () => {
   let service: CoordinatorService;
 
-  const queuedPlayersRepository = new QueuedPlayersRepository();
+  const mockedGroupMakerService = mock(GroupMakerService);
 
   const mockedGroupProducer = mock<GroupProducer>();
 
   beforeEach(async () => {
     jest.resetAllMocks();
 
-    const groupMakerService = new GroupMakerService(queuedPlayersRepository);
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoordinatorService,
-        { provide: GroupMakerService, useValue: groupMakerService },
+        { provide: GroupMakerService, useValue: mockedGroupMakerService },
         { provide: GroupProducedToken, useValue: mockedGroupProducer },
       ],
     }).compile();
@@ -42,9 +39,11 @@ describe('CoordinatorService', () => {
   describe('run', () => {
     groupFixtures().forEach(({ players, expected }) => {
       it('form groups', async () => {
-        await queuedPlayersRepository.queue(players);
-
         mockedGroupProducer.send.mockResolvedValueOnce();
+
+        mockedGroupMakerService.groupFor.mockResolvedValueOnce(expected);
+
+        mockedGroupMakerService.group.mockResolvedValueOnce(true);
 
         await service.run();
 
