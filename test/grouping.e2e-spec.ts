@@ -85,7 +85,7 @@ describe('Grouping', () => {
 
       await agent.post('/group/queue').send(body2).expect(201);
 
-      await service.run();
+      await service.run('Deadmines');
 
       const result = await producer.groups();
 

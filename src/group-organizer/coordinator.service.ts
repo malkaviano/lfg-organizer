@@ -19,33 +19,37 @@ export class CoordinatorService {
   ) {}
 
   @Cron('* * * * *')
-  public async run() {
+  public async coordinate() {
     const dungeons: DungeonName[] = ['WailingCaverns', 'Deadmines'];
 
-    for (const dungeon of dungeons) {
-      this.logger.debug(`Running group maker for ${dungeon}`);
+    for (const dungeonName of dungeons) {
+      await this.run(dungeonName);
+    }
+  }
 
-      const group = await this.groupMakerService.groupFor(dungeon);
+  public async run(dungeonName: DungeonName) {
+    this.logger.debug(`Running group maker for ${dungeonName}`);
 
-      if (group) {
-        const result = await this.groupMakerService.group([
-          group.tank,
-          group.healer,
-          ...group.damage,
-        ]);
+    const group = await this.groupMakerService.groupFor(dungeonName);
 
-        if (result) {
-          await this.partyProducer.send(group);
+    if (group) {
+      const result = await this.groupMakerService.group([
+        group.tank,
+        group.healer,
+        ...group.damage,
+      ]);
 
-          this.logger.debug(
-            `Group created for ${dungeon}: ${JSON.stringify(result)}`
-          );
-        } else {
-          this.logger.debug(`Failed to create group for ${dungeon}`);
-        }
+      if (result) {
+        await this.partyProducer.send(group);
+
+        this.logger.debug(
+          `Group created for ${dungeonName}: ${JSON.stringify(result)}`
+        );
       } else {
-        this.logger.debug(`No group found for ${dungeon}`);
+        this.logger.debug(`Failed to create group for ${dungeonName}`);
       }
+    } else {
+      this.logger.debug(`No group found for ${dungeonName}`);
     }
   }
 }

@@ -45,7 +45,7 @@ describe('CoordinatorService', () => {
 
         mockedGroupMakerService.group.mockResolvedValueOnce(true);
 
-        await service.run();
+        await service.run('WailingCaverns');
 
         expect(mockedGroupProducer.send).toHaveBeenCalledWith(expected);
       });
