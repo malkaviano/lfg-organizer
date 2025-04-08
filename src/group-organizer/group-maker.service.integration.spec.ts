@@ -485,5 +485,138 @@ function groupFixtures(): {
         damage: ['player3h', 'player4h', 'player5h'],
       },
     },
+    {
+      players: [
+        new QueuedPlayerEntity(
+          'player1h',
+          20,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player3h']
+        ),
+        new QueuedPlayerEntity(
+          'player2h',
+          19,
+          ['Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player4h', 'player5h']
+        ),
+        new QueuedPlayerEntity(
+          'player6h',
+          21,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player7h',
+          21,
+          ['Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString()
+        ),
+        new QueuedPlayerEntity(
+          'player3h',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player1h']
+        ),
+        new QueuedPlayerEntity(
+          'player4h',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player2h', 'player5h']
+        ),
+        new QueuedPlayerEntity(
+          'player5h',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player2h', 'player4h']
+        ),
+      ],
+      expected: {
+        tank: 'player1h',
+        healer: 'player2h',
+        damage: ['player3h', 'player4h', 'player5h'],
+      },
+    },
+    // LOCKOUT (not gonna address this now)
+    {
+      players: [
+        new QueuedPlayerEntity(
+          'player1h',
+          20,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player2h', 'player3h']
+        ),
+        new QueuedPlayerEntity(
+          'player2h',
+          19,
+          ['Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player2h', 'player3h']
+        ),
+        new QueuedPlayerEntity(
+          'player3h',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player1h', 'player2h']
+        ),
+        new QueuedPlayerEntity(
+          'player4h',
+          21,
+          ['Healer'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player5h']
+        ),
+        new QueuedPlayerEntity(
+          'player5h',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player4h']
+        ),
+        new QueuedPlayerEntity(
+          'player6h',
+          21,
+          ['Tank'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player7h', 'player8h']
+        ),
+        new QueuedPlayerEntity(
+          'player7h',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player6h', 'player8h']
+        ),
+        new QueuedPlayerEntity(
+          'player8h',
+          21,
+          ['Damage'],
+          ['WailingCaverns'],
+          new Date().toISOString(),
+          ['player6h', 'player7h']
+        ),
+      ],
+      expected: null,
+    },
   ];
 }
