@@ -10,4 +10,12 @@ db.createUser({
     db: '$MONGO_DATABASE'
   }]
 })
+db.createUser({
+  user: '$MONGO_USER_TEST',
+  pwd:  '$MONGO_PASSWORD_TEST',
+  roles: [{
+    role: 'readWrite',
+    db: '$MONGO_DATABASE_TEST'
+  }]
+})
 EOF
