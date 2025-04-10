@@ -21,7 +21,8 @@
     "paths": {
       "@/group/*": ["src/group-organizer/*"],
       "@/dungeon/*": ["src/dungeon/*"],
-      "@/helper/*": ["src/helper/*"]
+      "@/helper/*": ["src/helper/*"],
+      "@/config/*": ["src/config/*"]
     }
   }
 }

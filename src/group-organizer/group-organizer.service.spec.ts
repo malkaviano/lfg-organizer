@@ -4,7 +4,7 @@ import { mock } from 'ts-jest-mocker';
 
 import { GroupQueueingService } from '@/group/group-queueing.service';
 import { GroupQueueRequest } from '@/group/dto/group-queue.request';
-import { QueuedPlayersRepository } from '@/group/queued-players.repository';
+import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerLevel } from '@/dungeon/player-level.literal';

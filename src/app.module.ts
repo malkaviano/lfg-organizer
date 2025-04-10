@@ -1,13 +1,22 @@
 import { Module } from '@nestjs/common';
 
+import { ScheduleModule } from '@nestjs/schedule';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GroupOrganizerModule } from '@/group/group-organizer.module';
 import { DungeonModule } from '@/dungeon/dungeon.module';
-import { ScheduleModule } from '@nestjs/schedule';
+
+import { mongoConnection } from '@/config/mongo-connection.config';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), DungeonModule, GroupOrganizerModule],
+  imports: [
+    ScheduleModule.forRoot(),
+    MongooseModule.forRootAsync(mongoConnection.asProvider()),
+    DungeonModule,
+    GroupOrganizerModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -21,9 +21,12 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/mongoose": "^11.0.3",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^5.0.1",
+    "mongoose": "^8.13.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "uuid": "^11.1.0"
@@ -79,7 +82,8 @@
     "moduleNameMapper": {
       "^@/group/(.*)$": "<rootDir>/src/group-organizer/$1",
       "^@/dungeon/(.*)$": "<rootDir>/src/dungeon/$1",
-      "^@/helper/(.*)$": "<rootDir>/src/helper/$1"
+      "^@/helper/(.*)$": "<rootDir>/src/helper/$1",
+      "^@/config/(.*)$": "<rootDir>/src/config/$1"
     }
   }
 }

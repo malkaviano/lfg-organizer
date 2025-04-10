@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { GroupQueueRequest as PlayersQueueRequest } from '@/group/dto/group-queue.request';
-import { QueuedPlayersRepository } from '@/group/queued-players.repository';
+import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonService } from '@/dungeon/dungeon.service';

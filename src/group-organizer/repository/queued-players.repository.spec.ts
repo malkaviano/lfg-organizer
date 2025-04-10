@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { QueuedPlayersRepository } from '@/group/queued-players.repository';
+import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 
 describe('QueuedPlayersRepository', () => {
