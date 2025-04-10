@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import TestAgent from 'supertest/lib/agent';
+import { v4 as uuidv4 } from 'uuid';
 
 import { AppModule } from '../src/app.module';
 import { GroupQueueRequest } from '@/group/dto/group-queue.request';
@@ -48,12 +49,12 @@ describe('Grouping', () => {
         dungeons: ['Deadmines'],
         players: [
           {
-            id: '1',
+            id: uuidv4(),
             level: 20,
             roles: ['Tank'],
           },
           {
-            id: '2',
+            id: uuidv4(),
             level: 20,
             roles: ['Damage'],
           },
@@ -66,17 +67,17 @@ describe('Grouping', () => {
         dungeons: ['Deadmines'],
         players: [
           {
-            id: '3',
+            id: uuidv4(),
             level: 20,
             roles: ['Healer'],
           },
           {
-            id: '4',
+            id: uuidv4(),
             level: 20,
             roles: ['Damage'],
           },
           {
-            id: '5',
+            id: uuidv4(),
             level: 20,
             roles: ['Damage'],
           },
