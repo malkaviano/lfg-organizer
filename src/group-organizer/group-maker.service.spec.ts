@@ -3,13 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'ts-jest-mocker';
 
 import { GroupMakerService } from '@/group/group-maker.service';
-import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { DateTimeHelper } from '@/helper/datetime.helper';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 
 describe('GroupMakerService', () => {
   let service: GroupMakerService;
 
-  const mockedQueuedPlayersRepository = mock(QueuedPlayersRepository);
+  const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
 
   const mockedDateTimeHelper = mock(DateTimeHelper);
 
@@ -20,7 +23,7 @@ describe('GroupMakerService', () => {
       providers: [
         GroupMakerService,
         {
-          provide: QueuedPlayersRepository,
+          provide: QueuedPlayersRepositoryToken,
           useValue: mockedQueuedPlayersRepository,
         },
         {

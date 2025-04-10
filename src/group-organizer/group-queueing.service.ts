@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { GroupQueueRequest as PlayersQueueRequest } from '@/group/dto/group-queue.request';
-import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonService } from '@/dungeon/dungeon.service';
 import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 
 @Injectable()
 export class GroupQueueingService {
   constructor(
+    @Inject(QueuedPlayersRepositoryToken)
     private readonly queuePlayersRepository: QueuedPlayersRepository,
     private readonly dateTimeHelper: DateTimeHelper
   ) {}

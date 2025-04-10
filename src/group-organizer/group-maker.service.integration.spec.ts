@@ -1,33 +1,44 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { mock } from 'ts-jest-mocker';
 
 import { GroupMakerService } from '@/group/group-maker.service';
-import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
+import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
+import { mongoTestConnection } from '@/config/mongo-connection.config';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from './interface/queued-players-repository.interface';
 
 describe('GroupMakerService', () => {
+  let module: TestingModule;
+
   let service: GroupMakerService;
 
   const mockedDateTimeHelper = mock(DateTimeHelper);
 
   let queuedPlayersRepository;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.resetAllMocks();
+  });
 
-    queuedPlayersRepository = new QueuedPlayersRepository();
-
-    const module: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot(),
+        QueuedPlayersModule,
+        MongooseModule.forRootAsync(mongoTestConnection.asProvider()),
+      ],
       providers: [
+        ConfigService,
         GroupMakerService,
-        {
-          provide: QueuedPlayersRepository,
-          useValue: queuedPlayersRepository,
-        },
         {
           provide: DateTimeHelper,
           useValue: mockedDateTimeHelper,
@@ -36,6 +47,22 @@ describe('GroupMakerService', () => {
     }).compile();
 
     service = module.get<GroupMakerService>(GroupMakerService);
+
+    queuedPlayersRepository = module.get<QueuedPlayersRepository>(
+      QueuedPlayersRepositoryToken
+    );
+  });
+
+  afterEach(async () => {
+    const ids = groupFixtures().flatMap((fixture) =>
+      fixture.players.map((p) => p.id)
+    );
+
+    await queuedPlayersRepository.remove(ids);
+  });
+
+  afterAll(() => {
+    module.close();
   });
 
   it('should be defined', () => {

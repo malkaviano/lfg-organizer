@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
-import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
-import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 
 type PartialGroup = {
   tank?: string;
@@ -15,6 +17,7 @@ type PartialGroup = {
 @Injectable()
 export class GroupMakerService {
   constructor(
+    @Inject(QueuedPlayersRepositoryToken)
     private readonly queuePlayersRepository: QueuedPlayersRepository
   ) {}
 

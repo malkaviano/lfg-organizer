@@ -4,18 +4,21 @@ import { mock } from 'ts-jest-mocker';
 
 import { GroupQueueingService } from '@/group/group-queueing.service';
 import { GroupQueueRequest } from '@/group/dto/group-queue.request';
-import { QueuedPlayersRepository } from '@/group/repository/queued-players.repository';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 
 describe('GroupQueueingService', () => {
   let service: GroupQueueingService;
 
-  const mockedQueuedPlayersRepository = mock(QueuedPlayersRepository);
+  const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
 
   const mockedDateTimeHelper = mock(DateTimeHelper);
 
@@ -28,7 +31,7 @@ describe('GroupQueueingService', () => {
       providers: [
         GroupQueueingService,
         {
-          provide: QueuedPlayersRepository,
+          provide: QueuedPlayersRepositoryToken,
           useValue: mockedQueuedPlayersRepository,
         },
         {
@@ -84,7 +87,7 @@ describe('GroupQueueingService', () => {
 
       mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-      mockedQueuedPlayersRepository.queue.mockResolvedValueOnce();
+      mockedQueuedPlayersRepository.queue.mockResolvedValueOnce(2);
 
       const result = await service.queueParty(body);
 
@@ -225,7 +228,7 @@ describe('GroupQueueingService', () => {
         ),
       ]);
 
-      mockedQueuedPlayersRepository.remove.mockResolvedValueOnce();
+      mockedQueuedPlayersRepository.remove.mockResolvedValueOnce(2);
 
       const result = await service.dequeueParty(body);
 
