@@ -23,7 +23,7 @@ describe('GroupMakerService', () => {
 
   const mockedDateTimeHelper = mock(DateTimeHelper);
 
-  let queuedPlayersRepository;
+  let queuedPlayersRepository: QueuedPlayersRepository;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -53,16 +53,14 @@ describe('GroupMakerService', () => {
     );
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     const ids = groupFixtures().flatMap((fixture) =>
       fixture.players.map((p) => p.id)
     );
 
     await queuedPlayersRepository.remove(ids);
-  });
 
-  afterAll(() => {
-    module.close();
+    await module.close();
   });
 
   it('should be defined', () => {
@@ -79,6 +77,8 @@ describe('GroupMakerService', () => {
         const result = await service.groupFor(dungeonName);
 
         expect(result).toEqual(expected);
+
+        await queuedPlayersRepository.remove(players.map((p) => p.id));
       });
     });
   });
