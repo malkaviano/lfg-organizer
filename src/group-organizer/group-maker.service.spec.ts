@@ -44,11 +44,11 @@ describe('GroupMakerService', () => {
     it('should reset players', async () => {
       const playerIds = ['player1', 'player2'];
 
-      mockedQueuedPlayersRepository.changeStatus.mockResolvedValueOnce(2);
+      mockedQueuedPlayersRepository.return.mockResolvedValueOnce(2);
 
       await service.reset(playerIds);
 
-      expect(mockedQueuedPlayersRepository.changeStatus).toHaveBeenCalledWith(
+      expect(mockedQueuedPlayersRepository.return).toHaveBeenCalledWith(
         playerIds,
         'WAITING'
       );
@@ -60,7 +60,7 @@ describe('GroupMakerService', () => {
       it('return true', async () => {
         const playerIds = ['tank1', 'healer1', 'dps1', 'dps2', 'dps3'];
 
-        mockedQueuedPlayersRepository.changeStatus.mockResolvedValueOnce(5);
+        mockedQueuedPlayersRepository.group.mockResolvedValueOnce(true);
 
         const result = await service.group(playerIds);
 
@@ -72,24 +72,11 @@ describe('GroupMakerService', () => {
       it('return false', async () => {
         const playerIds = ['tank1', 'healer1', 'dps1', 'dps2', 'dps3'];
 
-        mockedQueuedPlayersRepository.changeStatus.mockResolvedValueOnce(3);
+        mockedQueuedPlayersRepository.group.mockResolvedValueOnce(false);
 
         const result = await service.group(playerIds);
 
         expect(result).toBe(false);
-      });
-
-      it('revert status to waiting', async () => {
-        const playerIds = ['tank1', 'healer1', 'dps1', 'dps2', 'dps3'];
-
-        mockedQueuedPlayersRepository.changeStatus.mockResolvedValueOnce(3);
-
-        await service.group(playerIds);
-
-        expect(mockedQueuedPlayersRepository.changeStatus).toHaveBeenCalledWith(
-          playerIds,
-          'WAITING'
-        );
       });
     });
   });

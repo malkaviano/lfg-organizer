@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { QueuedPlayerModel } from '@/group/model/queued-player.model';
-import { PlayerStatus } from '@/group/player-status.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
+import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
 
 @Injectable()
-export class MongoQueuedPlayersRepository {
+export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   constructor(
     @InjectModel(QueuedPlayerModel.name)
-    private readonly queuedPlayers: Model<QueuedPlayerModel>
+    private readonly queuedPlayers: Model<QueuedPlayerModel>,
+    @InjectConnection() private readonly connection: Connection
   ) {}
 
   public async queue(players: QueuedPlayerEntity[]): Promise<number> {
@@ -54,13 +56,10 @@ export class MongoQueuedPlayersRepository {
     });
   }
 
-  public async changeStatus(
-    playerIds: string[],
-    newStatus: PlayerStatus
-  ): Promise<number> {
+  public async return(playerIds: string[]): Promise<number> {
     const result = await this.queuedPlayers.updateMany(
       { id: playerIds },
-      { status: newStatus }
+      { status: 'WAITING' }
     );
 
     return result.modifiedCount ?? 0;
@@ -100,6 +99,37 @@ export class MongoQueuedPlayersRepository {
     }
 
     return null;
+  }
+
+  public async group(playerIds: string[]): Promise<boolean> {
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+
+    const groupId = uuidv4();
+
+    let result = false;
+
+    try {
+      const updated = await this.queuedPlayers.updateMany(
+        { id: playerIds },
+        { status: 'GROUPED', groupId }
+      );
+
+      if ((updated.modifiedCount ?? 0) !== playerIds.length) {
+        throw 'failed to update all';
+      }
+
+      await session.commitTransaction();
+
+      result = true;
+    } catch (error) {
+      await session.abortTransaction();
+    } finally {
+      await session.endSession();
+    }
+
+    return result;
   }
 
   public async clear(): Promise<void> {

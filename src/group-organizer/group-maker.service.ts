@@ -22,22 +22,11 @@ export class GroupMakerService {
   ) {}
 
   async group(playerIds: string[]): Promise<boolean> {
-    const result = await this.queuePlayersRepository.changeStatus(
-      playerIds,
-      'GROUPED'
-    );
-
-    const allChanged = result === playerIds.length;
-
-    if (!allChanged) {
-      await this.queuePlayersRepository.changeStatus(playerIds, 'WAITING');
-    }
-
-    return Promise.resolve(allChanged);
+    return this.queuePlayersRepository.group(playerIds);
   }
 
   async reset(playerIds: string[]): Promise<void> {
-    await this.queuePlayersRepository.changeStatus(playerIds, 'WAITING');
+    await this.queuePlayersRepository.return(playerIds, 'WAITING');
   }
 
   async groupFor(dungeonName: DungeonName): Promise<DungeonGroup | null> {

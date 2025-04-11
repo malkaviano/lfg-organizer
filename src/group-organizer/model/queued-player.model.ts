@@ -34,6 +34,9 @@ export class QueuedPlayerModel {
   @Prop(Date)
   public sentAt?: Date;
 
+  @Prop()
+  public groupId?: string;
+
   constructor(
     args: {
       readonly id: string;

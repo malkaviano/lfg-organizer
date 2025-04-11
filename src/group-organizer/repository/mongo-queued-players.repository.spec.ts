@@ -113,16 +113,9 @@ describe('MongoQueuedPlayersRepository', () => {
 
       expect(retrieved).toEqual([player1, player2, player3, player4, player5]);
 
-      const changed = await service.changeStatus(
-        [player1.id, player2.id],
-        'GROUPED'
-      );
+      const removed = await service.remove([player2.id, player3.id]);
 
-      expect(changed).toEqual(2);
-
-      const removed = await service.remove([player3.id]);
-
-      expect(removed).toEqual(1);
+      expect(removed).toEqual(2);
 
       const next = await service.nextInQueue('Deadmines', 'Healer');
 
@@ -133,6 +126,36 @@ describe('MongoQueuedPlayersRepository', () => {
       ]);
 
       expect(next2).toBeNull();
+
+      let grouped = await service.group([
+        player1.id,
+        player2.id,
+        player3.id,
+        player4.id,
+        player5.id,
+      ]);
+
+      expect(grouped).toEqual(false);
+
+      await service.queue([player2, player3]);
+
+      grouped = await service.group([
+        player1.id,
+        player2.id,
+        player3.id,
+        player4.id,
+        player5.id,
+      ]);
+
+      expect(grouped).toEqual(true);
+
+      const returned = await service.return([
+        player1.id,
+        player2.id,
+        player3.id,
+      ]);
+
+      expect(returned).toEqual(3);
     });
   });
 });

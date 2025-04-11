@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
@@ -10,7 +12,7 @@ export interface QueuedPlayersRepository {
 
   get(playerIds: string[]): Promise<QueuedPlayerEntity[]>;
 
-  changeStatus(playerIds: string[], newStatus: PlayerStatus): Promise<number>;
+  return(playerIds: string[], newStatus: PlayerStatus): Promise<number>;
 
   remove(playerIds: string[]): Promise<number>;
 
@@ -19,4 +21,6 @@ export interface QueuedPlayersRepository {
     playerRole: PlayerRole,
     ignoreIds: string[]
   ): Promise<QueuedPlayerEntity | null>;
+
+  group(playerIds: string[]): Promise<boolean>;
 }
