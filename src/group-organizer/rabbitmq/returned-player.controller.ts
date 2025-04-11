@@ -9,8 +9,6 @@ export class ReturnedPlayerController {
 
   @EventPattern('returned-player')
   async handleMessage(@Payload() data: unknown, @Ctx() context: RmqContext) {
-    console.log(data);
-
     const ids = (data as { ids: string[] }).ids;
 
     await this.groupMakerService.reset(ids);
