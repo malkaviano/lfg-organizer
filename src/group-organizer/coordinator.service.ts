@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
-import { GroupMakerService } from '@/group/group-maker.service';
+import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 

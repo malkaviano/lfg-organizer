@@ -3,12 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'ts-jest-mocker';
 
 import { CoordinatorService } from '@/group/coordinator.service';
-import { GroupMakerService } from '@/group/group-maker.service';
-import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import {
-  GroupProducer,
-  GroupProducedToken,
-} from '@/group/interface/group-producer.interface';
+import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 
 describe('CoordinatorService', () => {

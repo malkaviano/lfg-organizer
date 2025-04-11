@@ -7,7 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { GroupQueueingService } from '@/group/group-queueing.service';
+import { GroupQueueingService } from '@/group/group-maker/group-queueing.service';
 import { GroupQueueRequest } from '@/group/dto/group-queue.request';
 import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
 

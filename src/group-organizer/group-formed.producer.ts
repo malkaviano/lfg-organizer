@@ -1,6 +1,5 @@
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { GroupProducer } from '@/group/interface/group-producer.interface';
-import { Injectable } from '@nestjs/common';
 
 export class GroupFormedProducer implements GroupProducer {
   private readonly formedGroups: DungeonGroup[];

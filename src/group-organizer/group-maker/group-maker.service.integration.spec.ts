@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { mock } from 'ts-jest-mocker';
 
-import { GroupMakerService } from '@/group/group-maker.service';
+import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
@@ -14,7 +14,7 @@ import { mongoTestConnection } from '@/config/mongo-connection.config';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
-} from './interface/queued-players-repository.interface';
+} from '../interface/queued-players-repository.interface';
 
 describe('GroupMakerService', () => {
   let module: TestingModule;

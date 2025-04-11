@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { mock } from 'ts-jest-mocker';
 
-import { GroupMakerService } from '@/group/group-maker.service';
+import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import {
   QueuedPlayersRepository,
