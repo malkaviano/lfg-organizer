@@ -8,7 +8,7 @@ import { PlayerStatus } from '@/group/player-status.literal';
 
 export type QueuedPlayerDocument = HydratedDocument<QueuedPlayerModel>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class QueuedPlayerModel {
   @Prop()
   public id: string;
