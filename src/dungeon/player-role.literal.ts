@@ -1,1 +1,3 @@
-export type PlayerRole = 'Tank' | 'Healer' | 'Damage';
+export const playerRoles = ['Tank', 'Healer', 'Damage'] as const;
+
+export type PlayerRole = (typeof playerRoles)[number];
