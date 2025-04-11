@@ -3,20 +3,12 @@ import { Cron } from '@nestjs/schedule';
 
 import { GroupMakerService } from '@/group/group-maker.service';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import {
-  GroupProducer,
-  GroupProducedToken,
-} from '@/group/interface/group-producer.interface';
 
 @Injectable()
 export class CoordinatorService {
   private readonly logger = new Logger(CoordinatorService.name);
 
-  constructor(
-    private readonly groupMakerService: GroupMakerService,
-    @Inject(GroupProducedToken)
-    private readonly partyProducer: GroupProducer
-  ) {}
+  constructor(private readonly groupMakerService: GroupMakerService) {}
 
   @Cron('* * * * *')
   public async coordinate() {
@@ -40,8 +32,6 @@ export class CoordinatorService {
       ]);
 
       if (result) {
-        await this.partyProducer.send(group);
-
         this.logger.debug(
           `Group created for ${dungeonName}: ${JSON.stringify(result)}`
         );

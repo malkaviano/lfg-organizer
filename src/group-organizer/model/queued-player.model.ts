@@ -31,6 +31,9 @@ export class QueuedPlayerModel {
   @Prop([String])
   public playingWith: string[];
 
+  @Prop(Date)
+  public sentAt?: Date;
+
   constructor(
     args: {
       readonly id: string;

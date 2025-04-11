@@ -16,8 +16,6 @@ describe('CoordinatorService', () => {
 
   const mockedGroupMakerService = mock(GroupMakerService);
 
-  const mockedGroupProducer = mock<GroupProducer>();
-
   beforeEach(async () => {
     jest.resetAllMocks();
 
@@ -25,7 +23,6 @@ describe('CoordinatorService', () => {
       providers: [
         CoordinatorService,
         { provide: GroupMakerService, useValue: mockedGroupMakerService },
-        { provide: GroupProducedToken, useValue: mockedGroupProducer },
       ],
     }).compile();
 
@@ -37,198 +34,52 @@ describe('CoordinatorService', () => {
   });
 
   describe('run', () => {
-    groupFixtures().forEach(({ players, expected }) => {
+    groupFixtures().forEach(({ players, returned }) => {
       it('form groups', async () => {
-        mockedGroupProducer.send.mockResolvedValueOnce();
-
-        mockedGroupMakerService.groupFor.mockResolvedValueOnce(expected);
+        mockedGroupMakerService.groupFor.mockResolvedValueOnce(returned);
 
         mockedGroupMakerService.group.mockResolvedValueOnce(true);
 
         await service.run('WailingCaverns');
 
-        expect(mockedGroupProducer.send).toHaveBeenCalledWith(expected);
+        expect(mockedGroupMakerService.group).toHaveBeenCalledWith(players);
       });
     });
   });
 });
 
 function groupFixtures(): {
-  players: QueuedPlayerEntity[];
-  expected: DungeonGroup;
+  players: string[];
+  returned: DungeonGroup;
 }[] {
   return [
     {
-      players: [
-        new QueuedPlayerEntity(
-          'player1a',
-          20,
-          ['Tank'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player2a',
-          19,
-          ['Healer'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player3a',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player4a',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player5a',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-      ],
-      expected: {
+      players: ['player1a', 'player2a', 'player3a', 'player4a', 'player5a'],
+      returned: {
         tank: 'player1a',
         healer: 'player2a',
         damage: ['player3a', 'player4a', 'player5a'],
       },
     },
     {
-      players: [
-        new QueuedPlayerEntity(
-          'player1b',
-          20,
-          ['Tank', 'Healer'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player2b',
-          19,
-          ['Tank'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player3b',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player4b',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player5b',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-      ],
-      expected: {
+      players: ['player2b', 'player1b', 'player3b', 'player4b', 'player5b'],
+      returned: {
         tank: 'player2b',
         healer: 'player1b',
         damage: ['player3b', 'player4b', 'player5b'],
       },
     },
     {
-      players: [
-        new QueuedPlayerEntity(
-          'player1c',
-          20,
-          ['Tank', 'Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player2c',
-          19,
-          ['Healer'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player3c',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player4c',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player5c',
-          21,
-          ['Tank'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-      ],
-      expected: {
+      players: ['player5c', 'player2c', 'player1c', 'player3c', 'player4c'],
+      returned: {
         tank: 'player5c',
         healer: 'player2c',
         damage: ['player1c', 'player3c', 'player4c'],
       },
     },
     {
-      players: [
-        new QueuedPlayerEntity(
-          'player1d',
-          20,
-          ['Tank'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player2d',
-          19,
-          ['Healer', 'Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player3d',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player4d',
-          21,
-          ['Damage'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-        new QueuedPlayerEntity(
-          'player5d',
-          21,
-          ['Healer'],
-          ['WailingCaverns'],
-          new Date().toISOString()
-        ),
-      ],
-      expected: {
+      players: ['player1d', 'player5d', 'player2d', 'player3d', 'player4d'],
+      returned: {
         tank: 'player1d',
         healer: 'player5d',
         damage: ['player2d', 'player3d', 'player4d'],
