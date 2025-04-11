@@ -70,17 +70,15 @@ describe('GroupMakerService', () => {
   });
 
   describe('groupFor', () => {
-    describe('when enough players', () => {
-      groupFixtures().forEach(({ players, expected }) => {
-        it('return group', async () => {
-          await queuedPlayersRepository.queue(players);
+    groupFixtures().forEach(({ players, expected }) => {
+      it('return group', async () => {
+        await queuedPlayersRepository.queue(players);
 
-          const dungeonName: DungeonName = 'WailingCaverns';
+        const dungeonName: DungeonName = 'WailingCaverns';
 
-          const result = await service.groupFor(dungeonName);
+        const result = await service.groupFor(dungeonName);
 
-          expect(result).toEqual(expected);
-        });
+        expect(result).toEqual(expected);
       });
     });
   });
