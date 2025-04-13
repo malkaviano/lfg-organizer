@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 
 import { mock } from 'ts-jest-mocker';
 
@@ -10,11 +9,12 @@ import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
-import { mongoTestConnection } from '@/config/mongo-connection.config';
+import { mongodbTestConnection } from '@/config/mongo-connection.config';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
-} from '../interface/queued-players-repository.interface';
+} from '@/group/interface/queued-players-repository.interface';
+import { MongodbModule } from '@/infra/mongodb/mongodb.module';
 
 describe('GroupMakerService', () => {
   let module: TestingModule;
@@ -34,7 +34,7 @@ describe('GroupMakerService', () => {
       imports: [
         ConfigModule.forRoot(),
         QueuedPlayersModule,
-        MongooseModule.forRootAsync(mongoTestConnection.asProvider()),
+        MongodbModule.forRootAsync(mongodbTestConnection.asProvider()),
       ],
       providers: [
         ConfigService,

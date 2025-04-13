@@ -1,40 +1,25 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerStatus } from '@/group/player-status.literal';
 
-export type QueuedPlayerDocument = HydratedDocument<QueuedPlayerModel>;
-
-@Schema({ timestamps: true })
 export class QueuedPlayerModel {
-  @Prop()
   public id: string;
 
-  @Prop(Number)
   public level: PlayerLevel;
 
-  @Prop([String])
   public roles: PlayerRole[];
 
-  @Prop([String])
   public dungeons: DungeonName[];
 
-  @Prop()
   public queuedAt: string;
 
-  @Prop()
   public status: PlayerStatus;
 
-  @Prop([String])
   public playingWith: string[];
 
-  @Prop(Date)
   public sentAt?: Date;
 
-  @Prop()
   public groupId?: string;
 
   constructor(
@@ -67,6 +52,3 @@ export class QueuedPlayerModel {
     this.playingWith = args.playingWith;
   }
 }
-
-export const QueuedPlayerSchema =
-  SchemaFactory.createForClass(QueuedPlayerModel);

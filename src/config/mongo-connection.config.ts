@@ -1,15 +1,11 @@
 import { registerAs } from '@nestjs/config';
 
-export const mongoConnection = registerAs('mongoConnection', () => ({
-  uri: `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
-  user: process.env.MONGO_USER,
-  pass: process.env.MONGO_PASSWORD,
+export const mongodbConnection = registerAs('mongodbConnection', () => ({
+  url: `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
   dbName: process.env.MONGO_DATABASE,
 }));
 
-export const mongoTestConnection = registerAs('mongoTestConnection', () => ({
-  uri: `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
-  user: process.env.MONGO_USER_TEST,
-  pass: process.env.MONGO_PASSWORD_TEST,
+export const mongodbTestConnection = registerAs('mongoTestConnection', () => ({
+  url: `mongodb://${process.env.MONGO_USER_TEST}:${process.env.MONGO_PASSWORD_TEST}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
   dbName: process.env.MONGO_DATABASE_TEST,
 }));

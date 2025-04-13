@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 
 import { v4 as uuidv4 } from 'uuid';
 
 import { MongoQueuedPlayersRepository } from '@/group/repository/mongo-queued-players.repository';
 import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import { mongoTestConnection } from '@/config/mongo-connection.config';
+import { mongodbTestConnection } from '@/config/mongo-connection.config';
+import { MongodbModule } from '@/infra/mongodb/mongodb.module';
 
 describe('MongoQueuedPlayersRepository', () => {
   let module: TestingModule;
@@ -66,8 +66,8 @@ describe('MongoQueuedPlayersRepository', () => {
     module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
+        MongodbModule.forRootAsync(mongodbTestConnection.asProvider()),
         QueuedPlayersModule,
-        MongooseModule.forRootAsync(mongoTestConnection.asProvider()),
       ],
       providers: [ConfigService],
     }).compile();
@@ -78,7 +78,13 @@ describe('MongoQueuedPlayersRepository', () => {
   });
 
   afterAll(async () => {
-    await service.clear();
+    await service.remove([
+      player1.id,
+      player2.id,
+      player3.id,
+      player4.id,
+      player5.id,
+    ]);
 
     module.close();
   });

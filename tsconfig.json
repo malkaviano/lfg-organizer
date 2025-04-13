@@ -22,7 +22,8 @@
       "@/group/*": ["src/group-organizer/*"],
       "@/dungeon/*": ["src/dungeon/*"],
       "@/helper/*": ["src/helper/*"],
-      "@/config/*": ["src/config/*"]
+      "@/config/*": ["src/config/*"],
+      "@/infra/*": ["src/infra/*"]
     }
   }
 }

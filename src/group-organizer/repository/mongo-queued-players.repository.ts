@@ -1,21 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Inject, Injectable, Type } from '@nestjs/common';
 
-import { Connection, Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import { Db, MongoClient, ObjectId } from 'mongodb';
 
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { QueuedPlayerModel } from '@/group/model/queued-player.model';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
+import { MONGODB_DRIVER_OBJECT } from '@/infra/mongodb/tokens';
 
 @Injectable()
 export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
+  public readonly COLLECTION_NAME = 'queuedplayermodels';
+
   constructor(
-    @InjectModel(QueuedPlayerModel.name)
-    private readonly queuedPlayers: Model<QueuedPlayerModel>,
-    @InjectConnection() private readonly connection: Connection
+    @Inject(MONGODB_DRIVER_OBJECT)
+    private readonly mongoObject: { client: MongoClient; db: Db }
   ) {}
 
   public async queue(players: QueuedPlayerEntity[]): Promise<number> {
@@ -34,39 +35,44 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
       throw new Error('Player already queued');
     }
 
-    const result = await this.queuedPlayers.insertMany(
-      results.map((r) => r.playerModel)
-    );
+    const result = await this.mongoObject.db
+      .collection(this.COLLECTION_NAME)
+      .insertMany(results.map((r) => r.playerModel));
 
-    return result.length;
+    return result.insertedCount;
   }
 
   public async get(playerIds: string[]): Promise<QueuedPlayerEntity[]> {
-    const result = await this.queuedPlayers.find({ id: playerIds });
+    const result = this.mongoObject.db
+      .collection(this.COLLECTION_NAME)
+      .find({ id: { $in: playerIds } });
 
-    return result.map((model) => {
-      return new QueuedPlayerEntity(
-        model.id,
-        model.level,
-        model.roles,
-        model.dungeons,
-        model.queuedAt,
-        model.playingWith
-      );
-    });
+    return result
+      .map((document) => {
+        return new QueuedPlayerEntity(
+          document.id,
+          document.level,
+          document.roles,
+          document.dungeons,
+          document.queuedAt,
+          document.playingWith
+        );
+      })
+      .toArray();
   }
 
   public async return(playerIds: string[]): Promise<number> {
-    const result = await this.queuedPlayers.updateMany(
-      { id: playerIds },
-      { status: 'WAITING' }
-    );
+    const result = await this.mongoObject.db
+      .collection(this.COLLECTION_NAME)
+      .updateMany({ id: { $in: playerIds } }, { $set: { status: 'WAITING' } });
 
     return result.modifiedCount ?? 0;
   }
 
   public async remove(playerIds: string[]): Promise<number> {
-    const result = await this.queuedPlayers.deleteMany({ id: playerIds });
+    const result = await this.mongoObject.db
+      .collection(this.COLLECTION_NAME)
+      .deleteMany({ id: { $in: playerIds } });
 
     return result.deletedCount ?? 0;
   }
@@ -76,16 +82,17 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     playerRole: PlayerRole,
     ignoreIds: string[] = []
   ): Promise<QueuedPlayerEntity | null> {
-    const result = await this.queuedPlayers.findOne(
-      {
-        roles: playerRole,
-        status: 'WAITING',
-        dungeons: [dungeonName],
-        id: { $nin: ignoreIds },
-      },
-      null,
-      { sort: { queuedAt: -1 } }
-    );
+    const result = await this.mongoObject.db
+      .collection(this.COLLECTION_NAME)
+      .findOne(
+        {
+          roles: playerRole,
+          status: 'WAITING',
+          dungeons: [dungeonName],
+          id: { $nin: ignoreIds },
+        },
+        { sort: { queuedAt: -1 } }
+      );
 
     if (result) {
       return new QueuedPlayerEntity(
@@ -102,7 +109,9 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   }
 
   public async group(playerIds: string[]): Promise<boolean> {
-    const session = await this.connection.startSession();
+    console.log(this.mongoObject.client);
+
+    const session = this.mongoObject.client.startSession();
 
     session.startTransaction();
 
@@ -111,10 +120,12 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     let result = false;
 
     try {
-      const updated = await this.queuedPlayers.updateMany(
-        { id: playerIds },
-        { status: 'GROUPED', groupId }
-      );
+      const updated = await this.mongoObject.db
+        .collection(this.COLLECTION_NAME)
+        .updateMany(
+          { id: { $in: playerIds } },
+          { $set: { status: 'GROUPED', groupId } }
+        );
 
       if ((updated.modifiedCount ?? 0) !== playerIds.length) {
         throw 'failed to update all';
@@ -133,6 +144,6 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   }
 
   public async clear(): Promise<void> {
-    await this.queuedPlayers.deleteMany();
+    await this.mongoObject.db.collection(this.COLLECTION_NAME).deleteMany();
   }
 }
