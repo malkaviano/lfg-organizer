@@ -137,11 +137,15 @@ describe('MongoQueuedPlayersRepository', () => {
 
   afterAll(async () => {
     await service.remove([
-      player1.id,
-      player2.id,
-      player3.id,
-      player4.id,
-      player5.id,
+      player1Id,
+      player2Id,
+      player3Id,
+      player4Id,
+      player5Id,
+      player6Id,
+      player7Id,
+      player8Id,
+      player9Id,
     ]);
 
     module.close();
