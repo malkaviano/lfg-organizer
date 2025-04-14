@@ -16,10 +16,32 @@ describe('MongoQueuedPlayersRepository', () => {
 
   const timestamp = '2025-04-01T11:42:19.088Z';
 
-  const timestamp2 = '2025-04-02T11:42:19.088Z';
+  const timestamp2 = '2025-04-01T11:45:19.088Z';
+
+  const [
+    player1Id,
+    player2Id,
+    player3Id,
+    player4Id,
+    player5Id,
+    player6Id,
+    player7Id,
+    player8Id,
+    player9Id,
+  ] = [
+    uuidv4(),
+    uuidv4(),
+    uuidv4(),
+    uuidv4(),
+    uuidv4(),
+    uuidv4(),
+    uuidv4(),
+    uuidv4(),
+    uuidv4(),
+  ];
 
   const player1 = new QueuedPlayerEntity(
-    uuidv4(),
+    player1Id,
     20,
     ['Tank', 'Damage'],
     ['Deadmines'],
@@ -27,7 +49,7 @@ describe('MongoQueuedPlayersRepository', () => {
   );
 
   const player2 = new QueuedPlayerEntity(
-    uuidv4(),
+    player2Id,
     21,
     ['Healer'],
     ['Deadmines'],
@@ -35,7 +57,7 @@ describe('MongoQueuedPlayersRepository', () => {
   );
 
   const player3 = new QueuedPlayerEntity(
-    uuidv4(),
+    player3Id,
     20,
     ['Damage'],
     ['Deadmines'],
@@ -43,7 +65,7 @@ describe('MongoQueuedPlayersRepository', () => {
   );
 
   const player4 = new QueuedPlayerEntity(
-    uuidv4(),
+    player4Id,
     21,
     ['Healer'],
     ['Deadmines'],
@@ -51,11 +73,47 @@ describe('MongoQueuedPlayersRepository', () => {
   );
 
   const player5 = new QueuedPlayerEntity(
-    uuidv4(),
+    player5Id,
     21,
     ['Tank'],
     ['Deadmines'],
     timestamp
+  );
+
+  const player6 = new QueuedPlayerEntity(
+    player6Id,
+    21,
+    ['Damage'],
+    ['WailingCaverns'],
+    timestamp,
+    [player7Id, player8Id, player9Id]
+  );
+
+  const player7 = new QueuedPlayerEntity(
+    player7Id,
+    22,
+    ['Damage'],
+    ['WailingCaverns'],
+    timestamp,
+    [player6Id, player8Id, player9Id]
+  );
+
+  const player8 = new QueuedPlayerEntity(
+    player8Id,
+    20,
+    ['Damage'],
+    ['WailingCaverns'],
+    timestamp,
+    [player6Id, player7Id, player9Id]
+  );
+
+  const player9 = new QueuedPlayerEntity(
+    player9Id,
+    20,
+    ['Tank'],
+    ['WailingCaverns'],
+    timestamp,
+    [player6Id, player7Id, player8Id]
   );
 
   beforeEach(() => {
@@ -162,6 +220,45 @@ describe('MongoQueuedPlayersRepository', () => {
       ]);
 
       expect(returned).toEqual(3);
+
+      await service.queue([player6, player7, player8, player9]);
+
+      await service.remove([player7Id, player9Id]);
+
+      const playerResult = await service.get([
+        player6Id,
+        player7Id,
+        player8Id,
+        player9Id,
+      ]);
+
+      const player6Result = playerResult
+        .filter((p) => p.id === player6Id)
+        .pop();
+
+      expect(player6Result).toBeDefined();
+
+      expect(player6Result?.playingWith).toEqual([player8Id]);
+
+      const player7Result = playerResult
+        .filter((p) => p.id === player7Id)
+        .pop();
+
+      expect(player7Result).not.toBeDefined();
+
+      const player8Result = playerResult
+        .filter((p) => p.id === player8Id)
+        .pop();
+
+      expect(player8Result).toBeDefined();
+
+      expect(player8Result?.playingWith).toEqual([player6Id]);
+
+      const player9Result = playerResult
+        .filter((p) => p.id === player9Id)
+        .pop();
+
+      expect(player9Result).not.toBeDefined();
     });
   });
 });

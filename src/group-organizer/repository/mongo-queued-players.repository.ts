@@ -1,7 +1,7 @@
 import { Inject, Injectable, Type } from '@nestjs/common';
 
 import { v4 as uuidv4 } from 'uuid';
-import { Db, MongoClient, ObjectId } from 'mongodb';
+import { Db, MongoClient, ObjectId, PullOperator } from 'mongodb';
 
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { QueuedPlayerModel } from '@/group/model/queued-player.model';
@@ -70,6 +70,23 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   }
 
   public async remove(playerIds: string[]): Promise<number> {
+    const deleted = await this.get(playerIds);
+
+    const deletedIds = deleted.map((d) => d.id);
+
+    const linked = deleted
+      .flatMap((p) => p.playingWith)
+      .filter((id) => deletedIds.some((d) => d !== id));
+
+    const pull = { playingWith: { $in: deletedIds } } as PullOperator<Document>;
+
+    await this.mongoObject.db.collection(this.COLLECTION_NAME).updateMany(
+      { id: { $in: linked } },
+      {
+        $pull: pull,
+      }
+    );
+
     const result = await this.mongoObject.db
       .collection(this.COLLECTION_NAME)
       .deleteMany({ id: { $in: playerIds } });
@@ -109,8 +126,6 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   }
 
   public async group(playerIds: string[]): Promise<boolean> {
-    console.log(this.mongoObject.client);
-
     const session = this.mongoObject.client.startSession();
 
     session.startTransaction();
