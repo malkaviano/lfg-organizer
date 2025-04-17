@@ -40,21 +40,6 @@ describe('GroupMakerService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('reset', () => {
-    it('should reset players', async () => {
-      const playerIds = ['player1', 'player2'];
-
-      mockedQueuedPlayersRepository.return.mockResolvedValueOnce(2);
-
-      await service.reset(playerIds);
-
-      expect(mockedQueuedPlayersRepository.return).toHaveBeenCalledWith(
-        playerIds,
-        'WAITING'
-      );
-    });
-  });
-
   describe('group', () => {
     describe('when all players change status', () => {
       it('return true', async () => {

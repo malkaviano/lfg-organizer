@@ -25,10 +25,6 @@ export class GroupMakerService {
     return this.queuePlayersRepository.group(playerIds);
   }
 
-  async reset(playerIds: string[]): Promise<void> {
-    await this.queuePlayersRepository.return(playerIds, 'WAITING');
-  }
-
   async groupFor(dungeonName: DungeonName): Promise<DungeonGroup | null> {
     let result: DungeonGroup | null;
 

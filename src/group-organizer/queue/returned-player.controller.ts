@@ -1,17 +1,23 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 
-import { GroupMakerService } from '@/group/group-maker/group-maker.service';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 
 @Controller()
 export class ReturnedPlayerController {
-  constructor(private readonly groupMakerService: GroupMakerService) {}
+  constructor(
+    @Inject(QueuedPlayersRepositoryToken)
+    private readonly queuePlayersRepository: QueuedPlayersRepository
+  ) {}
 
   @EventPattern('returned-player')
   async handleMessage(@Payload() data: unknown, @Ctx() context: RmqContext) {
     const ids = (data as { ids: string[] }).ids;
 
-    await this.groupMakerService.reset(ids);
+    await this.queuePlayersRepository.return(ids, 'WAITING');
 
     const channel = context.getChannelRef();
 

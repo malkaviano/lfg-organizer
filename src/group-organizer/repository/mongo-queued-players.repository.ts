@@ -1,14 +1,14 @@
 import { Inject, Injectable, Type } from '@nestjs/common';
 
 import { v4 as uuidv4 } from 'uuid';
-import { Db, MongoClient, ObjectId, PullOperator } from 'mongodb';
+import { Db, MongoClient, PullOperator } from 'mongodb';
 
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { QueuedPlayerModel } from '@/group/model/queued-player.model';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
-import { MONGODB_DRIVER_OBJECT } from '@/infra/mongodb/tokens';
+import { MONGODB_DRIVER_OBJECT } from '@/group/repository/tokens';
 
 @Injectable()
 export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {

@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { RmqContext } from '@nestjs/microservices';
 
 import { mock } from 'ts-jest-mocker';
 
-import { ReturnedPlayerController } from '@/group/rabbitmq/returned-player.controller';
-import { GroupMakerService } from '@/group/group-maker/group-maker.service';
-import { RmqContext } from '@nestjs/microservices';
+import { ReturnedPlayerController } from '@/group/queue/returned-player.controller';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 
 describe('ReturnedPlayerController', () => {
   let controller: ReturnedPlayerController;
 
-  const mockedGroupMakerService = mock(GroupMakerService);
+  const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
 
   const mockedRabbitMQContext = mock(RmqContext);
 
@@ -17,7 +20,10 @@ describe('ReturnedPlayerController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ReturnedPlayerController],
       providers: [
-        { provide: GroupMakerService, useValue: mockedGroupMakerService },
+        {
+          provide: QueuedPlayersRepositoryToken,
+          useValue: mockedQueuedPlayersRepository,
+        },
       ],
     }).compile();
 
@@ -32,7 +38,7 @@ describe('ReturnedPlayerController', () => {
     it('resets player to waiting status and ack', async () => {
       let result = false;
 
-      mockedGroupMakerService.reset.mockResolvedValueOnce();
+      mockedQueuedPlayersRepository.return.mockResolvedValueOnce(1);
 
       mockedRabbitMQContext.getChannelRef.mockImplementationOnce(() => ({
         ack: () => (result = true),
@@ -48,7 +54,10 @@ describe('ReturnedPlayerController', () => {
 
       expect(result).toEqual(true);
 
-      expect(mockedGroupMakerService.reset).toHaveBeenCalledWith(['id1']);
+      expect(mockedQueuedPlayersRepository.return).toHaveBeenCalledWith(
+        ['id1'],
+        'WAITING'
+      );
     });
   });
 });

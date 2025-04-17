@@ -3,7 +3,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { rabbitConnection } from './config/rabbitmq.config';
+import { rabbitConnection } from '@/config/rabbitmq.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

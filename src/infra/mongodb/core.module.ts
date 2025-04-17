@@ -20,7 +20,7 @@ import {
   MONGODB_DEFAULT_CONNECTION_NAME,
   MONGODB_DRIVER_MODULE_OPTIONS,
   MONGODB_DRIVER_OBJECT,
-} from '@/infra/mongodb//tokens';
+} from '@/group/repository/tokens';
 
 @Global()
 @Module({})

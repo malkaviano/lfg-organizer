@@ -9,6 +9,7 @@ import { DungeonModule } from '@/dungeon/dungeon.module';
 
 import { mongodbConnection } from '@/config/mongo-connection.config';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
+import { RabbitMQModule } from '@/infra/rabbitmq/rabbitmq.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MongodbModule } from '@/infra/mongodb/mongodb.module';
     DungeonModule,
     GroupOrganizerModule,
     MongodbModule.forRootAsync(mongodbConnection.asProvider()),
+    RabbitMQModule,
   ],
   controllers: [AppController],
   providers: [AppService],
