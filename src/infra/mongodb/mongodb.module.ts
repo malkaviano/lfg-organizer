@@ -8,8 +8,6 @@ import { CoreModule } from '@/infra/mongodb/core.module';
 
 @Module({})
 export class MongodbModule {
-  private static connectionName: string;
-
   public static forRoot(options: MongoDbDriverModuleOptions): DynamicModule {
     return {
       module: MongodbModule,
