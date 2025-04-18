@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices';
 
-export const rabbitConnection = registerAs('mongodbConnection', () => ({
+export default registerAs('rabbitConnection', () => ({
   transport: Transport.RMQ,
   options: {
     urls: [

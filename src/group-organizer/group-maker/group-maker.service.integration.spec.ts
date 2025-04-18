@@ -9,7 +9,7 @@ import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
-import { mongodbTestConnection } from '@/config/mongo-connection.config';
+import mongodbTestConnection from '@/config/mongo-connection-test.config';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,

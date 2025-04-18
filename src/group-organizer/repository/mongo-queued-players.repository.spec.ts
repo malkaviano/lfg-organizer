@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { MongoQueuedPlayersRepository } from '@/group/repository/mongo-queued-players.repository';
 import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import { mongodbTestConnection } from '@/config/mongo-connection.config';
+import mongodbTestConnection from '@/config/mongo-connection-test.config';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
 
 describe('MongoQueuedPlayersRepository', () => {
