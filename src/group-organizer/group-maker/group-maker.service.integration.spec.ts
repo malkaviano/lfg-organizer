@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { mock } from 'ts-jest-mocker';
+import { v4 as uuid4 } from 'uuid';
 
 import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 import { DateTimeHelper } from '@/helper/datetime.helper';
@@ -15,6 +16,7 @@ import {
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
+import { IdHelper } from '@/helper/id.helper';
 
 describe('GroupMakerService', () => {
   let module: TestingModule;
@@ -24,6 +26,8 @@ describe('GroupMakerService', () => {
   const mockedDateTimeHelper = mock(DateTimeHelper);
 
   let queuedPlayersRepository: QueuedPlayersRepository;
+
+  const mockedIdHelper = mock(IdHelper);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -42,6 +46,10 @@ describe('GroupMakerService', () => {
         {
           provide: DateTimeHelper,
           useValue: mockedDateTimeHelper,
+        },
+        {
+          provide: IdHelper,
+          useValue: mockedIdHelper,
         },
       ],
     }).compile();
@@ -73,6 +81,8 @@ describe('GroupMakerService', () => {
         await queuedPlayersRepository.queue(players);
 
         const dungeonName: DungeonName = 'WailingCaverns';
+
+        mockedIdHelper.newId.mockReturnValueOnce(expected?.id ?? '');
 
         const result = await service.groupFor(dungeonName);
 
@@ -161,6 +171,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player1a',
         healer: 'player2a',
         damage: ['player3a', 'player4a', 'player5a'],
@@ -205,6 +216,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player2b',
         healer: 'player1b',
         damage: ['player3b', 'player4b', 'player5b'],
@@ -249,6 +261,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player5c',
         healer: 'player2c',
         damage: ['player1c', 'player3c', 'player4c'],
@@ -293,6 +306,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player1d',
         healer: 'player5d',
         damage: ['player2d', 'player3d', 'player4d'],
@@ -346,6 +360,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player1e',
         healer: 'player2e',
         damage: ['player6e', 'player3e', 'player4e'],
@@ -399,6 +414,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player2f',
         healer: 'player1f',
         damage: ['player6f', 'player3f', 'player4f'],
@@ -452,6 +468,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player1g',
         healer: 'player2g',
         damage: ['player3g', 'player6g', 'player4g'],
@@ -505,6 +522,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player6h',
         healer: 'player2h',
         damage: ['player3h', 'player4h', 'player5h'],
@@ -568,6 +586,7 @@ function groupFixtures(): {
         ),
       ],
       expected: {
+        id: uuid4(),
         tank: 'player1h',
         healer: 'player2h',
         damage: ['player3h', 'player4h', 'player5h'],

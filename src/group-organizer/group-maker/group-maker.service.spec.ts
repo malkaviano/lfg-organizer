@@ -8,6 +8,7 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
+import { IdHelper } from '@/helper/id.helper';
 
 describe('GroupMakerService', () => {
   let service: GroupMakerService;
@@ -15,6 +16,8 @@ describe('GroupMakerService', () => {
   const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
 
   const mockedDateTimeHelper = mock(DateTimeHelper);
+
+  const mockedIdHelper = mock(IdHelper);
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -29,6 +32,10 @@ describe('GroupMakerService', () => {
         {
           provide: DateTimeHelper,
           useValue: mockedDateTimeHelper,
+        },
+        {
+          provide: IdHelper,
+          useValue: mockedIdHelper,
         },
       ],
     }).compile();

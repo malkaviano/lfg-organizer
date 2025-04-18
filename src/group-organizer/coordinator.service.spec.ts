@@ -51,6 +51,7 @@ function groupFixtures(): {
     {
       players: ['player1a', 'player2a', 'player3a', 'player4a', 'player5a'],
       returned: {
+        id: '1',
         tank: 'player1a',
         healer: 'player2a',
         damage: ['player3a', 'player4a', 'player5a'],
@@ -59,6 +60,7 @@ function groupFixtures(): {
     {
       players: ['player2b', 'player1b', 'player3b', 'player4b', 'player5b'],
       returned: {
+        id: '2',
         tank: 'player2b',
         healer: 'player1b',
         damage: ['player3b', 'player4b', 'player5b'],
@@ -67,6 +69,7 @@ function groupFixtures(): {
     {
       players: ['player5c', 'player2c', 'player1c', 'player3c', 'player4c'],
       returned: {
+        id: '3',
         tank: 'player5c',
         healer: 'player2c',
         damage: ['player1c', 'player3c', 'player4c'],
@@ -75,6 +78,7 @@ function groupFixtures(): {
     {
       players: ['player1d', 'player5d', 'player2d', 'player3d', 'player4d'],
       returned: {
+        id: '4',
         tank: 'player1d',
         healer: 'player5d',
         damage: ['player2d', 'player3d', 'player4d'],

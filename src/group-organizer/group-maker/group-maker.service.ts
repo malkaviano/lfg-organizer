@@ -7,6 +7,7 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
+import { IdHelper } from '@/helper/id.helper';
 
 type PartialGroup = {
   tank?: string;
@@ -18,7 +19,8 @@ type PartialGroup = {
 export class GroupMakerService {
   constructor(
     @Inject(QueuedPlayersRepositoryToken)
-    private readonly queuePlayersRepository: QueuedPlayersRepository
+    private readonly queuePlayersRepository: QueuedPlayersRepository,
+    private readonly idHelper: IdHelper
   ) {}
 
   async group(playerIds: string[]): Promise<boolean> {
@@ -108,6 +110,7 @@ export class GroupMakerService {
     }
 
     const fullGroup: DungeonGroup = {
+      id: this.idHelper.newId(),
       tank: partialGroup.tank!,
       healer: partialGroup.healer!,
       damage: partialGroup.damage,
@@ -167,6 +170,7 @@ export class GroupMakerService {
     }
 
     const fullGroup: DungeonGroup = {
+      id: this.idHelper.newId(),
       tank: partialGroup.tank!,
       healer: partialGroup.healer!,
       damage: partialGroup.damage,
@@ -240,6 +244,7 @@ export class GroupMakerService {
     }
 
     const fullGroup: DungeonGroup = {
+      id: this.idHelper.newId(),
       tank: partialGroup.tank!,
       healer: partialGroup.healer!,
       damage: partialGroup.damage,
