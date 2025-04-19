@@ -1,11 +1,9 @@
 import { mock } from 'ts-jest-mocker';
-import { v4 as uuid4 } from 'uuid';
 
 import { TankHealerStrategy } from '@/group/strategy/tank-healer.strategy';
 import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
 import { IdHelper } from '@/helper/id.helper';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 
 describe('TankHealerStrategy', () => {
