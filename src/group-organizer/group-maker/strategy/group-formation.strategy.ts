@@ -12,8 +12,7 @@ export type PartialGroup = {
 
 export abstract class GroupFormationStrategy {
   constructor(
-    protected readonly queuePlayersRepository: QueuedPlayersRepository,
-    protected readonly idHelper: IdHelper
+    protected readonly queuePlayersRepository: QueuedPlayersRepository
   ) {}
 
   public abstract run(dungeonName: DungeonName): Promise<DungeonGroup | null>;

@@ -9,6 +9,7 @@ import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
 import { MONGODB_DRIVER_OBJECT } from '@/group/repository/tokens';
+import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 
 @Injectable()
 export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
@@ -125,7 +126,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     return null;
   }
 
-  public async group(playerIds: string[]): Promise<boolean> {
+  public async createGroup(group: DungeonGroup): Promise<boolean> {
     const session = this.mongoObject.client.startSession();
 
     session.startTransaction();
@@ -133,6 +134,8 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     const groupId = uuidv4();
 
     let result = false;
+
+    const playerIds = [...group.damage.map((d) => d), group.tank, group.healer];
 
     try {
       const updated = await this.mongoObject.db

@@ -7,15 +7,11 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { IdHelper } from '@/helper/id.helper';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { DateTimeHelper } from '@/helper/datetime.helper';
 
 describe('HealerTankStrategy', () => {
   const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
-
-  const mockedIdHelper = mock(IdHelper);
 
   let strategy: HealerTankStrategy;
 
@@ -28,14 +24,6 @@ describe('HealerTankStrategy', () => {
         {
           provide: QueuedPlayersRepositoryToken,
           useValue: mockedQueuedPlayersRepository,
-        },
-        {
-          provide: DateTimeHelper,
-          useValue: mockedIdHelper,
-        },
-        {
-          provide: IdHelper,
-          useValue: mockedIdHelper,
         },
       ],
     }).compile();
@@ -127,12 +115,9 @@ describe('HealerTankStrategy', () => {
           .mockResolvedValueOnce([damage2])
           .mockResolvedValueOnce([damage3]);
 
-        mockedIdHelper.newId.mockReturnValueOnce('newId1');
-
         const result = await strategy.run(dungeonName);
 
         expect(result).toEqual({
-          id: 'newId1',
           tank: tank.id,
           healer: healer.id,
           damage: [damage1.id, damage2.id, damage3.id],
@@ -218,12 +203,9 @@ describe('HealerTankStrategy', () => {
           .mockResolvedValueOnce([damage1, damage2])
           .mockResolvedValueOnce([damage3]);
 
-        mockedIdHelper.newId.mockReturnValueOnce('newId1');
-
         const result = await strategy.run(dungeonName);
 
         expect(result).toEqual({
-          id: 'newId1',
           tank: tank.id,
           healer: healer.id,
           damage: [damage5.id, damage4.id, damage3.id],

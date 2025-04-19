@@ -10,16 +10,14 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { IdHelper } from '@/helper/id.helper';
 
 @Injectable()
 export class HealerTankStrategy extends GroupFormationStrategy {
   constructor(
     @Inject(QueuedPlayersRepositoryToken)
-    queuePlayersRepository: QueuedPlayersRepository,
-    idHelper: IdHelper
+    queuePlayersRepository: QueuedPlayersRepository
   ) {
-    super(queuePlayersRepository, idHelper);
+    super(queuePlayersRepository);
   }
 
   public async run(dungeonName: DungeonName): Promise<DungeonGroup | null> {
@@ -75,7 +73,6 @@ export class HealerTankStrategy extends GroupFormationStrategy {
     }
 
     const fullGroup: DungeonGroup = {
-      id: this.idHelper.newId(),
       tank: partialGroup.tank!,
       healer: partialGroup.healer!,
       damage: partialGroup.damage,

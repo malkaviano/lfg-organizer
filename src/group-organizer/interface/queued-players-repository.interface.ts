@@ -1,3 +1,4 @@
+import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
@@ -20,5 +21,5 @@ export interface QueuedPlayersRepository {
     ignoreIds: string[]
   ): Promise<QueuedPlayerEntity | null>;
 
-  group(playerIds: string[]): Promise<boolean>;
+  createGroup(group: DungeonGroup): Promise<boolean>;
 }

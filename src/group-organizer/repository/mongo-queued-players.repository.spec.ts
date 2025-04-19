@@ -195,25 +195,21 @@ describe('MongoQueuedPlayersRepository', () => {
 
       expect(next2).toBeNull();
 
-      let grouped = await service.group([
-        player1.id,
-        player2.id,
-        player3.id,
-        player4.id,
-        player5.id,
-      ]);
+      let grouped = await service.createGroup({
+        tank: player1.id,
+        healer: player2.id,
+        damage: [player3.id, player4.id, player5.id],
+      });
 
       expect(grouped).toEqual(false);
 
       await service.queue([player2, player3]);
 
-      grouped = await service.group([
-        player1.id,
-        player2.id,
-        player3.id,
-        player4.id,
-        player5.id,
-      ]);
+      grouped = await service.createGroup({
+        tank: player1.id,
+        healer: player2.id,
+        damage: [player3.id, player4.id, player5.id],
+      });
 
       expect(grouped).toEqual(true);
 

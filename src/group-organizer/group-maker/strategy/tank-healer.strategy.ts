@@ -16,10 +16,9 @@ import { IdHelper } from '@/helper/id.helper';
 export class TankHealerStrategy extends GroupFormationStrategy {
   constructor(
     @Inject(QueuedPlayersRepositoryToken)
-    queuePlayersRepository: QueuedPlayersRepository,
-    idHelper: IdHelper
+    queuePlayersRepository: QueuedPlayersRepository
   ) {
-    super(queuePlayersRepository, idHelper);
+    super(queuePlayersRepository);
   }
 
   public async run(dungeonName: DungeonName): Promise<DungeonGroup | null> {
@@ -75,7 +74,6 @@ export class TankHealerStrategy extends GroupFormationStrategy {
     }
 
     const fullGroup: DungeonGroup = {
-      id: this.idHelper.newId(),
       tank: partialGroup.tank!,
       healer: partialGroup.healer!,
       damage: partialGroup.damage,

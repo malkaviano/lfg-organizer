@@ -26,11 +26,7 @@ export class CoordinatorService {
     const group = await this.groupMakerService.groupFor(dungeonName);
 
     if (group) {
-      const result = await this.groupMakerService.group([
-        group.tank,
-        group.healer,
-        ...group.damage,
-      ]);
+      const result = await this.groupMakerService.createGroup(group);
 
       if (result) {
         this.logger.debug(
