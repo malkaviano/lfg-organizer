@@ -9,8 +9,8 @@ import {
 import { IdHelper } from '@/helper/id.helper';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { DamageTankStrategy } from '@/group/group-maker/strategy/damage-tank.stragegy';
 import { DateTimeHelper } from '@/helper/datetime.helper';
+import { DamageTankStrategy } from '@/group/group-maker/strategy/damage-tank.strategy';
 
 describe('DamageTankStrategy', () => {
   const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();

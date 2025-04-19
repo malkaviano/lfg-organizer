@@ -8,7 +8,7 @@ import {
 } from '@/group/interface/queued-players-repository.interface';
 import { TankHealerStrategy } from '@/group/group-maker/strategy/tank-healer.strategy';
 import { HealerTankStrategy } from '@/group/group-maker/strategy/healer-tank.strategy';
-import { DamageTankStrategy } from '@/group/group-maker/strategy/damage-tank.stragegy';
+import { DamageTankStrategy } from '@/group/group-maker/strategy/damage-tank.strategy';
 
 @Injectable()
 export class GroupMakerService {
