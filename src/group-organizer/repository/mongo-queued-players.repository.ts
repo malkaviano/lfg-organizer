@@ -193,12 +193,6 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     return result;
   }
 
-  public async clear(): Promise<void> {
-    await this.mongoObject.db
-      .collection(this.PLAYERS_COLLECTION_NAME)
-      .deleteMany();
-  }
-
   public async groups(): Promise<PlayerGroupMessage[]> {
     throw new Error('Method not implemented.');
   }
