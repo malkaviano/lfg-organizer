@@ -16,7 +16,7 @@ import { IdHelper } from '@/helper/id.helper';
 
 @Injectable()
 export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
-  public readonly PLAYERS_COLLECTION_NAME = 'queuedplayermodels';
+  public readonly PLAYERS_COLLECTION_NAME = 'queuedplayers';
 
   public readonly GROUPS_COLLECTION_NAME = 'playergroups';
 
