@@ -1,3 +1,4 @@
+import { ConfigType } from '@nestjs/config';
 import { Inject, Injectable } from '@nestjs/common';
 
 import { Db, MongoClient, PullOperator } from 'mongodb';
@@ -11,20 +12,19 @@ import { MONGODB_DRIVER_OBJECT } from '@/group/repository/tokens';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 import { DateTimeHelper } from '@/helper/datetime.helper';
-import { PlayerGroupModel } from '../model/player-group.model';
+import { PlayerGroupModel } from '@/group/model/player-group.model';
 import { IdHelper } from '@/helper/id.helper';
+import mongodbCollection from '@/config/mongo-collection.config';
 
 @Injectable()
 export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
-  public readonly PLAYERS_COLLECTION_NAME = 'queuedplayers';
-
-  public readonly GROUPS_COLLECTION_NAME = 'playergroups';
-
   constructor(
     @Inject(MONGODB_DRIVER_OBJECT)
     private readonly mongoObject: { client: MongoClient; db: Db },
     private readonly datetimeHelper: DateTimeHelper,
-    private readonly idHelper: IdHelper
+    private readonly idHelper: IdHelper,
+    @Inject(mongodbCollection.KEY)
+    private readonly mongoCollections: ConfigType<typeof mongodbCollection>
   ) {}
 
   public async queue(players: QueuedPlayerEntity[]): Promise<number> {
@@ -44,7 +44,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     }
 
     const result = await this.mongoObject.db
-      .collection(this.PLAYERS_COLLECTION_NAME)
+      .collection(this.mongoCollections.queuedPlayers)
       .insertMany(results.map((r) => r.playerModel));
 
     return result.insertedCount;
@@ -52,7 +52,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
 
   public async get(playerIds: string[]): Promise<QueuedPlayerEntity[]> {
     const result = this.mongoObject.db
-      .collection(this.PLAYERS_COLLECTION_NAME)
+      .collection(this.mongoCollections.queuedPlayers)
       .find({ id: { $in: playerIds } });
 
     return result
@@ -71,7 +71,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
 
   public async return(playerIds: string[]): Promise<number> {
     const result = await this.mongoObject.db
-      .collection(this.PLAYERS_COLLECTION_NAME)
+      .collection(this.mongoCollections.queuedPlayers)
       .updateMany({ id: { $in: playerIds } }, { $set: { status: 'WAITING' } });
 
     return result.modifiedCount ?? 0;
@@ -89,7 +89,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     const pull = { playingWith: { $in: deletedIds } } as PullOperator<Document>;
 
     await this.mongoObject.db
-      .collection(this.PLAYERS_COLLECTION_NAME)
+      .collection(this.mongoCollections.queuedPlayers)
       .updateMany(
         { id: { $in: linked } },
         {
@@ -98,7 +98,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
       );
 
     const result = await this.mongoObject.db
-      .collection(this.PLAYERS_COLLECTION_NAME)
+      .collection(this.mongoCollections.queuedPlayers)
       .deleteMany({ id: { $in: playerIds } });
 
     return result.deletedCount ?? 0;
@@ -110,7 +110,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     ignoreIds: string[] = []
   ): Promise<QueuedPlayerEntity | null> {
     const result = await this.mongoObject.db
-      .collection(this.PLAYERS_COLLECTION_NAME)
+      .collection(this.mongoCollections.queuedPlayers)
       .findOne(
         {
           roles: playerRole,
@@ -164,7 +164,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
       );
 
       const inserted = await this.mongoObject.db
-        .collection(this.GROUPS_COLLECTION_NAME)
+        .collection(this.mongoCollections.playerGroups)
         .insertOne(groupModel);
 
       if (!inserted.acknowledged) {
@@ -172,7 +172,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
       }
 
       const updated = await this.mongoObject.db
-        .collection(this.PLAYERS_COLLECTION_NAME)
+        .collection(this.mongoCollections.queuedPlayers)
         .updateMany(
           { id: { $in: playerIds } },
           { $set: { status: 'GROUPED', groupId, groupedAt: timestamp } }
@@ -199,7 +199,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
 
   public async unSentGroups(): Promise<PlayerGroupMessage[]> {
     return this.mongoObject.db
-      .collection(this.GROUPS_COLLECTION_NAME)
+      .collection(this.mongoCollections.playerGroups)
       .find({ sentAt: null })
       .map((document) => {
         return new PlayerGroupMessage(

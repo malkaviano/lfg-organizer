@@ -7,16 +7,22 @@ import { AppService } from './app.service';
 
 import { GroupOrganizerModule } from '@/group/group-organizer.module';
 import { DungeonModule } from '@/dungeon/dungeon.module';
-import mongodbConnection from '@/config/mongo-connection.config';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
+import mongodbConnection from '@/config/mongo-connection.config';
 import rabbitClientConfig from '@/config/rmq-proxy.config';
 import rabbitConfig from '@/config/rmq.config';
+import mongodbCollection from '@/config/mongo-collection.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [mongodbConnection, rabbitClientConfig, rabbitConfig],
+      load: [
+        mongodbConnection,
+        rabbitClientConfig,
+        rabbitConfig,
+        mongodbCollection,
+      ],
     }),
     ScheduleModule.forRoot(),
     DungeonModule,

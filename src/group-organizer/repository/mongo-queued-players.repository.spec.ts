@@ -7,10 +7,10 @@ import { mock } from 'ts-jest-mocker';
 import { MongoQueuedPlayersRepository } from '@/group/repository/mongo-queued-players.repository';
 import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import mongodbTestConnection from '@/config/mongo-connection-test.config';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
 import { DateTimeHelper } from '@/helper/datetime.helper';
-import { group } from 'console';
+import mongodbTestConnection from '@/config/mongo-connection-test.config';
+import mongodbCollection from '@/config/mongo-collection.config';
 
 describe('MongoQueuedPlayersRepository', () => {
   let module: TestingModule;
@@ -128,7 +128,10 @@ describe('MongoQueuedPlayersRepository', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [mongodbTestConnection, mongodbCollection],
+        }),
         MongodbModule.forRootAsync(mongodbTestConnection.asProvider()),
         QueuedPlayersModule,
       ],
