@@ -141,6 +141,24 @@ describe('TankHealerStrategy', () => {
         21,
         ['Damage'],
         ['WailingCaverns'],
+        new Date().toISOString(),
+        ['player4a']
+      );
+
+      const damage2 = new QueuedPlayerEntity(
+        'player4a',
+        21,
+        ['Damage'],
+        ['WailingCaverns'],
+        new Date().toISOString(),
+        ['player3a']
+      );
+
+      const damage3 = new QueuedPlayerEntity(
+        'player5a',
+        21,
+        ['Damage'],
+        ['WailingCaverns'],
         new Date().toISOString()
       );
 
@@ -168,12 +186,14 @@ describe('TankHealerStrategy', () => {
         mockedQueuedPlayersRepository.nextInQueue
           .mockResolvedValueOnce(tank)
           .mockResolvedValueOnce(healer)
-          .mockResolvedValueOnce(damage1);
+          .mockResolvedValueOnce(damage1)
+          .mockResolvedValueOnce(damage3);
 
         mockedQueuedPlayersRepository.get
           .mockResolvedValueOnce([damage4])
           .mockResolvedValueOnce([healer, damage5])
-          .mockResolvedValueOnce([damage1]);
+          .mockResolvedValueOnce([damage1, damage2])
+          .mockResolvedValueOnce([damage3]);
 
         mockedIdHelper.newId.mockReturnValueOnce('newId1');
 
@@ -183,7 +203,7 @@ describe('TankHealerStrategy', () => {
           id: 'newId1',
           tank: tank.id,
           healer: healer.id,
-          damage: [damage4.id, damage5.id, damage1.id],
+          damage: [damage4.id, damage5.id, damage3.id],
         });
       });
     });
