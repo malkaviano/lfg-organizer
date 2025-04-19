@@ -10,7 +10,6 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { IdHelper } from '@/helper/id.helper';
 
 @Injectable()
 export class TankHealerStrategy extends GroupFormationStrategy {

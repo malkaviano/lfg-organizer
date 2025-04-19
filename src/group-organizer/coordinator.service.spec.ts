@@ -45,7 +45,10 @@ describe('CoordinatorService', () => {
 
       await service.run('WailingCaverns');
 
-      expect(mockedGroupMakerService.createGroup).toHaveBeenCalledWith(group);
+      expect(mockedGroupMakerService.createGroup).toHaveBeenCalledWith(
+        group,
+        'WailingCaverns'
+      );
     });
   });
 });

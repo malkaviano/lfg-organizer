@@ -20,8 +20,11 @@ export class GroupMakerService {
     private readonly damageThenTankStrategy: DamageTankStrategy
   ) {}
 
-  async createGroup(group: DungeonGroup): Promise<boolean> {
-    return this.queuePlayersRepository.createGroup(group);
+  async createGroup(
+    group: DungeonGroup,
+    dungeonName: DungeonName
+  ): Promise<boolean> {
+    return this.queuePlayersRepository.createGroup(group, dungeonName);
   }
 
   async groupFor(dungeonName: DungeonName): Promise<DungeonGroup | null> {

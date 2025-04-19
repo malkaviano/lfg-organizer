@@ -10,14 +10,21 @@ import { PlayerRole } from '@/dungeon/player-role.literal';
 import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
 import { MONGODB_DRIVER_OBJECT } from '@/group/repository/tokens';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
+import { PlayerGroupMessage } from '@/group/dto/player-group.message';
+import { DateTimeHelper } from '@/helper/datetime.helper';
+import { PlayerGroupModel } from '../model/player-group.model';
+import { group } from 'console';
 
 @Injectable()
 export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
-  public readonly COLLECTION_NAME = 'queuedplayermodels';
+  public readonly PLAYERS_COLLECTION_NAME = 'queuedplayermodels';
+
+  public readonly GROUPS_COLLECTION_NAME = 'playergroups';
 
   constructor(
     @Inject(MONGODB_DRIVER_OBJECT)
-    private readonly mongoObject: { client: MongoClient; db: Db }
+    private readonly mongoObject: { client: MongoClient; db: Db },
+    private readonly datetimeHelper: DateTimeHelper
   ) {}
 
   public async queue(players: QueuedPlayerEntity[]): Promise<number> {
@@ -37,7 +44,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     }
 
     const result = await this.mongoObject.db
-      .collection(this.COLLECTION_NAME)
+      .collection(this.PLAYERS_COLLECTION_NAME)
       .insertMany(results.map((r) => r.playerModel));
 
     return result.insertedCount;
@@ -45,7 +52,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
 
   public async get(playerIds: string[]): Promise<QueuedPlayerEntity[]> {
     const result = this.mongoObject.db
-      .collection(this.COLLECTION_NAME)
+      .collection(this.PLAYERS_COLLECTION_NAME)
       .find({ id: { $in: playerIds } });
 
     return result
@@ -64,7 +71,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
 
   public async return(playerIds: string[]): Promise<number> {
     const result = await this.mongoObject.db
-      .collection(this.COLLECTION_NAME)
+      .collection(this.PLAYERS_COLLECTION_NAME)
       .updateMany({ id: { $in: playerIds } }, { $set: { status: 'WAITING' } });
 
     return result.modifiedCount ?? 0;
@@ -81,15 +88,17 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
 
     const pull = { playingWith: { $in: deletedIds } } as PullOperator<Document>;
 
-    await this.mongoObject.db.collection(this.COLLECTION_NAME).updateMany(
-      { id: { $in: linked } },
-      {
-        $pull: pull,
-      }
-    );
+    await this.mongoObject.db
+      .collection(this.PLAYERS_COLLECTION_NAME)
+      .updateMany(
+        { id: { $in: linked } },
+        {
+          $pull: pull,
+        }
+      );
 
     const result = await this.mongoObject.db
-      .collection(this.COLLECTION_NAME)
+      .collection(this.PLAYERS_COLLECTION_NAME)
       .deleteMany({ id: { $in: playerIds } });
 
     return result.deletedCount ?? 0;
@@ -101,7 +110,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     ignoreIds: string[] = []
   ): Promise<QueuedPlayerEntity | null> {
     const result = await this.mongoObject.db
-      .collection(this.COLLECTION_NAME)
+      .collection(this.PLAYERS_COLLECTION_NAME)
       .findOne(
         {
           roles: playerRole,
@@ -126,10 +135,11 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     return null;
   }
 
-  public async createGroup(group: DungeonGroup): Promise<boolean> {
+  public async createGroup(
+    group: DungeonGroup,
+    dungeonName: DungeonName
+  ): Promise<boolean> {
     const session = this.mongoObject.client.startSession();
-
-    session.startTransaction();
 
     const groupId = uuidv4();
 
@@ -137,15 +147,37 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
 
     const playerIds = [...group.damage.map((d) => d), group.tank, group.healer];
 
+    session.startTransaction();
+
+    const timestamp = this.datetimeHelper.timestamp();
+
     try {
+      const groupModel = new PlayerGroupModel(
+        groupId,
+        dungeonName,
+        group,
+        timestamp
+      );
+
+      const inserted = await this.mongoObject.db
+        .collection(this.GROUPS_COLLECTION_NAME)
+        .insertOne(groupModel);
+
+      if (!inserted.acknowledged) {
+        throw 'failed to create group';
+      }
+
       const updated = await this.mongoObject.db
-        .collection(this.COLLECTION_NAME)
+        .collection(this.PLAYERS_COLLECTION_NAME)
         .updateMany(
           { id: { $in: playerIds } },
-          { $set: { status: 'GROUPED', groupId } }
+          { $set: { status: 'GROUPED', groupId, groupedAt: timestamp } }
         );
 
-      if ((updated.modifiedCount ?? 0) !== playerIds.length) {
+      if (
+        !updated.acknowledged ||
+        (updated.modifiedCount ?? 0) !== playerIds.length
+      ) {
         throw 'failed to update all';
       }
 
@@ -162,6 +194,12 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   }
 
   public async clear(): Promise<void> {
-    await this.mongoObject.db.collection(this.COLLECTION_NAME).deleteMany();
+    await this.mongoObject.db
+      .collection(this.PLAYERS_COLLECTION_NAME)
+      .deleteMany();
+  }
+
+  public async groups(): Promise<PlayerGroupMessage[]> {
+    throw new Error('Method not implemented.');
   }
 }

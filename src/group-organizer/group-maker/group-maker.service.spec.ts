@@ -72,7 +72,7 @@ describe('GroupMakerService', () => {
 
         mockedQueuedPlayersRepository.createGroup.mockResolvedValueOnce(true);
 
-        const result = await service.createGroup(group);
+        const result = await service.createGroup(group, 'Deadmines');
 
         expect(result).toBe(true);
       });
@@ -87,7 +87,7 @@ describe('GroupMakerService', () => {
         };
         mockedQueuedPlayersRepository.createGroup.mockResolvedValueOnce(false);
 
-        const result = await service.createGroup(group);
+        const result = await service.createGroup(group, 'Deadmines');
 
         expect(result).toBe(false);
       });

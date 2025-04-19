@@ -2,12 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { v4 as uuidv4 } from 'uuid';
+import { mock } from 'ts-jest-mocker';
 
 import { MongoQueuedPlayersRepository } from '@/group/repository/mongo-queued-players.repository';
 import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import mongodbTestConnection from '@/config/mongo-connection-test.config';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
+import { DateTimeHelper } from '@/helper/datetime.helper';
 
 describe('MongoQueuedPlayersRepository', () => {
   let module: TestingModule;
@@ -17,6 +19,8 @@ describe('MongoQueuedPlayersRepository', () => {
   const timestamp = '2025-04-01T11:42:19.088Z';
 
   const timestamp2 = '2025-04-01T11:45:19.088Z';
+
+  const mockedDateTimeHelper = mock(DateTimeHelper);
 
   const [
     player1Id,
@@ -127,7 +131,7 @@ describe('MongoQueuedPlayersRepository', () => {
         MongodbModule.forRootAsync(mongodbTestConnection.asProvider()),
         QueuedPlayersModule,
       ],
-      providers: [ConfigService],
+      providers: [],
     }).compile();
 
     service = module.get<MongoQueuedPlayersRepository>(
@@ -195,21 +199,27 @@ describe('MongoQueuedPlayersRepository', () => {
 
       expect(next2).toBeNull();
 
-      let grouped = await service.createGroup({
-        tank: player1.id,
-        healer: player2.id,
-        damage: [player3.id, player4.id, player5.id],
-      });
+      let grouped = await service.createGroup(
+        {
+          tank: player1.id,
+          healer: player2.id,
+          damage: [player3.id, player4.id, player5.id],
+        },
+        'Deadmines'
+      );
 
       expect(grouped).toEqual(false);
 
       await service.queue([player2, player3]);
 
-      grouped = await service.createGroup({
-        tank: player1.id,
-        healer: player2.id,
-        damage: [player3.id, player4.id, player5.id],
-      });
+      grouped = await service.createGroup(
+        {
+          tank: player1.id,
+          healer: player2.id,
+          damage: [player3.id, player4.id, player5.id],
+        },
+        'Deadmines'
+      );
 
       expect(grouped).toEqual(true);
 

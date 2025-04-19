@@ -8,7 +8,7 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { GroupProducedToken } from '../interface/group-producer.interface';
+import { GroupProducedToken } from '@/group/interface/group-producer.interface';
 
 describe('GroupProducerService', () => {
   let service: GroupProducerService;

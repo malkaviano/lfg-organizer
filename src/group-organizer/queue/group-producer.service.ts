@@ -26,7 +26,6 @@ export class GroupProducerService
   }
 
   async publish(): Promise<void> {
-    this.queuePlayersRepository.createGroup;
-    // const observable = this.client.emit<number>('group-formed', group);
+    throw new Error('Method not implemented.');
   }
 }

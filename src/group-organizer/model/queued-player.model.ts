@@ -18,9 +18,9 @@ export class QueuedPlayerModel {
 
   public playingWith: string[];
 
-  public sentAt?: Date;
-
   public groupId?: string;
+
+  public groupedAt?: string;
 
   constructor(
     args: {
