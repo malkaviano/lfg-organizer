@@ -64,18 +64,16 @@ export abstract class GroupFormationStrategy {
     ignored: string[],
     partialGroup: PartialGroup,
     playerRole: PlayerRole,
-    predicate: () => boolean
+    predicate: (group: PartialGroup) => boolean
   ): Promise<PartialGroup> {
-    while (predicate()) {
+    while (predicate(partialGroup)) {
       const player = await this.getPlayer(dungeonName, playerRole, ...ignored);
 
       if (!player) {
         break;
       }
 
-      ignored.push(player.id);
-
-      ignored = ignored.concat(player.playingWith);
+      ignored.push(player.id, ...player.playingWith);
 
       const { resolved, group } = await this.resolvePremade(
         [player.id, ...player.playingWith],
