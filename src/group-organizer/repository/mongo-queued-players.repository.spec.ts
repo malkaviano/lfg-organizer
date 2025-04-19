@@ -10,6 +10,7 @@ import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import mongodbTestConnection from '@/config/mongo-connection-test.config';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
 import { DateTimeHelper } from '@/helper/datetime.helper';
+import { group } from 'console';
 
 describe('MongoQueuedPlayersRepository', () => {
   let module: TestingModule;
@@ -222,6 +223,10 @@ describe('MongoQueuedPlayersRepository', () => {
       );
 
       expect(grouped).toEqual(true);
+
+      const unsent = await service.unSentGroups();
+
+      expect(unsent.length).toBeGreaterThan(0);
 
       const returned = await service.return([
         player1.id,

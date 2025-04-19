@@ -1,6 +1,5 @@
-import { Inject, Injectable, Type } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
-import { v4 as uuidv4 } from 'uuid';
 import { Db, MongoClient, PullOperator } from 'mongodb';
 
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
@@ -13,7 +12,7 @@ import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerGroupModel } from '../model/player-group.model';
-import { group } from 'console';
+import { IdHelper } from '@/helper/id.helper';
 
 @Injectable()
 export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
@@ -24,7 +23,8 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   constructor(
     @Inject(MONGODB_DRIVER_OBJECT)
     private readonly mongoObject: { client: MongoClient; db: Db },
-    private readonly datetimeHelper: DateTimeHelper
+    private readonly datetimeHelper: DateTimeHelper,
+    private readonly idHelper: IdHelper
   ) {}
 
   public async queue(players: QueuedPlayerEntity[]): Promise<number> {
@@ -141,17 +141,21 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
   ): Promise<boolean> {
     const session = this.mongoObject.client.startSession();
 
-    const groupId = uuidv4();
-
     let result = false;
 
-    const playerIds = [...group.damage.map((d) => d), group.tank, group.healer];
-
-    session.startTransaction();
-
-    const timestamp = this.datetimeHelper.timestamp();
-
     try {
+      const playerIds = [
+        ...group.damage.map((d) => d),
+        group.tank,
+        group.healer,
+      ];
+
+      const groupId = this.idHelper.newId();
+
+      const timestamp = this.datetimeHelper.timestamp();
+
+      session.startTransaction();
+
       const groupModel = new PlayerGroupModel(
         groupId,
         dungeonName,
@@ -193,7 +197,19 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     return result;
   }
 
-  public async groups(): Promise<PlayerGroupMessage[]> {
-    throw new Error('Method not implemented.');
+  public async unSentGroups(): Promise<PlayerGroupMessage[]> {
+    return this.mongoObject.db
+      .collection(this.GROUPS_COLLECTION_NAME)
+      .find({ sentAt: null })
+      .map((document) => {
+        return new PlayerGroupMessage(
+          document.id,
+          document.dungeon,
+          document.group.tank,
+          document.group.healer,
+          document.group.damage
+        );
+      })
+      .toArray();
   }
 }

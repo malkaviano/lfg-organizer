@@ -24,5 +24,5 @@ export interface QueuedPlayersRepository {
 
   createGroup(group: DungeonGroup, dungeonName: DungeonName): Promise<boolean>;
 
-  groups(): Promise<PlayerGroupMessage[]>;
+  unSentGroups(): Promise<PlayerGroupMessage[]>;
 }
