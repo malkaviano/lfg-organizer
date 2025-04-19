@@ -28,27 +28,27 @@ export class DamageTankStrategy extends GroupFormationStrategy {
 
     partialGroup.damage.push(damage1.id);
 
-    ignored.push(damage1.id);
+    ignored.push(damage1.id, ...damage1.playingWith);
 
-    ignored = ignored.concat(damage1.playingWith);
+    if (damage1.playingWith.length > 0) {
+      const { resolved, group } = await this.resolvePremade(
+        damage1.playingWith,
+        partialGroup
+      );
 
-    const { resolved, group } = await this.resolvePremade(
-      damage1.playingWith,
-      partialGroup
-    );
+      if (!resolved) {
+        return Promise.resolve(null);
+      }
 
-    if (!resolved) {
-      return Promise.resolve(null);
+      partialGroup = group;
     }
-
-    partialGroup = group;
 
     partialGroup = await this.resolveRole(
       dungeonName,
       ignored,
       partialGroup,
       'Damage',
-      () => partialGroup.damage.length < 3
+      (group: PartialGroup) => group.damage.length < 3
     );
 
     if (partialGroup.damage.length < 3) {
@@ -60,7 +60,7 @@ export class DamageTankStrategy extends GroupFormationStrategy {
       ignored,
       partialGroup,
       'Tank',
-      () => !partialGroup.tank
+      (group: PartialGroup) => !group.tank
     );
 
     if (!partialGroup.tank) {
@@ -72,7 +72,7 @@ export class DamageTankStrategy extends GroupFormationStrategy {
       ignored,
       partialGroup,
       'Healer',
-      () => !partialGroup.healer
+      (group: PartialGroup) => !group.healer
     );
 
     if (!partialGroup.healer) {
