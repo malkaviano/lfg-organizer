@@ -3,7 +3,6 @@ import { Cron } from '@nestjs/schedule';
 
 import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 
 @Injectable()
 export class CoordinatorService {
@@ -41,9 +40,5 @@ export class CoordinatorService {
     } else {
       this.logger.debug(`No group found for ${dungeonName}`);
     }
-  }
-
-  public async grouped(): Promise<DungeonGroup> {
-    throw new Error('not implemented');
   }
 }

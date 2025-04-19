@@ -87,6 +87,10 @@ describe('Grouping', () => {
       await agent.post('/group/queue').send(body2).expect(201);
 
       await service.run('Deadmines');
+
+      await producer.publish();
+
+      // TODO: Write assetions
     });
   });
 });
