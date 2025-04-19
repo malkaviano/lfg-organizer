@@ -1,16 +1,23 @@
+import { Inject, Injectable } from '@nestjs/common';
+
 import {
   GroupFormationStrategy,
   PartialGroup,
-} from '@/group/strategy/group-formation.strategy';
+} from '@/group/group-maker/strategy/group-formation.strategy';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 import { IdHelper } from '@/helper/id.helper';
 
-export class HealerTankStrategy extends GroupFormationStrategy {
+@Injectable()
+export class TankHealerStrategy extends GroupFormationStrategy {
   constructor(
-    protected readonly queuePlayersRepository: QueuedPlayersRepository,
-    protected readonly idHelper: IdHelper
+    @Inject(QueuedPlayersRepositoryToken)
+    queuePlayersRepository: QueuedPlayersRepository,
+    idHelper: IdHelper
   ) {
     super(queuePlayersRepository, idHelper);
   }
@@ -20,19 +27,19 @@ export class HealerTankStrategy extends GroupFormationStrategy {
 
     let ignored: string[] = [];
 
-    const healer = await this.getPlayer(dungeonName, 'Healer');
+    const tank = await this.getPlayer(dungeonName, 'Tank');
 
-    if (!healer) {
+    if (!tank) {
       return Promise.resolve(null);
     }
 
-    partialGroup.healer = healer.id;
+    partialGroup.tank = tank.id;
 
-    ignored.push(partialGroup.healer, ...healer.playingWith);
+    ignored.push(tank.id, ...tank.playingWith);
 
-    if (healer.playingWith.length > 0) {
+    if (tank.playingWith.length > 0) {
       const { resolved, group } = await this.resolvePremade(
-        healer.playingWith,
+        tank.playingWith,
         partialGroup
       );
 
@@ -47,11 +54,11 @@ export class HealerTankStrategy extends GroupFormationStrategy {
       dungeonName,
       ignored,
       partialGroup,
-      'Tank',
-      (group: PartialGroup) => !group.tank
+      'Healer',
+      (group: PartialGroup) => !group.healer
     );
 
-    if (!partialGroup.tank) {
+    if (!partialGroup.healer) {
       return Promise.resolve(null);
     }
 

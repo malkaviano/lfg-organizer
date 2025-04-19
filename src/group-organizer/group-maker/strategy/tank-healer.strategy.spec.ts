@@ -1,23 +1,46 @@
+import { Test, TestingModule } from '@nestjs/testing';
+
 import { mock } from 'ts-jest-mocker';
 
-import { TankHealerStrategy } from '@/group/strategy/tank-healer.strategy';
-import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
+import { TankHealerStrategy } from '@/group/group-maker/strategy/tank-healer.strategy';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 import { IdHelper } from '@/helper/id.helper';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
+import { DateTimeHelper } from '@/helper/datetime.helper';
 
 describe('TankHealerStrategy', () => {
   const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
 
   const mockedIdHelper = mock(IdHelper);
 
-  const strategy = new TankHealerStrategy(
-    mockedQueuedPlayersRepository,
-    mockedIdHelper
-  );
+  let strategy: TankHealerStrategy;
 
   beforeEach(async () => {
     jest.resetAllMocks();
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        TankHealerStrategy,
+        {
+          provide: QueuedPlayersRepositoryToken,
+          useValue: mockedQueuedPlayersRepository,
+        },
+        {
+          provide: DateTimeHelper,
+          useValue: mockedIdHelper,
+        },
+        {
+          provide: IdHelper,
+          useValue: mockedIdHelper,
+        },
+      ],
+    }).compile();
+
+    strategy = module.get<TankHealerStrategy>(TankHealerStrategy);
   });
 
   it('should be defined', () => {

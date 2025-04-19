@@ -1,16 +1,23 @@
+import { Inject, Injectable } from '@nestjs/common';
+
 import {
   GroupFormationStrategy,
   PartialGroup,
-} from '@/group/strategy/group-formation.strategy';
+} from '@/group/group-maker/strategy/group-formation.strategy';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 import { IdHelper } from '@/helper/id.helper';
 
+@Injectable()
 export class DamageTankStrategy extends GroupFormationStrategy {
   constructor(
-    protected readonly queuePlayersRepository: QueuedPlayersRepository,
-    protected readonly idHelper: IdHelper
+    @Inject(QueuedPlayersRepositoryToken)
+    queuePlayersRepository: QueuedPlayersRepository,
+    idHelper: IdHelper
   ) {
     super(queuePlayersRepository, idHelper);
   }

@@ -1,23 +1,46 @@
+import { Test, TestingModule } from '@nestjs/testing';
+
 import { mock } from 'ts-jest-mocker';
 
-import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
+import { HealerTankStrategy } from '@/group/group-maker/strategy/healer-tank.strategy';
+import {
+  QueuedPlayersRepository,
+  QueuedPlayersRepositoryToken,
+} from '@/group/interface/queued-players-repository.interface';
 import { IdHelper } from '@/helper/id.helper';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { DamageTankStrategy } from '@/group/strategy/damage-tank.stragegy';
+import { DateTimeHelper } from '@/helper/datetime.helper';
 
-describe('DamageTankStrategy', () => {
+describe('HealerTankStrategy', () => {
   const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
 
   const mockedIdHelper = mock(IdHelper);
 
-  const strategy = new DamageTankStrategy(
-    mockedQueuedPlayersRepository,
-    mockedIdHelper
-  );
+  let strategy: HealerTankStrategy;
 
   beforeEach(async () => {
     jest.resetAllMocks();
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        HealerTankStrategy,
+        {
+          provide: QueuedPlayersRepositoryToken,
+          useValue: mockedQueuedPlayersRepository,
+        },
+        {
+          provide: DateTimeHelper,
+          useValue: mockedIdHelper,
+        },
+        {
+          provide: IdHelper,
+          useValue: mockedIdHelper,
+        },
+      ],
+    }).compile();
+
+    strategy = module.get<HealerTankStrategy>(HealerTankStrategy);
   });
 
   it('should be defined', () => {
@@ -70,11 +93,16 @@ describe('DamageTankStrategy', () => {
         const dungeonName: DungeonName = 'WailingCaverns';
 
         mockedQueuedPlayersRepository.nextInQueue
+          .mockResolvedValueOnce(healer)
+          .mockResolvedValueOnce(tank)
           .mockResolvedValueOnce(damage1)
           .mockResolvedValueOnce(damage2)
           .mockResolvedValueOnce(null);
 
-        mockedQueuedPlayersRepository.get.mockResolvedValueOnce([damage2]);
+        mockedQueuedPlayersRepository.get
+          .mockResolvedValueOnce([tank])
+          .mockResolvedValueOnce([damage1])
+          .mockResolvedValueOnce([damage2]);
 
         const result = await strategy.run(dungeonName);
 
@@ -87,17 +115,17 @@ describe('DamageTankStrategy', () => {
         const dungeonName: DungeonName = 'WailingCaverns';
 
         mockedQueuedPlayersRepository.nextInQueue
+          .mockResolvedValueOnce(healer)
+          .mockResolvedValueOnce(tank)
           .mockResolvedValueOnce(damage1)
           .mockResolvedValueOnce(damage2)
-          .mockResolvedValueOnce(damage3)
-          .mockResolvedValueOnce(tank)
-          .mockResolvedValueOnce(healer);
+          .mockResolvedValueOnce(damage3);
 
         mockedQueuedPlayersRepository.get
-          .mockResolvedValueOnce([damage2])
-          .mockResolvedValueOnce([damage3])
           .mockResolvedValueOnce([tank])
-          .mockResolvedValueOnce([healer]);
+          .mockResolvedValueOnce([damage1])
+          .mockResolvedValueOnce([damage2])
+          .mockResolvedValueOnce([damage3]);
 
         mockedIdHelper.newId.mockReturnValueOnce('newId1');
 
@@ -122,14 +150,6 @@ describe('DamageTankStrategy', () => {
         ['player6a']
       );
 
-      const tank2 = new QueuedPlayerEntity(
-        'player1a',
-        20,
-        ['Tank'],
-        ['WailingCaverns'],
-        new Date().toISOString()
-      );
-
       const healer = new QueuedPlayerEntity(
         'player2a',
         19,
@@ -137,14 +157,6 @@ describe('DamageTankStrategy', () => {
         ['WailingCaverns'],
         new Date().toISOString(),
         ['player7a']
-      );
-
-      const healer2 = new QueuedPlayerEntity(
-        'player2a',
-        19,
-        ['Healer'],
-        ['WailingCaverns'],
-        new Date().toISOString()
       );
 
       const damage1 = new QueuedPlayerEntity(
@@ -195,20 +207,16 @@ describe('DamageTankStrategy', () => {
         const dungeonName: DungeonName = 'WailingCaverns';
 
         mockedQueuedPlayersRepository.nextInQueue
-          .mockResolvedValueOnce(damage1)
-          .mockResolvedValueOnce(damage3)
-          .mockResolvedValueOnce(tank)
-          .mockResolvedValueOnce(tank2)
           .mockResolvedValueOnce(healer)
-          .mockResolvedValueOnce(healer2);
+          .mockResolvedValueOnce(tank)
+          .mockResolvedValueOnce(damage1)
+          .mockResolvedValueOnce(damage3);
 
         mockedQueuedPlayersRepository.get
-          .mockResolvedValueOnce([damage2])
-          .mockResolvedValueOnce([damage3])
+          .mockResolvedValueOnce([damage5])
           .mockResolvedValueOnce([tank, damage4])
-          .mockResolvedValueOnce([tank2])
-          .mockResolvedValueOnce([healer, damage5])
-          .mockResolvedValueOnce([healer2]);
+          .mockResolvedValueOnce([damage1, damage2])
+          .mockResolvedValueOnce([damage3]);
 
         mockedIdHelper.newId.mockReturnValueOnce('newId1');
 
@@ -216,9 +224,9 @@ describe('DamageTankStrategy', () => {
 
         expect(result).toEqual({
           id: 'newId1',
-          tank: tank2.id,
-          healer: healer2.id,
-          damage: [damage1.id, damage2.id, damage3.id],
+          tank: tank.id,
+          healer: healer.id,
+          damage: [damage5.id, damage4.id, damage3.id],
         });
       });
     });
