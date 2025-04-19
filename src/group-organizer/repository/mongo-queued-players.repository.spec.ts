@@ -227,9 +227,15 @@ describe('MongoQueuedPlayersRepository', () => {
 
       expect(grouped).toEqual(true);
 
-      const unsent = await service.unSentGroups();
+      let unsent = await service.unSentGroups();
 
       expect(unsent.length).toBeGreaterThan(0);
+
+      await service.confirmGroupsSent(unsent.map((g) => g.groupId));
+
+      unsent = await service.unSentGroups();
+
+      expect(unsent.length).toEqual(0);
 
       const returned = await service.return([
         player1.id,

@@ -26,7 +26,6 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
     @Inject(mongodbCollection.KEY)
     private readonly mongoCollections: ConfigType<typeof mongodbCollection>
   ) {}
-
   public async queue(players: QueuedPlayerEntity[]): Promise<number> {
     const results = players.map((player) => {
       const playerModel = new QueuedPlayerModel({
@@ -211,5 +210,13 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
         );
       })
       .toArray();
+  }
+
+  public async confirmGroupsSent(groupIds: string[]): Promise<void> {
+    const timestamp = this.datetimeHelper.timestamp();
+
+    await this.mongoObject.db
+      .collection(this.mongoCollections.playerGroups)
+      .updateMany({ id: { $in: groupIds } }, { $set: { sentAt: timestamp } });
   }
 }
