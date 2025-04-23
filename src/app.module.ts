@@ -12,6 +12,7 @@ import mongodbConnection from '@/config/mongo-connection.config';
 import rabbitClientConfig from '@/config/rmq-proxy.config';
 import rabbitConfig from '@/config/rmq.config';
 import mongodbCollection from '@/config/mongo-collection.config';
+import dungeonConfig from '@/config/dungeon.config';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import mongodbCollection from '@/config/mongo-collection.config';
         rabbitClientConfig,
         rabbitConfig,
         mongodbCollection,
+        dungeonConfig,
       ],
     }),
     ScheduleModule.forRoot(),

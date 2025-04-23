@@ -1,22 +1,30 @@
+import { ConfigType } from '@nestjs/config';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
 import { GroupMakerService } from '@/group/group-maker/group-maker.service';
-import { DungeonName } from '@/dungeon/dungeon-name.literal';
+import { DungeonName, dungeons } from '@/dungeon/dungeon-name.literal';
+import dungeonConfig from '@/config/dungeon.config';
 
 @Injectable()
 export class CoordinatorService {
   private readonly logger = new Logger(CoordinatorService.name);
 
-  constructor(private readonly groupMakerService: GroupMakerService) {}
+  constructor(
+    private readonly groupMakerService: GroupMakerService,
+    @Inject(dungeonConfig.KEY)
+    private readonly dungeonConf: ConfigType<typeof dungeonConfig>
+  ) {}
 
-  @Cron('* * * * *')
+  @Cron('*/15 * * * * *	')
   public async coordinate() {
-    const dungeons: DungeonName[] = ['WailingCaverns', 'Deadmines'];
+    const dungeonName = this.dungeonConf.dungeonName as DungeonName;
 
-    for (const dungeonName of dungeons) {
-      await this.run(dungeonName);
+    if (!dungeons.includes(dungeonName)) {
+      throw new Error('Invalid dungeon name');
     }
+
+    await this.run(dungeonName);
   }
 
   public async run(dungeonName: DungeonName) {
