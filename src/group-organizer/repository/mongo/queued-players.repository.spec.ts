@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { mock } from 'ts-jest-mocker';
 
-import { MongoQueuedPlayersRepository } from '@/group/repository/mongo-queued-players.repository';
+import { MongoQueuedPlayersRepository } from '@/group/repository/mongo/queued-players.repository';
 import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
