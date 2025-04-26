@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { GroupOrganizerModule } from '@/group/group-organizer.module';
 import { DungeonModule } from '@/dungeon/dungeon.module';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
+import { PostgresModule } from '@/infra/postgres/postgres.module';
 import mongodbConnection from '@/config/mongo-connection.config';
 import rabbitClientConfig from '@/config/rmq-proxy.config';
 import rabbitConfig from '@/config/rmq.config';
@@ -30,6 +31,7 @@ import dungeonConfig from '@/config/dungeon.config';
     DungeonModule,
     GroupOrganizerModule,
     MongodbModule.forRootAsync(mongodbConnection.asProvider()),
+    PostgresModule,
   ],
   controllers: [AppController],
   providers: [AppService],
