@@ -86,6 +86,9 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
+    "modulePaths": [
+      "<rootDir>"
+    ],
     "moduleNameMapper": {
       "^@/group/(.*)$": "<rootDir>/src/group-organizer/$1",
       "^@/dungeon/(.*)$": "<rootDir>/src/dungeon/$1",

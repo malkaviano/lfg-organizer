@@ -8,12 +8,12 @@ import { QueuedPlayerModel } from '@/group/model/queued-player.model';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { QueuedPlayersRepository } from '@/group/interface/queued-players-repository.interface';
-import { MONGODB_DRIVER_OBJECT } from '@/group/repository/tokens';
 import { DungeonGroup } from '@/dungeon/dungeon-group.type';
 import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerGroupModel } from '@/group/model/player-group.model';
 import { IdHelper } from '@/helper/id.helper';
+import { MONGODB_DRIVER_OBJECT } from '../../tokens';
 import mongodbCollection from '@/config/mongo-collection.config';
 
 @Injectable()

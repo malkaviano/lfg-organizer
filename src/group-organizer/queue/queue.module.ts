@@ -3,16 +3,16 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { ReturnedPlayerController } from '@/group/queue/returned-player.controller';
-import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
 import { GroupProducerService } from '@/group/queue/group-producer.service';
 import {
   GroupProducedToken,
   QueueClientToken,
 } from '@/group/interface/group-producer.interface';
+import { MongodbModule } from '@/infra/mongodb/mongodb.module';
 
 @Module({
   imports: [
-    QueuedPlayersModule,
+    MongodbModule,
     ClientsModule.registerAsync([
       {
         name: QueueClientToken,
