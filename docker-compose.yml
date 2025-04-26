@@ -1,4 +1,30 @@
 services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    hostname: postgres
+    environment:
+      - POSTGRES_DB=${PG_DATABASE_NAME}
+      - POSTGRES_USER=${PG_DATABASE_USER}
+      - POSTGRES_PASSWORD=${PG_DATABASE_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@localhost.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 8080:80
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
   db:
     image: mongo:8
     restart: always
@@ -18,9 +44,14 @@ services:
     volumes:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh:ro
       - mongodb_data:/data/db
-      - mongo-config:/data/configdb
+      - mongodb_config:/data/configdb
+
 volumes:
   mongodb_data:
     driver: local
-  mongo-config:
+  mongodb_config:
+    driver: local
+  postgres_data:
+    driver: local
+  pgadmin_data:
     driver: local
