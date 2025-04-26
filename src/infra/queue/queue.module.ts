@@ -24,6 +24,5 @@ import { MongodbModule } from '@/infra/mongodb/mongodb.module';
   ],
   controllers: [ReturnedPlayerController],
   providers: [{ provide: GroupProducedToken, useClass: GroupProducerService }],
-  exports: [{ provide: GroupProducedToken, useClass: GroupProducerService }],
 })
 export class QueueModule {}

@@ -14,6 +14,7 @@ import rabbitClientConfig from '@/config/rmq-proxy.config';
 import rabbitConfig from '@/config/rmq.config';
 import mongodbCollection from '@/config/mongo-collection.config';
 import dungeonConfig from '@/config/dungeon.config';
+import { QueueModule } from '@/infra/queue/queue.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import dungeonConfig from '@/config/dungeon.config';
     GroupOrganizerModule,
     MongodbModule.forRootAsync(mongodbConnection.asProvider()),
     PostgresModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
