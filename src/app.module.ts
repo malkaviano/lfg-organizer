@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,7 +10,6 @@ import { AppService } from './app.service';
 import { GroupOrganizerModule } from '@/group/group-organizer.module';
 import { DungeonModule } from '@/dungeon/dungeon.module';
 import { MongodbModule } from '@/infra/mongodb/mongodb.module';
-import { PostgresModule } from '@/infra/postgres/postgres.module';
 import mongodbConnection from '@/config/mongo-connection.config';
 import rabbitClientConfig from '@/config/rmq-proxy.config';
 import rabbitConfig from '@/config/rmq.config';
@@ -32,7 +33,20 @@ import { QueueModule } from '@/infra/queue/queue.module';
     DungeonModule,
     GroupOrganizerModule,
     MongodbModule.forRootAsync(mongodbConnection.asProvider()),
-    PostgresModule,
+    MikroOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        driver: PostgreSqlDriver,
+        dbName: configService.get<string>('PG_DATABASE_NAME'),
+        host: configService.get<string>('PG_DATABASE_HOST'),
+        port: configService.get<number>('PG_DATABASE_PORT'),
+        user: configService.get<string>('PG_DATABASE_USER'),
+        password: configService.get<string>('PG_DATABASE_PASSWORD'),
+        entities: ['../dist/group-organizer/model'],
+        entitiesTs: ['../src/group-organizer/model'],
+        autoLoadEntities: true,
+      }),
+    }),
     QueueModule,
   ],
   controllers: [AppController],
