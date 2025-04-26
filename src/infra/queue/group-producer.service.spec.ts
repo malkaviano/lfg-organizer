@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 
 import { mock } from 'ts-jest-mocker';
 
-import { GroupProducerService } from '@/group/queue/group-producer.service';
+import { GroupProducerService } from '@/infra/queue/group-producer.service';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,

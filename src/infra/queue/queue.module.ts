@@ -2,8 +2,8 @@ import { ClientsModule, RmqOptions } from '@nestjs/microservices';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { ReturnedPlayerController } from '@/group/queue/returned-player.controller';
-import { GroupProducerService } from '@/group/queue/group-producer.service';
+import { ReturnedPlayerController } from '@/infra/queue/returned-player.controller';
+import { GroupProducerService } from '@/infra/queue/group-producer.service';
 import {
   GroupProducedToken,
   QueueClientToken,

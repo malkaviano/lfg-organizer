@@ -3,7 +3,7 @@ import { RmqContext } from '@nestjs/microservices';
 
 import { mock } from 'ts-jest-mocker';
 
-import { ReturnedPlayerController } from '@/group/queue/returned-player.controller';
+import { ReturnedPlayerController } from '@/infra/queue/returned-player.controller';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
