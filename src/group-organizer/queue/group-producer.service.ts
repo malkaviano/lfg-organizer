@@ -9,7 +9,7 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { PlayerGroupMessage } from '../dto/player-group.message';
+import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 
 @Injectable()
 export class GroupProducerService

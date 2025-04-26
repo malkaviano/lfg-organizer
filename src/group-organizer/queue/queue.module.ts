@@ -1,4 +1,4 @@
-import { ClientsModule, RmqOptions, Transport } from '@nestjs/microservices';
+import { ClientsModule, RmqOptions } from '@nestjs/microservices';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
