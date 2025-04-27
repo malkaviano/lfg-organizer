@@ -29,9 +29,23 @@ model QueuedPlayer {
 
   playingWith String[] @db.Uuid()
 
-  groupId String? @db.VarChar(20)
+  groupId String? @db.Uuid()
+}
 
-  groupedAt String? @db.VarChar(20)
+model PlayerGroup {
+  id String   @id @db.Uuid() @default(uuid())
 
-  groupRole String? @db.VarChar(20)
+  dungeon String @db.VarChar(20)
+  
+  tankId String @db.Uuid() 
+  
+  healerId String @db.Uuid()
+  
+  damage1Id String @db.Uuid()
+
+  damage2Id String @db.Uuid()
+
+  damage3Id String @db.Uuid()  
+  
+  sentAt String? @db.VarChar(20)
 }
