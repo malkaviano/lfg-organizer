@@ -35,17 +35,19 @@ import { QueueModule } from '@/infra/queue/queue.module';
     MongodbModule.forRootAsync(mongodbConnection.asProvider()),
     MikroOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        driver: PostgreSqlDriver,
-        dbName: configService.get<string>('PG_DATABASE_NAME'),
-        host: configService.get<string>('PG_DATABASE_HOST'),
-        port: configService.get<number>('PG_DATABASE_PORT'),
-        user: configService.get<string>('PG_DATABASE_USER'),
-        password: configService.get<string>('PG_DATABASE_PASSWORD'),
-        entities: ['../dist/group-organizer/model'],
-        entitiesTs: ['../src/group-organizer/model'],
-        autoLoadEntities: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        return {
+          driver: PostgreSqlDriver,
+          dbName: configService.get<string>('PG_DATABASE_NAME'),
+          host: configService.get<string>('PG_DATABASE_HOST'),
+          port: configService.get<number>('PG_DATABASE_PORT'),
+          user: configService.get<string>('PG_DATABASE_USER'),
+          password: configService.get<string>('PG_DATABASE_PASSWORD'),
+          entities: ['./**/*.model.js'],
+          entitiesTs: ['./**/*.model.ts'],
+          autoLoadEntities: true,
+        };
+      },
     }),
     QueueModule,
   ],

@@ -1,9 +1,13 @@
+import { Entity, PrimaryKey } from '@mikro-orm/core';
+
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerStatus } from '@/group/player-status.literal';
 
+@Entity()
 export class QueuedPlayerModel {
+  @PrimaryKey()
   public id: string;
 
   public level: PlayerLevel;
