@@ -149,18 +149,11 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
         group.healer,
       ];
 
-      const groupId = this.idHelper.newId();
-
       const timestamp = this.datetimeHelper.timestamp();
 
       session.startTransaction();
 
-      const groupModel = new PlayerGroupModel(
-        groupId,
-        dungeonName,
-        group,
-        timestamp
-      );
+      const groupModel = new PlayerGroupModel(dungeonName, group, timestamp);
 
       const inserted = await this.mongoObject.db
         .collection(this.mongoCollections.playerGroups)
@@ -174,7 +167,7 @@ export class MongoQueuedPlayersRepository implements QueuedPlayersRepository {
         .collection(this.mongoCollections.queuedPlayers)
         .updateMany(
           { id: { $in: playerIds } },
-          { $set: { status: 'GROUPED', groupId, groupedAt: timestamp } }
+          { $set: { status: 'GROUPED', groupedAt: timestamp } }
         );
 
       if (

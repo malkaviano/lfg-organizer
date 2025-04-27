@@ -7,8 +7,8 @@ import { PlayerStatus } from '@/group/player-status.literal';
 
 @Entity()
 export class QueuedPlayerModel {
-  @PrimaryKey()
-  public id: string;
+  @PrimaryKey({ autoincrement: true })
+  public id!: BigInt;
 
   public level: PlayerLevel;
 
@@ -28,7 +28,6 @@ export class QueuedPlayerModel {
 
   constructor(
     args: {
-      readonly id: string;
       readonly level: PlayerLevel;
       readonly roles: PlayerRole[];
       readonly dungeons: DungeonName[];
@@ -36,7 +35,6 @@ export class QueuedPlayerModel {
       readonly status: PlayerStatus;
       readonly playingWith: string[];
     } = {
-      id: '',
       level: 10,
       roles: [],
       dungeons: [],
@@ -45,9 +43,8 @@ export class QueuedPlayerModel {
       playingWith: [],
     }
   ) {
-    const { id, level, roles, dungeons, queuedAt, status } = args;
+    const { level, roles, dungeons, queuedAt, status } = args;
 
-    this.id = id;
     this.level = level;
     this.roles = roles;
     this.dungeons = dungeons;
