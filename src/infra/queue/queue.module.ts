@@ -8,11 +8,11 @@ import {
   GroupProducedToken,
   QueueClientToken,
 } from '@/group/interface/group-producer.interface';
-import { MongodbModule } from '@/infra/mongodb/mongodb.module';
+import { RepositoryModule } from '@/infra/sequelize/repository.module';
 
 @Module({
   imports: [
-    MongodbModule,
+    RepositoryModule,
     ClientsModule.registerAsync([
       {
         name: QueueClientToken,

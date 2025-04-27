@@ -20,21 +20,22 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@mikro-orm/core": "^6.4.13",
-    "@mikro-orm/nestjs": "^6.1.1",
-    "@mikro-orm/postgresql": "^6.4.13",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/microservices": "^11.0.16",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^5.0.1",
+    "@nestjs/sequelize": "^11.0.0",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",
     "mongodb": "^6.15.0",
     "pg": "^8.15.6",
+    "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "sequelize": "^6.37.7",
+    "sequelize-typescript": "^2.1.6",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
@@ -49,6 +50,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/pg": "^8.11.14",
+    "@types/sequelize": "^4.28.20",
     "@types/supertest": "^6.0.2",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.0.1",

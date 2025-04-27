@@ -1,36 +1,44 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Table, PrimaryKey, Column, AllowNull } from 'sequelize-typescript';
 
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
-import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerStatus } from '@/group/player-status.literal';
+import { PlayerLevel } from '@/dungeon/player-level.literal';
 
-@Entity({ tableName: 'queued_players' })
+@Table({ tableName: 'queued_players' })
 export class QueuedPlayerModel {
-  @PrimaryKey({ type: 'string' })
+  @PrimaryKey
   public id!: string;
 
-  @Property({ type: 'smallint' })
+  @Column({ type: 'smallint' })
+  @AllowNull(false)
   public level!: PlayerLevel;
 
-  @Property({ type: 'string[]' })
+  @Column({ type: 'string[]' })
+  @AllowNull(false)
   public roles!: PlayerRole[];
 
-  @Property({ type: 'string[]' })
+  @Column({ type: 'string[]' })
+  @AllowNull(false)
   public dungeons!: DungeonName[];
 
-  @Property({ type: 'string' })
+  @Column({ type: 'string' })
+  @AllowNull(false)
   public queuedAt!: string;
 
-  @Property({ type: 'string' })
+  @Column({ type: 'string' })
+  @AllowNull(false)
   public status!: PlayerStatus;
 
-  @Property({ type: 'string[]' })
+  @Column({ type: 'string[]' })
+  @AllowNull(false)
   public playingWith!: string[];
 
-  @Property({ type: 'string' })
+  @Column({ type: 'string' })
+  @AllowNull(true)
   public groupId?: string;
 
-  @Property({ type: 'string' })
+  @Column({ type: 'string' })
+  @AllowNull(true)
   public groupedAt?: string;
 }
