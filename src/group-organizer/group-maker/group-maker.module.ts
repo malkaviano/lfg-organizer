@@ -6,10 +6,10 @@ import { HelperModule } from '@/helper/helper.module';
 import { DamageTankStrategy } from '@/group/group-maker/strategy/damage-tank.strategy';
 import { HealerTankStrategy } from '@/group/group-maker/strategy/healer-tank.strategy';
 import { TankHealerStrategy } from '@/group/group-maker/strategy/tank-healer.strategy';
-import { PostgresModule } from '@/infra/postgres/postgres.module';
+import { RepositoryModule } from '@/infra/mikroorm/repository.module';
 
 @Module({
-  imports: [HelperModule, PostgresModule],
+  imports: [HelperModule, RepositoryModule],
   providers: [
     GroupMakerService,
     GroupQueueingService,
