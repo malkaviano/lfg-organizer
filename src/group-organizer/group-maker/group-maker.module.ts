@@ -6,7 +6,7 @@ import { HelperModule } from '@/helper/helper.module';
 import { DamageTankStrategy } from '@/group/group-maker/strategy/damage-tank.strategy';
 import { HealerTankStrategy } from '@/group/group-maker/strategy/healer-tank.strategy';
 import { TankHealerStrategy } from '@/group/group-maker/strategy/tank-healer.strategy';
-import { RepositoryModule } from '@/infra/sequelize/repository.module';
+import { RepositoryModule } from '@/infra/store/repository.module';
 
 @Module({
   imports: [HelperModule, RepositoryModule],

@@ -8,7 +8,7 @@ import {
   GroupProducedToken,
   QueueClientToken,
 } from '@/group/interface/group-producer.interface';
-import { RepositoryModule } from '@/infra/sequelize/repository.module';
+import { RepositoryModule } from '@/infra/store/repository.module';
 
 @Module({
   imports: [
