@@ -54,10 +54,9 @@ describe('ReturnedPlayerController', () => {
 
       expect(result).toEqual(true);
 
-      expect(mockedQueuedPlayersRepository.return).toHaveBeenCalledWith(
-        ['id1'],
-        'WAITING'
-      );
+      expect(mockedQueuedPlayersRepository.return).toHaveBeenCalledWith([
+        'id1',
+      ]);
     });
   });
 });

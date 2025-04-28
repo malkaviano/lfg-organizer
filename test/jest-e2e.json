@@ -4,8 +4,9 @@
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.ts$": "ts-jest"
   },
+  "modulePaths": ["<rootDir>"],
   "moduleNameMapper": {
     "^@/group/(.*)$": "<rootDir>/src/group-organizer/$1",
     "^@/dungeon/(.*)$": "<rootDir>/src/dungeon/$1",
