@@ -15,17 +15,17 @@ datasource db {
 }
 
 model QueuedPlayer {
-  id String   @id @db.Uuid() @default(uuid())
+  id String   @id @db.Uuid()
 
   level Int
 
-  roles String[] @db.VarChar(20)
+  roles String[] @db.VarChar(50)
 
-  dungeons String[] @db.VarChar(20)
+  dungeons String[] @db.VarChar(50)
 
-  queuedAt String @db.VarChar(20)
+  queuedAt String @db.VarChar(50)
 
-  status String @db.VarChar(20)
+  status String @db.VarChar(50)
 
   playingWith String[] @db.Uuid()
 
@@ -33,9 +33,9 @@ model QueuedPlayer {
 }
 
 model PlayerGroup {
-  id String   @id @db.Uuid() @default(uuid())
+  id String   @id @default(uuid()) @db.Uuid()
 
-  dungeon String @db.VarChar(20)
+  dungeon String @db.VarChar(50)
   
   tankId String @db.Uuid() 
   
@@ -47,5 +47,5 @@ model PlayerGroup {
 
   damage3Id String @db.Uuid()  
   
-  sentAt String? @db.VarChar(20)
+  sentAt String? @db.VarChar(50)
 }

@@ -48,9 +48,9 @@ describe('GroupProducerService', () => {
         },
       ];
 
-      mockedQueuedPlayersRepository.unSentGroups.mockResolvedValueOnce(groups);
+      mockedQueuedPlayersRepository.groupsToSend.mockResolvedValueOnce(groups);
 
-      mockedQueuedPlayersRepository.confirmGroupsSent.mockResolvedValueOnce();
+      mockedQueuedPlayersRepository.groupsSent.mockResolvedValueOnce();
 
       mockedRmqClient.emit.mockReturnValueOnce({} as any);
 
@@ -61,9 +61,9 @@ describe('GroupProducerService', () => {
         groups
       );
 
-      expect(
-        mockedQueuedPlayersRepository.confirmGroupsSent
-      ).toHaveBeenCalledWith(['group1']);
+      expect(mockedQueuedPlayersRepository.groupsSent).toHaveBeenCalledWith([
+        'group1',
+      ]);
     });
   });
 });

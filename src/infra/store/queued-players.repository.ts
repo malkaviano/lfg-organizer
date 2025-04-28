@@ -6,16 +6,35 @@ import { DungeonName } from '@/dungeon/dungeon-name.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import { PlayerStatus } from '@/group/player-status.literal';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PrismaService } from '@/infra/store/prisma.service';
+import { DateTimeHelper } from '@/helper/datetime.helper';
 
 @Injectable()
 export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly dateTimeHelper: DateTimeHelper
+  ) {}
 
   async queue(players: QueuedPlayerEntity[]): Promise<number> {
-    throw new Error('Method not implemented.');
+    try {
+      const inserted = await this.prismaService.queuedPlayer.createMany({
+        data: players.map((player) => ({
+          id: player.id,
+          level: player.level,
+          roles: player.roles,
+          dungeons: player.dungeons,
+          queuedAt: player.queuedAt,
+          playingWith: player.playingWith,
+          status: 'WAITING',
+        })),
+      });
+
+      return inserted.count;
+    } catch (error) {
+      throw new Error('Player already queued');
+    }
   }
 
   async get(playerIds: string[]): Promise<QueuedPlayerEntity[]> {
@@ -37,12 +56,44 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
     });
   }
 
-  async return(playerIds: string[], newStatus: PlayerStatus): Promise<number> {
-    throw new Error('Method not implemented.');
+  async return(playerIds: string[]): Promise<number> {
+    const updated = await this.prismaService.queuedPlayer.updateMany({
+      where: {
+        id: { in: playerIds },
+      },
+      data: {
+        status: 'WAITING',
+      },
+    });
+
+    return updated.count;
   }
 
   async remove(playerIds: string[]): Promise<number> {
-    throw new Error('Method not implemented.');
+    const deleted = await this.prismaService.queuedPlayer.deleteMany({
+      where: {
+        id: { in: playerIds },
+      },
+    });
+
+    const playWith = await this.prismaService.queuedPlayer.findMany({
+      where: {
+        playingWith: { hasSome: playerIds },
+      },
+    });
+
+    for (const player of playWith) {
+      const newPlayingWith = player.playingWith.filter(
+        (id) => !playerIds.includes(id)
+      );
+
+      await this.prismaService.queuedPlayer.update({
+        where: { id: player.id },
+        data: { playingWith: newPlayingWith },
+      });
+    }
+
+    return deleted.count;
   }
 
   async nextInQueue(
@@ -55,6 +106,7 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
         dungeons: { has: dungeonName },
         roles: { has: playerRole },
         id: { notIn: ignoreIds },
+        status: 'WAITING',
       },
       orderBy: {
         queuedAt: 'asc',
@@ -79,14 +131,69 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
     group: DungeonGroup,
     dungeonName: DungeonName
   ): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    try {
+      await this.prismaService.$transaction(async (tx) => {
+        const inserted = await tx.playerGroup.create({
+          data: {
+            tankId: group.tank,
+            healerId: group.healer,
+            damage1Id: group.damage[0],
+            damage2Id: group.damage[1],
+            damage3Id: group.damage[2],
+            dungeon: dungeonName,
+          },
+        });
+
+        const updated = await tx.queuedPlayer.updateMany({
+          where: {
+            id: { in: [group.tank, group.healer, ...group.damage] },
+            status: 'WAITING',
+          },
+          data: {
+            status: 'GROUPED',
+            groupId: inserted.id,
+          },
+        });
+
+        if (updated.count !== 5) {
+          throw new Error('Cannot create group');
+        }
+      });
+
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
-  async unSentGroups(): Promise<PlayerGroupMessage[]> {
-    throw new Error('Method not implemented.');
+  async groupsToSend(): Promise<PlayerGroupMessage[]> {
+    const groups = await this.prismaService.playerGroup.findMany({
+      where: {
+        sentAt: null,
+      },
+    });
+
+    return groups.map((group) => {
+      return new PlayerGroupMessage(
+        group.id,
+        group.dungeon,
+        group.tankId,
+        group.healerId,
+        [group.damage1Id, group.damage2Id, group.damage3Id]
+      );
+    });
   }
 
-  async confirmGroupsSent(groupIds: string[]): Promise<void> {
-    throw new Error('Method not implemented.');
+  async groupsSent(groupIds: string[]): Promise<void> {
+    const timestamp = this.dateTimeHelper.timestamp();
+
+    await this.prismaService.playerGroup.updateMany({
+      where: {
+        id: { in: groupIds },
+      },
+      data: {
+        sentAt: timestamp,
+      },
+    });
   }
 }

@@ -28,17 +28,6 @@ import dungeonConfig from '@/config/dungeon.config';
     ScheduleModule.forRoot(),
     DungeonModule,
     GroupOrganizerModule,
-    SequelizeModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
-        dialect: 'postgres',
-        host: configService.get('PG_DATABASE_HOST'),
-        port: +configService.get('PG_DATABASE_PORT'),
-        username: configService.get('PG_DATABASE_USER'),
-        password: configService.get('PG_DATABASE_PASSWORD'),
-        database: configService.get('PG_DATABASE_NAME'),
-      }),
-      inject: [ConfigService],
-    }),
     QueueModule,
   ],
   controllers: [AppController],

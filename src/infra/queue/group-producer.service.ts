@@ -26,12 +26,12 @@ export class GroupProducerService
   }
 
   async publish(): Promise<void> {
-    const groups = await this.queuePlayersRepository.unSentGroups();
+    const groups = await this.queuePlayersRepository.groupsToSend();
 
     this.client.emit<PlayerGroupMessage[]>('player-groups', groups);
 
     const groupIds = groups.map((group) => group.groupId);
 
-    await this.queuePlayersRepository.confirmGroupsSent(groupIds);
+    await this.queuePlayersRepository.groupsSent(groupIds);
   }
 }
