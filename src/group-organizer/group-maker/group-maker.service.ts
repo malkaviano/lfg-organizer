@@ -9,6 +9,7 @@ import {
 import { TankHealerStrategy } from '@/group/group-maker/strategy/tank-healer.strategy';
 import { HealerTankStrategy } from '@/group/group-maker/strategy/healer-tank.strategy';
 import { DamageTankStrategy } from '@/group/group-maker/strategy/damage-tank.strategy';
+import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 
 @Injectable()
 export class GroupMakerService {
@@ -33,15 +34,23 @@ export class GroupMakerService {
     result = await this.tankThenHealerStrategy.run(dungeonName);
 
     if (result) {
-      return Promise.resolve(result);
+      return result;
     }
 
     result = await this.healerThenTankStrategy.run(dungeonName);
 
     if (result) {
-      return Promise.resolve(result);
+      return result;
     }
 
     return this.damageThenTankStrategy.run(dungeonName);
+  }
+
+  async groupsToSend(): Promise<PlayerGroupMessage[]> {
+    return this.queuePlayersRepository.groupsToSend();
+  }
+
+  async groupsSent(groupIds: string[]): Promise<void> {
+    await this.queuePlayersRepository.groupsSent(groupIds);
   }
 }

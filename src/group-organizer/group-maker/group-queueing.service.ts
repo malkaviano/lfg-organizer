@@ -11,7 +11,6 @@ import {
 } from '@/group/interface/queued-players-repository.interface';
 import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
 import { PlayersReturnMessage } from '@/group/dto/players-return.message';
-import { GroupReturnRequest } from '@/group/dto/group-return.request';
 
 @Injectable()
 export class GroupQueueingService {
@@ -85,7 +84,7 @@ export class GroupQueueingService {
     }
 
     if (!obj.result) {
-      return Promise.resolve(obj);
+      return obj;
     }
 
     try {
@@ -95,7 +94,7 @@ export class GroupQueueingService {
       obj.errorMsg = 'one or more players are already queued';
     }
 
-    return Promise.resolve(obj);
+    return obj;
   }
 
   async dequeue(
@@ -105,7 +104,7 @@ export class GroupQueueingService {
 
     await this.queuePlayersRepository.remove(playerIds);
 
-    return Promise.resolve({ result: true });
+    return { result: true };
   }
 
   async return(message: PlayersReturnMessage): Promise<number> {

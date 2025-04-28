@@ -28,7 +28,7 @@ export class DamageTankStrategy extends GroupFormationStrategy {
     const damage1 = await this.getPlayer(dungeonName, 'Damage');
 
     if (!damage1) {
-      return Promise.resolve(null);
+      return null;
     }
 
     partialGroup.damage.push(damage1.id);
@@ -42,7 +42,7 @@ export class DamageTankStrategy extends GroupFormationStrategy {
       );
 
       if (!resolved) {
-        return Promise.resolve(null);
+        return null;
       }
 
       partialGroup = group;
@@ -57,7 +57,7 @@ export class DamageTankStrategy extends GroupFormationStrategy {
     );
 
     if (partialGroup.damage.length < 3) {
-      return Promise.resolve(null);
+      return null;
     }
 
     partialGroup = await this.resolveRole(
@@ -69,7 +69,7 @@ export class DamageTankStrategy extends GroupFormationStrategy {
     );
 
     if (!partialGroup.tank) {
-      return Promise.resolve(null);
+      return null;
     }
 
     partialGroup = await this.resolveRole(
@@ -81,7 +81,7 @@ export class DamageTankStrategy extends GroupFormationStrategy {
     );
 
     if (!partialGroup.healer) {
-      return Promise.resolve(null);
+      return null;
     }
 
     const fullGroup: DungeonGroup = {
@@ -90,6 +90,6 @@ export class DamageTankStrategy extends GroupFormationStrategy {
       damage: partialGroup.damage,
     };
 
-    return Promise.resolve(fullGroup);
+    return fullGroup;
   }
 }

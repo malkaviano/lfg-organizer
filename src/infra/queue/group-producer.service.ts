@@ -5,11 +5,8 @@ import {
   GroupProducer,
   QueueClientToken,
 } from '@/group/interface/group-producer.interface';
-import {
-  QueuedPlayersRepository,
-  QueuedPlayersRepositoryToken,
-} from '@/group/interface/queued-players-repository.interface';
 import { PlayerGroupMessage } from '@/group/dto/player-group.message';
+import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 
 @Injectable()
 export class GroupProducerService
@@ -17,8 +14,7 @@ export class GroupProducerService
 {
   constructor(
     @Inject(QueueClientToken) private readonly client: ClientProxy,
-    @Inject(QueuedPlayersRepositoryToken)
-    private readonly queuePlayersRepository: QueuedPlayersRepository
+    private readonly groupMakerService: GroupMakerService
   ) {}
 
   async onApplicationBootstrap() {
@@ -26,12 +22,12 @@ export class GroupProducerService
   }
 
   async publish(): Promise<void> {
-    const groups = await this.queuePlayersRepository.groupsToSend();
+    const groups = await this.groupMakerService.groupsToSend();
 
     this.client.emit<PlayerGroupMessage[]>('player-groups', groups);
 
     const groupIds = groups.map((group) => group.groupId);
 
-    await this.queuePlayersRepository.groupsSent(groupIds);
+    await this.groupMakerService.groupsSent(groupIds);
   }
 }

@@ -51,11 +51,11 @@ export abstract class GroupFormationStrategy {
       ) {
         clonedGroup.damage.push(player.id);
       } else {
-        return Promise.resolve({ resolved: false, group: { damage: [] } });
+        return { resolved: false, group: { damage: [] } };
       }
     }
 
-    return Promise.resolve({ resolved: true, group: clonedGroup });
+    return { resolved: true, group: clonedGroup };
   }
 
   protected async resolveRole(
@@ -84,6 +84,6 @@ export abstract class GroupFormationStrategy {
       }
     }
 
-    return Promise.resolve(partialGroup);
+    return partialGroup;
   }
 }

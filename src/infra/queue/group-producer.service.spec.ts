@@ -4,18 +4,15 @@ import { ClientProxy } from '@nestjs/microservices';
 import { mock } from 'ts-jest-mocker';
 
 import { GroupProducerService } from '@/infra/queue/group-producer.service';
-import {
-  QueuedPlayersRepository,
-  QueuedPlayersRepositoryToken,
-} from '@/group/interface/queued-players-repository.interface';
 import { QueueClientToken } from '@/group/interface/group-producer.interface';
+import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 
 describe('GroupProducerService', () => {
   let service: GroupProducerService;
 
   const mockedRmqClient = mock<ClientProxy>();
 
-  const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
+  const mockedGroupMakerService = mock<GroupMakerService>();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,8 +20,8 @@ describe('GroupProducerService', () => {
         GroupProducerService,
         { provide: QueueClientToken, useValue: mockedRmqClient },
         {
-          provide: QueuedPlayersRepositoryToken,
-          useValue: mockedQueuedPlayersRepository,
+          provide: GroupMakerService,
+          useValue: mockedGroupMakerService,
         },
       ],
     }).compile();
@@ -48,9 +45,9 @@ describe('GroupProducerService', () => {
         },
       ];
 
-      mockedQueuedPlayersRepository.groupsToSend.mockResolvedValueOnce(groups);
+      mockedGroupMakerService.groupsToSend.mockResolvedValueOnce(groups);
 
-      mockedQueuedPlayersRepository.groupsSent.mockResolvedValueOnce();
+      mockedGroupMakerService.groupsSent.mockResolvedValueOnce();
 
       mockedRmqClient.emit.mockReturnValueOnce({} as any);
 
@@ -61,7 +58,7 @@ describe('GroupProducerService', () => {
         groups
       );
 
-      expect(mockedQueuedPlayersRepository.groupsSent).toHaveBeenCalledWith([
+      expect(mockedGroupMakerService.groupsSent).toHaveBeenCalledWith([
         'group1',
       ]);
     });
