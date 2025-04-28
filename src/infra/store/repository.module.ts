@@ -1,23 +1,24 @@
 import { Module } from '@nestjs/common';
 
-import { MongoQueuedPlayersRepository } from '@/group/repository/mongo-queued-players.repository';
 import { QueuedPlayersRepositoryToken } from '@/group/interface/queued-players-repository.interface';
 import { HelperModule } from '@/helper/helper.module';
+import { SQLQueuedPlayersRepository } from '@/infra/store/queued-players.repository';
+import { PrismaService } from '@/infra/store/prisma.service';
 
 @Module({
   imports: [HelperModule],
   providers: [
-    MongoQueuedPlayersRepository,
+    PrismaService,
     {
       provide: QueuedPlayersRepositoryToken,
-      useClass: MongoQueuedPlayersRepository,
+      useClass: SQLQueuedPlayersRepository,
     },
   ],
   exports: [
     {
       provide: QueuedPlayersRepositoryToken,
-      useClass: MongoQueuedPlayersRepository,
+      useClass: SQLQueuedPlayersRepository,
     },
   ],
 })
-export class QueuedPlayersModule {}
+export class RepositoryModule {}

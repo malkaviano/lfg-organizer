@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SequelizeModule } from '@nestjs/sequelize';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { GroupOrganizerModule } from '@/group/group-organizer.module';
 import { DungeonModule } from '@/dungeon/dungeon.module';
-import { MongodbModule } from '@/infra/mongodb/mongodb.module';
-import mongodbConnection from '@/config/mongo-connection.config';
+import { QueueModule } from '@/infra/queue/queue.module';
 import rabbitClientConfig from '@/config/rmq-proxy.config';
 import rabbitConfig from '@/config/rmq.config';
 import mongodbCollection from '@/config/mongo-collection.config';
@@ -19,7 +19,6 @@ import dungeonConfig from '@/config/dungeon.config';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
-        mongodbConnection,
         rabbitClientConfig,
         rabbitConfig,
         mongodbCollection,
@@ -29,7 +28,7 @@ import dungeonConfig from '@/config/dungeon.config';
     ScheduleModule.forRoot(),
     DungeonModule,
     GroupOrganizerModule,
-    MongodbModule.forRootAsync(mongodbConnection.asProvider()),
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],

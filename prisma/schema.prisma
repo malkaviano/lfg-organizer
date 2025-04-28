@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model QueuedPlayer {
+  id String   @id @db.Uuid()
+
+  level Int
+
+  roles String[] @db.VarChar(50)
+
+  dungeons String[] @db.VarChar(50)
+
+  queuedAt String @db.VarChar(50)
+
+  status String @db.VarChar(50)
+
+  playingWith String[] @db.Uuid()
+
+  groupId String? @db.Uuid()
+}
+
+model PlayerGroup {
+  id String   @id @default(uuid()) @db.Uuid()
+
+  dungeon String @db.VarChar(50)
+  
+  tankId String @db.Uuid() 
+  
+  healerId String @db.Uuid()
+  
+  damage1Id String @db.Uuid()
+
+  damage2Id String @db.Uuid()
+
+  damage3Id String @db.Uuid()  
+  
+  sentAt String? @db.VarChar(50)
+}

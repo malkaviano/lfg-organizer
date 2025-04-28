@@ -1,27 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
 
 import { v4 as uuidv4 } from 'uuid';
 import { mock } from 'ts-jest-mocker';
 
-import { MongoQueuedPlayersRepository } from '@/group/repository/mongo-queued-players.repository';
-import { QueuedPlayersModule } from '@/group/repository/queued-players.module';
+import { SQLQueuedPlayersRepository } from '@/infra/store/queued-players.repository';
+import { PrismaService } from '@/infra/store/prisma.service';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import { MongodbModule } from '@/infra/mongodb/mongodb.module';
+import { ConfigModule } from '@nestjs/config';
+import { QueuedPlayersRepositoryToken } from '@/group/interface/queued-players-repository.interface';
 import { DateTimeHelper } from '@/helper/datetime.helper';
-import mongodbTestConnection from '@/config/mongo-connection-test.config';
-import mongodbCollection from '@/config/mongo-collection.config';
 
-describe('MongoQueuedPlayersRepository', () => {
+describe('SQLQueuedPlayersRepository', () => {
   let module: TestingModule;
 
-  let service: MongoQueuedPlayersRepository;
-
-  const timestamp = '2025-04-01T11:42:19.088Z';
-
-  const timestamp2 = '2025-04-01T11:45:19.088Z';
+  let service: SQLQueuedPlayersRepository;
 
   const mockedDateTimeHelper = mock(DateTimeHelper);
+
+  const timestamp = '2025-04-01T11:42:19.088Z';
 
   const [
     player1Id,
@@ -130,17 +126,23 @@ describe('MongoQueuedPlayersRepository', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          load: [mongodbTestConnection, mongodbCollection],
+          load: [],
         }),
-        MongodbModule.forRootAsync(mongodbTestConnection.asProvider()),
-        QueuedPlayersModule,
       ],
-      providers: [],
+      providers: [
+        PrismaService,
+        {
+          provide: QueuedPlayersRepositoryToken,
+          useClass: SQLQueuedPlayersRepository,
+        },
+        {
+          provide: DateTimeHelper,
+          useValue: mockedDateTimeHelper,
+        },
+      ],
     }).compile();
 
-    service = module.get<MongoQueuedPlayersRepository>(
-      MongoQueuedPlayersRepository
-    );
+    service = module.get(QueuedPlayersRepositoryToken);
   });
 
   afterAll(async () => {
@@ -165,6 +167,8 @@ describe('MongoQueuedPlayersRepository', () => {
 
   describe('manipulating players', () => {
     it('executes all repo operations', async () => {
+      mockedDateTimeHelper.timestamp.mockReturnValue(timestamp);
+
       const queued = await service.queue([
         player1,
         player2,
@@ -193,7 +197,7 @@ describe('MongoQueuedPlayersRepository', () => {
 
       expect(removed).toEqual(2);
 
-      const next = await service.nextInQueue('Deadmines', 'Healer');
+      const next = await service.nextInQueue('Deadmines', 'Healer', []);
 
       expect(next).toEqual(player4);
 
@@ -227,13 +231,13 @@ describe('MongoQueuedPlayersRepository', () => {
 
       expect(grouped).toEqual(true);
 
-      let unsent = await service.unSentGroups();
+      let unsent = await service.groupsToSend();
 
       expect(unsent.length).toBeGreaterThan(0);
 
-      await service.confirmGroupsSent(unsent.map((g) => g.groupId));
+      await service.groupsSent(unsent.map((g) => g.groupId));
 
-      unsent = await service.unSentGroups();
+      unsent = await service.groupsToSend();
 
       expect(unsent.length).toEqual(0);
 

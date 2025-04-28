@@ -9,7 +9,7 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { PlayerGroupMessage } from '../dto/player-group.message';
+import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 
 @Injectable()
 export class GroupProducerService
@@ -26,12 +26,12 @@ export class GroupProducerService
   }
 
   async publish(): Promise<void> {
-    const groups = await this.queuePlayersRepository.unSentGroups();
+    const groups = await this.queuePlayersRepository.groupsToSend();
 
     this.client.emit<PlayerGroupMessage[]>('player-groups', groups);
 
     const groupIds = groups.map((group) => group.groupId);
 
-    await this.queuePlayersRepository.confirmGroupsSent(groupIds);
+    await this.queuePlayersRepository.groupsSent(groupIds);
   }
 }

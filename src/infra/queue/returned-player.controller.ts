@@ -17,7 +17,7 @@ export class ReturnedPlayerController {
   async handleMessage(@Payload() data: unknown, @Ctx() context: RmqContext) {
     const ids = (data as { ids: string[] }).ids;
 
-    await this.queuePlayersRepository.return(ids, 'WAITING');
+    await this.queuePlayersRepository.return(ids);
 
     const channel = context.getChannelRef();
 

@@ -5,8 +5,12 @@ import {
   MongoDbDriverModuleAsyncOptions,
 } from '@/infra/mongodb/mongodb.options';
 import { CoreModule } from '@/infra/mongodb/core.module';
+import { HelperModule } from '@/helper/helper.module';
+import { QueuedPlayersRepositoryToken } from '@/group/interface/queued-players-repository.interface';
 
-@Module({})
+@Module({
+  imports: [HelperModule],
+})
 export class MongodbModule {
   public static forRoot(options: MongoDbDriverModuleOptions): DynamicModule {
     return {

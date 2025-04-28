@@ -12,7 +12,7 @@ export interface QueuedPlayersRepository {
 
   get(playerIds: string[]): Promise<QueuedPlayerEntity[]>;
 
-  return(playerIds: string[], newStatus: PlayerStatus): Promise<number>;
+  return(playerIds: string[]): Promise<number>;
 
   remove(playerIds: string[]): Promise<number>;
 
@@ -24,7 +24,7 @@ export interface QueuedPlayersRepository {
 
   createGroup(group: DungeonGroup, dungeonName: DungeonName): Promise<boolean>;
 
-  unSentGroups(): Promise<PlayerGroupMessage[]>;
+  groupsToSend(): Promise<PlayerGroupMessage[]>;
 
-  confirmGroupsSent(groupIds: string[]): Promise<void>;
+  groupsSent(groupIds: string[]): Promise<void>;
 }

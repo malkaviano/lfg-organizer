@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 
 import { mock } from 'ts-jest-mocker';
 
-import { GroupProducerService } from '@/group/queue/group-producer.service';
+import { GroupProducerService } from '@/infra/queue/group-producer.service';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
@@ -48,9 +48,9 @@ describe('GroupProducerService', () => {
         },
       ];
 
-      mockedQueuedPlayersRepository.unSentGroups.mockResolvedValueOnce(groups);
+      mockedQueuedPlayersRepository.groupsToSend.mockResolvedValueOnce(groups);
 
-      mockedQueuedPlayersRepository.confirmGroupsSent.mockResolvedValueOnce();
+      mockedQueuedPlayersRepository.groupsSent.mockResolvedValueOnce();
 
       mockedRmqClient.emit.mockReturnValueOnce({} as any);
 
@@ -61,9 +61,9 @@ describe('GroupProducerService', () => {
         groups
       );
 
-      expect(
-        mockedQueuedPlayersRepository.confirmGroupsSent
-      ).toHaveBeenCalledWith(['group1']);
+      expect(mockedQueuedPlayersRepository.groupsSent).toHaveBeenCalledWith([
+        'group1',
+      ]);
     });
   });
 });
