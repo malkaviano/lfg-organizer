@@ -9,6 +9,9 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
+import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
+import { PlayersReturnMessage } from '@/group/dto/players-return.message';
+import { GroupReturnRequest } from '@/group/dto/group-return.request';
 
 @Injectable()
 export class GroupQueueingService {
@@ -18,8 +21,8 @@ export class GroupQueueingService {
     private readonly dateTimeHelper: DateTimeHelper
   ) {}
 
-  async queueParty(
-    request: PlayersQueueRequest
+  async queue(
+    request: PlayersQueueRequest | PlayersQueueMessage
   ): Promise<{ result: boolean; errorMsg?: string }> {
     const timestamp = this.dateTimeHelper.timestamp();
 
@@ -95,15 +98,17 @@ export class GroupQueueingService {
     return Promise.resolve(obj);
   }
 
-  async dequeueParty(
+  async dequeue(
     request: GroupDequeueRequest
   ): Promise<{ result: boolean; errorMsg?: string }> {
-    const total = request.playerIds.length;
-
     const { playerIds } = request;
 
     await this.queuePlayersRepository.remove(playerIds);
 
     return Promise.resolve({ result: true });
+  }
+
+  async return(message: PlayersReturnMessage): Promise<number> {
+    return this.queuePlayersRepository.return(message.playerIds);
   }
 }

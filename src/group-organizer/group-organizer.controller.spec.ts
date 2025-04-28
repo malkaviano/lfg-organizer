@@ -51,13 +51,13 @@ describe('GroupOrganizerController', () => {
         dungeons: ['Deadmines'],
       };
 
-      mockedGroupOrganizerService.queueParty.mockResolvedValueOnce({
+      mockedGroupOrganizerService.queue.mockResolvedValueOnce({
         result: true,
       });
 
       await controller.queueParty(body);
 
-      expect(mockedGroupOrganizerService.queueParty).toHaveBeenCalled();
+      expect(mockedGroupOrganizerService.queue).toHaveBeenCalled();
     });
 
     describe('when service fails', () => {
@@ -73,7 +73,7 @@ describe('GroupOrganizerController', () => {
           dungeons: ['Deadmines'],
         };
 
-        mockedGroupOrganizerService.queueParty.mockResolvedValue({
+        mockedGroupOrganizerService.queue.mockResolvedValue({
           result: false,
           errorMsg: 'Player cannot be queued',
         });
@@ -96,13 +96,13 @@ describe('GroupOrganizerController', () => {
           playerIds: ['id1', 'id2'],
         };
 
-        mockedGroupOrganizerService.dequeueParty.mockResolvedValueOnce({
+        mockedGroupOrganizerService.dequeue.mockResolvedValueOnce({
           result: true,
         });
 
         await controller.dequeueParty(body);
 
-        expect(mockedGroupOrganizerService.dequeueParty).toHaveBeenCalled();
+        expect(mockedGroupOrganizerService.dequeue).toHaveBeenCalled();
       });
 
       describe('when not all member can be removed', () => {
@@ -111,7 +111,7 @@ describe('GroupOrganizerController', () => {
             playerIds: ['id1', 'id2'],
           };
 
-          mockedGroupOrganizerService.dequeueParty.mockResolvedValue({
+          mockedGroupOrganizerService.dequeue.mockResolvedValue({
             result: false,
             errorMsg: 'one or more players already selected for a group',
           });

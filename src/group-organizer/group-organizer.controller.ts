@@ -18,7 +18,7 @@ export class GroupOrganizerController {
   @Post('queue')
   public async queueParty(@Body() request: GroupQueueRequest): Promise<void> {
     const { result, errorMsg = 'unknown error' } =
-      await this.groupOrganizerService.queueParty(request);
+      await this.groupOrganizerService.queue(request);
 
     if (!result) {
       throw new HttpException(errorMsg, HttpStatus.BAD_REQUEST);
@@ -31,7 +31,7 @@ export class GroupOrganizerController {
     @Body() request: GroupDequeueRequest
   ): Promise<void> {
     const { result, errorMsg = 'unknown error' } =
-      await this.groupOrganizerService.dequeueParty(request);
+      await this.groupOrganizerService.dequeue(request);
 
     if (!result) {
       throw new HttpException(errorMsg, 400);

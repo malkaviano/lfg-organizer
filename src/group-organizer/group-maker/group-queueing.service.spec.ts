@@ -14,6 +14,7 @@ import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
+import { PlayersReturnMessage } from '@/group/dto/players-return.message';
 
 describe('GroupQueueingService', () => {
   let service: GroupQueueingService;
@@ -48,7 +49,7 @@ describe('GroupQueueingService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('queueParty', () => {
+  describe('queue', () => {
     it('sanitize values and queue', async () => {
       const body: GroupQueueRequest = {
         players: [
@@ -89,7 +90,7 @@ describe('GroupQueueingService', () => {
 
       mockedQueuedPlayersRepository.queue.mockResolvedValueOnce(2);
 
-      const result = await service.queueParty(body);
+      const result = await service.queue(body);
 
       expect(result).toEqual({ result: true });
 
@@ -117,7 +118,7 @@ describe('GroupQueueingService', () => {
 
       mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-      const result = await service.queueParty(body);
+      const result = await service.queue(body);
 
       expect(result).toEqual({
         result: false,
@@ -198,14 +199,14 @@ describe('GroupQueueingService', () => {
       it('validate roles', async () => {
         mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
 
-        const result = await service.queueParty({ players, dungeons });
+        const result = await service.queue({ players, dungeons });
 
         expect(result).toEqual(expected);
       });
     });
   });
 
-  describe('dequeueParty', () => {
+  describe('dequeue', () => {
     it('remove waiting players', async () => {
       const body: GroupDequeueRequest = {
         playerIds: ['id1', 'id2'],
@@ -230,9 +231,23 @@ describe('GroupQueueingService', () => {
 
       mockedQueuedPlayersRepository.remove.mockResolvedValueOnce(2);
 
-      const result = await service.dequeueParty(body);
+      const result = await service.dequeue(body);
 
       expect(result).toEqual({ result: true });
+    });
+  });
+
+  describe('return', () => {
+    it('change players back to waiting', async () => {
+      const message: PlayersReturnMessage = {
+        playerIds: ['id1', 'id2'],
+      };
+
+      mockedQueuedPlayersRepository.return.mockResolvedValueOnce(2);
+
+      const result = await service.return(message);
+
+      expect(result).toEqual(2);
     });
   });
 });

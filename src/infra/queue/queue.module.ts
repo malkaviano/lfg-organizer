@@ -2,17 +2,17 @@ import { ClientsModule, RmqOptions } from '@nestjs/microservices';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { ReturnedPlayerController } from '@/infra/queue/returned-player.controller';
+import { QueuedPlayerController } from '@/infra/queue/queued-player.controller';
 import { GroupProducerService } from '@/infra/queue/group-producer.service';
 import {
   GroupProducedToken,
   QueueClientToken,
 } from '@/group/interface/group-producer.interface';
-import { RepositoryModule } from '@/infra/store/repository.module';
+import { GroupMakerModule } from '@/group/group-maker/group-maker.module';
 
 @Module({
   imports: [
-    RepositoryModule,
+    GroupMakerModule,
     ClientsModule.registerAsync([
       {
         name: QueueClientToken,
@@ -22,7 +22,7 @@ import { RepositoryModule } from '@/infra/store/repository.module';
       },
     ]),
   ],
-  controllers: [ReturnedPlayerController],
+  controllers: [QueuedPlayerController],
   providers: [{ provide: GroupProducedToken, useClass: GroupProducerService }],
 })
 export class QueueModule {}
