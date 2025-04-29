@@ -97,14 +97,10 @@ export class GroupQueueingService {
     return obj;
   }
 
-  async dequeue(
-    request: GroupDequeueRequest
-  ): Promise<{ result: boolean; errorMsg?: string }> {
+  async dequeue(request: GroupDequeueRequest): Promise<number> {
     const { playerIds } = request;
 
-    await this.queuePlayersRepository.remove(playerIds);
-
-    return { result: true };
+    return this.queuePlayersRepository.remove(playerIds);
   }
 
   async return(message: PlayersReturnMessage): Promise<number> {

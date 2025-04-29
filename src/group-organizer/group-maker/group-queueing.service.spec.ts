@@ -233,7 +233,7 @@ describe('GroupQueueingService', () => {
 
       const result = await service.dequeue(body);
 
-      expect(result).toEqual({ result: true });
+      expect(result).toEqual(2);
     });
   });
 

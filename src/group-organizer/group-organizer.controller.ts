@@ -30,11 +30,6 @@ export class GroupOrganizerController {
   public async dequeueParty(
     @Body() request: GroupDequeueRequest
   ): Promise<void> {
-    const { result, errorMsg = 'unknown error' } =
-      await this.groupOrganizerService.dequeue(request);
-
-    if (!result) {
-      throw new HttpException(errorMsg, 400);
-    }
+    await this.groupOrganizerService.dequeue(request);
   }
 }

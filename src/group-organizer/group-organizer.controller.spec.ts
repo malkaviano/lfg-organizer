@@ -33,8 +33,8 @@ describe('GroupOrganizerController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('queueParty', () => {
-    it('queue party', async () => {
+  describe('queue', () => {
+    it('queue players', async () => {
       const body: GroupQueueRequest = {
         players: [
           {
@@ -89,42 +89,17 @@ describe('GroupOrganizerController', () => {
     });
   });
 
-  describe('dequeueParty', () => {
-    describe('when party members are waiting', () => {
-      it('remove party members from queue', async () => {
-        const body: GroupDequeueRequest = {
-          playerIds: ['id1', 'id2'],
-        };
+  describe('dequeue', () => {
+    it('remove players from queue', async () => {
+      const body: GroupDequeueRequest = {
+        playerIds: ['id1', 'id2'],
+      };
 
-        mockedGroupOrganizerService.dequeue.mockResolvedValueOnce({
-          result: true,
-        });
+      mockedGroupOrganizerService.dequeue.mockResolvedValueOnce(2);
 
-        await controller.dequeueParty(body);
+      await controller.dequeueParty(body);
 
-        expect(mockedGroupOrganizerService.dequeue).toHaveBeenCalled();
-      });
-
-      describe('when not all member can be removed', () => {
-        it('throw error', async () => {
-          const body: GroupDequeueRequest = {
-            playerIds: ['id1', 'id2'],
-          };
-
-          mockedGroupOrganizerService.dequeue.mockResolvedValue({
-            result: false,
-            errorMsg: 'one or more players already selected for a group',
-          });
-
-          await expect(controller.dequeueParty(body)).rejects.toThrow(
-            'one or more players already selected for a group'
-          );
-
-          await expect(controller.dequeueParty(body)).rejects.toThrow(
-            HttpException
-          );
-        });
-      });
+      expect(mockedGroupOrganizerService.dequeue).toHaveBeenCalled();
     });
   });
 });
