@@ -16,7 +16,7 @@ export class GroupOrganizerController {
   constructor(private readonly groupOrganizerService: GroupQueueingService) {}
 
   @Post('queue')
-  public async queueParty(@Body() request: GroupQueueRequest): Promise<void> {
+  public async queue(@Body() request: GroupQueueRequest): Promise<void> {
     const { result, errorMsg = 'unknown error' } =
       await this.groupOrganizerService.queue(request);
 
@@ -27,9 +27,7 @@ export class GroupOrganizerController {
 
   @Post('remove')
   @HttpCode(200)
-  public async dequeueParty(
-    @Body() request: GroupDequeueRequest
-  ): Promise<void> {
+  public async dequeue(@Body() request: GroupDequeueRequest): Promise<void> {
     await this.groupOrganizerService.dequeue(request);
   }
 }

@@ -55,7 +55,7 @@ describe('GroupOrganizerController', () => {
         result: true,
       });
 
-      await controller.queueParty(body);
+      await controller.queue(body);
 
       expect(mockedGroupOrganizerService.queue).toHaveBeenCalled();
     });
@@ -78,13 +78,11 @@ describe('GroupOrganizerController', () => {
           errorMsg: 'Player cannot be queued',
         });
 
-        await expect(controller.queueParty(body)).rejects.toThrow(
+        await expect(controller.queue(body)).rejects.toThrow(
           'Player cannot be queued'
         );
 
-        await expect(controller.queueParty(body)).rejects.toThrow(
-          HttpException
-        );
+        await expect(controller.queue(body)).rejects.toThrow(HttpException);
       });
     });
   });
@@ -97,7 +95,7 @@ describe('GroupOrganizerController', () => {
 
       mockedGroupOrganizerService.dequeue.mockResolvedValueOnce(2);
 
-      await controller.dequeueParty(body);
+      await controller.dequeue(body);
 
       expect(mockedGroupOrganizerService.dequeue).toHaveBeenCalled();
     });
