@@ -19,6 +19,10 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
 
   async add(players: QueuedPlayerEntity[]): Promise<number> {
     try {
+      for (const player of players) {
+        await this.remove([player.id], player.queuedAt);
+      }
+
       const inserted = await this.prismaService.queuedPlayer.createMany({
         data: players.map((player) => ({
           id: player.id,

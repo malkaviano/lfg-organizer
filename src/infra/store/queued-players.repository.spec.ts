@@ -19,6 +19,8 @@ describe('SQLQueuedPlayersRepository', () => {
 
   const timestamp = '2025-04-01T11:42:19.088Z';
 
+  const timestampOld = '2025-03-01T11:42:19.088Z';
+
   const [
     player1Id,
     player2Id,
@@ -55,6 +57,14 @@ describe('SQLQueuedPlayersRepository', () => {
     ['Healer'],
     ['Deadmines'],
     timestamp
+  );
+
+  const player2old = new QueuedPlayerEntity(
+    player2Id,
+    21,
+    ['Healer'],
+    ['Deadmines'],
+    timestampOld
   );
 
   const player3 = new QueuedPlayerEntity(
@@ -182,7 +192,7 @@ describe('SQLQueuedPlayersRepository', () => {
 
       expect(queued).toEqual(5);
 
-      await expect(service.add([player2])).rejects.toThrow(
+      await expect(service.add([player2old])).rejects.toThrow(
         'Player already queued'
       );
 
