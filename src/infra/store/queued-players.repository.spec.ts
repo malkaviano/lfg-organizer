@@ -196,6 +196,10 @@ describe('SQLQueuedPlayersRepository', () => {
         'Player already queued'
       );
 
+      const notDeleted = await service.remove([player2Id], timestampOld);
+
+      expect(notDeleted).toEqual(0);
+
       const retrieved = await service.get([
         player1.id,
         player2.id,
