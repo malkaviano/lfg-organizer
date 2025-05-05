@@ -5,6 +5,7 @@ import { PlayerRole } from '@/dungeon/player-role.literal';
 export interface PlayersQueueMessage {
   readonly players: PlayerQueue[];
   readonly dungeons: DungeonName[];
+  readonly queuedAt: string;
 }
 
 interface PlayerQueue {

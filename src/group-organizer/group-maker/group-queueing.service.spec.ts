@@ -3,9 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'ts-jest-mocker';
 
 import { GroupQueueingService } from '@/group/group-maker/group-queueing.service';
-import { GroupQueueRequest } from '@/group/dto/group-queue.request';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
-import { DateTimeHelper } from '@/helper/datetime.helper';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
@@ -15,13 +13,12 @@ import {
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
 import { PlayersReturnMessage } from '@/group/dto/players-return.message';
+import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
 
 describe('GroupQueueingService', () => {
   let service: GroupQueueingService;
 
   const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
-
-  const mockedDateTimeHelper = mock(DateTimeHelper);
 
   const timestamp = '2025-04-01T11:42:19.088Z';
 
@@ -35,10 +32,6 @@ describe('GroupQueueingService', () => {
           provide: QueuedPlayersRepositoryToken,
           useValue: mockedQueuedPlayersRepository,
         },
-        {
-          provide: DateTimeHelper,
-          useValue: mockedDateTimeHelper,
-        },
       ],
     }).compile();
 
@@ -51,7 +44,8 @@ describe('GroupQueueingService', () => {
 
   describe('queue', () => {
     it('sanitize values and queue', async () => {
-      const body: GroupQueueRequest = {
+      const message: PlayersQueueMessage = {
+        queuedAt: timestamp,
         players: [
           {
             id: 'id1',
@@ -86,11 +80,9 @@ describe('GroupQueueingService', () => {
         ),
       ];
 
-      mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
-
       mockedQueuedPlayersRepository.queue.mockResolvedValueOnce(2);
 
-      const result = await service.queue(body);
+      const result = await service.queue(message);
 
       expect(result).toEqual({ result: true });
 
@@ -100,7 +92,8 @@ describe('GroupQueueingService', () => {
     });
 
     it('validate player level', async () => {
-      const body: GroupQueueRequest = {
+      const body: PlayersQueueMessage = {
+        queuedAt: timestamp,
         players: [
           {
             id: 'id1',
@@ -116,8 +109,6 @@ describe('GroupQueueingService', () => {
         dungeons: ['RagefireChasm', 'Deadmines'],
       };
 
-      mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
-
       const result = await service.queue(body);
 
       expect(result).toEqual({
@@ -129,6 +120,7 @@ describe('GroupQueueingService', () => {
 
     [
       {
+        queuedAt: timestamp,
         players: [
           {
             id: 'id1',
@@ -148,6 +140,7 @@ describe('GroupQueueingService', () => {
         },
       },
       {
+        queuedAt: timestamp,
         players: [
           {
             id: 'id1',
@@ -167,6 +160,7 @@ describe('GroupQueueingService', () => {
         },
       },
       {
+        queuedAt: timestamp,
         players: [
           {
             id: 'id1',
@@ -195,11 +189,9 @@ describe('GroupQueueingService', () => {
           errorMsg: 'a group cannot have more than three damage dealers',
         },
       },
-    ].forEach(({ players, dungeons, expected }) => {
+    ].forEach(({ queuedAt, players, dungeons, expected }) => {
       it('validate roles', async () => {
-        mockedDateTimeHelper.timestamp.mockReturnValueOnce(timestamp);
-
-        const result = await service.queue({ players, dungeons });
+        const result = await service.queue({ queuedAt, players, dungeons });
 
         expect(result).toEqual(expected);
       });
