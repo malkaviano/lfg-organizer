@@ -10,14 +10,24 @@ import dungeonConfig from '@/config/dungeon.config';
 export class CoordinatorService {
   private readonly logger = new Logger(CoordinatorService.name);
 
+  private isRunning: boolean;
+
   constructor(
     private readonly groupMakerService: GroupMakerService,
     @Inject(dungeonConfig.KEY)
     private readonly dungeonConf: ConfigType<typeof dungeonConfig>
-  ) {}
+  ) {
+    this.isRunning = false;
+  }
 
-  @Cron('*/15 * * * * *	')
+  @Cron('*/1 * * * * *')
   public async coordinate() {
+    if (this.isRunning) {
+      return;
+    }
+
+    this.isRunning = true;
+
     const dungeonNames = this.dungeonConf.dungeonNames?.split(
       '|'
     ) as DungeonName[];
@@ -29,6 +39,8 @@ export class CoordinatorService {
     const promises = dungeonNames.map((dungeonName) => this.run(dungeonName));
 
     await Promise.all(promises);
+
+    this.isRunning = false;
   }
 
   public async run(dungeonName: DungeonName) {
