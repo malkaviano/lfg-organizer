@@ -8,7 +8,7 @@ import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 export const QueuedPlayersRepositoryToken = Symbol('QueuedPlayersRepository');
 
 export interface QueuedPlayersRepository {
-  queue(players: QueuedPlayerEntity[]): Promise<number>;
+  add(players: QueuedPlayerEntity[]): Promise<number>;
 
   get(playerIds: string[]): Promise<QueuedPlayerEntity[]>;
 

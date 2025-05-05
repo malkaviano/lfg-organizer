@@ -169,7 +169,7 @@ describe('SQLQueuedPlayersRepository', () => {
     it('executes all repo operations', async () => {
       mockedDateTimeHelper.timestamp.mockReturnValue(timestamp);
 
-      const queued = await service.queue([
+      const queued = await service.add([
         player1,
         player2,
         player3,
@@ -179,7 +179,7 @@ describe('SQLQueuedPlayersRepository', () => {
 
       expect(queued).toEqual(5);
 
-      await expect(service.queue([player2])).rejects.toThrow(
+      await expect(service.add([player2])).rejects.toThrow(
         'Player already queued'
       );
 
@@ -218,7 +218,7 @@ describe('SQLQueuedPlayersRepository', () => {
 
       expect(grouped).toEqual(false);
 
-      await service.queue([player2, player3]);
+      await service.add([player2, player3]);
 
       grouped = await service.createGroup(
         {
@@ -249,7 +249,7 @@ describe('SQLQueuedPlayersRepository', () => {
 
       expect(returned).toEqual(3);
 
-      await service.queue([player6, player7, player8, player9]);
+      await service.add([player6, player7, player8, player9]);
 
       await service.remove([player7Id, player9Id]);
 

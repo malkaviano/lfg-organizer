@@ -4,21 +4,25 @@ import { RmqContext } from '@nestjs/microservices';
 import { mock } from 'ts-jest-mocker';
 
 import { QueuedPlayerController } from '@/infra/queue/queued-player.controller';
-import { GroupQueueingService } from '@/group/group-maker/group-queueing.service';
+import { PlayersQueueingService } from '@/group/group-maker/players-queueing.service';
+import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
+import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
 
 describe('QueuedPlayerController', () => {
   let controller: QueuedPlayerController;
 
-  const mockedGroupQueueingService = mock<GroupQueueingService>();
+  const mockedGroupQueueingService = mock<PlayersQueueingService>();
 
   const mockedRabbitMQContext = mock(RmqContext);
+
+  const timestamp = '2025-04-01T11:42:19.088Z';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [QueuedPlayerController],
       providers: [
         {
-          provide: GroupQueueingService,
+          provide: PlayersQueueingService,
           useValue: mockedGroupQueueingService,
         },
       ],
@@ -31,32 +35,60 @@ describe('QueuedPlayerController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('returned-player', () => {
-    it('resets player to waiting status and ack', async () => {
+  describe('handleQueuedPlayer', () => {
+    it('queue players and ack', async () => {
       let result = false;
 
-      mockedGroupQueueingService.unGroup.mockResolvedValueOnce(1);
+      mockedGroupQueueingService.queue.mockResolvedValueOnce({ result: true });
 
       mockedRabbitMQContext.getChannelRef.mockImplementationOnce(() => ({
         ack: () => (result = true),
       }));
 
+      const message: PlayersQueueMessage = {
+        queuedAt: timestamp,
+        dungeons: ['Deadmines', 'RagefireChasm'],
+        players: [{ id: 'id1', level: 21, roles: ['Damage', 'Tank'] }],
+      };
+
       mockedRabbitMQContext.getMessage.mockImplementationOnce(() => ({
-        data: {
-          playerIds: ['id1'],
-        },
+        data: message,
       }));
 
-      await controller.handleReturnPlayer(
-        { playerIds: ['id1'] },
-        mockedRabbitMQContext
-      );
+      await controller.handleQueuedPlayer(message, mockedRabbitMQContext);
+
+      expect(mockedGroupQueueingService.queue).toHaveBeenCalledWith(message);
 
       expect(result).toEqual(true);
+    });
+  });
 
-      expect(mockedGroupQueueingService.unGroup).toHaveBeenCalledWith({
-        playerIds: ['id1'],
+  describe('handleDequeuedPlayer', () => {
+    it('dequeue players and ack', async () => {
+      let result = false;
+
+      mockedGroupQueueingService.dequeue.mockResolvedValueOnce({
+        result: true,
       });
+
+      mockedRabbitMQContext.getChannelRef.mockImplementationOnce(() => ({
+        ack: () => (result = true),
+      }));
+
+      const message: PlayersDequeueMessage = {
+        playerIds: ['id1'],
+        processedAt: timestamp,
+      };
+
+      mockedRabbitMQContext.getMessage.mockImplementationOnce(() => ({
+        data: message,
+      }));
+
+      await controller.handleDequeuePlayer(message, mockedRabbitMQContext);
+
+      expect(mockedGroupQueueingService.dequeue).toHaveBeenCalledWith(message);
+
+      expect(result).toEqual(true);
     });
   });
 });

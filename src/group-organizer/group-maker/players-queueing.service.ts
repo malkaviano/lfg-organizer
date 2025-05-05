@@ -11,7 +11,7 @@ import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
 import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
 
 @Injectable()
-export class GroupQueueingService {
+export class PlayersQueueingService {
   constructor(
     @Inject(QueuedPlayersRepositoryToken)
     private readonly queuePlayersRepository: QueuedPlayersRepository
@@ -83,7 +83,7 @@ export class GroupQueueingService {
     }
 
     try {
-      await this.queuePlayersRepository.queue(players);
+      await this.queuePlayersRepository.add(players);
     } catch (error) {
       obj.result = false;
       obj.errorMsg = 'one or more players are already queued';
@@ -92,10 +92,14 @@ export class GroupQueueingService {
     return obj;
   }
 
-  async dequeue(request: PlayersDequeueMessage): Promise<number> {
+  async dequeue(
+    request: PlayersDequeueMessage
+  ): Promise<{ result: boolean; errorMsg?: string }> {
     const { playerIds } = request;
 
-    return this.queuePlayersRepository.remove(playerIds);
+    await this.queuePlayersRepository.remove(playerIds);
+
+    return { result: true };
   }
 
   async unGroup(message: PlayersUnGroupMessage): Promise<number> {

@@ -17,7 +17,7 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
     private readonly dateTimeHelper: DateTimeHelper
   ) {}
 
-  async queue(players: QueuedPlayerEntity[]): Promise<number> {
+  async add(players: QueuedPlayerEntity[]): Promise<number> {
     try {
       const inserted = await this.prismaService.queuedPlayer.createMany({
         data: players.map((player) => ({

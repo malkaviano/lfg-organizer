@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { mock } from 'ts-jest-mocker';
 
-import { GroupQueueingService } from '@/group/group-maker/group-queueing.service';
+import { PlayersQueueingService } from '@/group/group-maker/players-queueing.service';
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
@@ -15,8 +15,8 @@ import {
 import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
 import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
 
-describe('GroupQueueingService', () => {
-  let service: GroupQueueingService;
+describe('PlayersQueueingService', () => {
+  let service: PlayersQueueingService;
 
   const mockedQueuedPlayersRepository = mock<QueuedPlayersRepository>();
 
@@ -27,7 +27,7 @@ describe('GroupQueueingService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        GroupQueueingService,
+        PlayersQueueingService,
         {
           provide: QueuedPlayersRepositoryToken,
           useValue: mockedQueuedPlayersRepository,
@@ -35,7 +35,7 @@ describe('GroupQueueingService', () => {
       ],
     }).compile();
 
-    service = module.get<GroupQueueingService>(GroupQueueingService);
+    service = module.get<PlayersQueueingService>(PlayersQueueingService);
   });
 
   it('should be defined', () => {
@@ -80,15 +80,13 @@ describe('GroupQueueingService', () => {
         ),
       ];
 
-      mockedQueuedPlayersRepository.queue.mockResolvedValueOnce(2);
+      mockedQueuedPlayersRepository.add.mockResolvedValueOnce(2);
 
       const result = await service.queue(message);
 
       expect(result).toEqual({ result: true });
 
-      expect(mockedQueuedPlayersRepository.queue).toHaveBeenCalledWith(
-        expected
-      );
+      expect(mockedQueuedPlayersRepository.add).toHaveBeenCalledWith(expected);
     });
 
     it('validate player level', async () => {
@@ -226,7 +224,7 @@ describe('GroupQueueingService', () => {
 
       const result = await service.dequeue(message);
 
-      expect(result).toEqual(2);
+      expect(result).toEqual({ result: true });
     });
   });
 

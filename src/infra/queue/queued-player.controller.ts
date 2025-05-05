@@ -1,14 +1,14 @@
 import { Controller } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 
-import { GroupQueueingService } from '@/group/group-maker/group-queueing.service';
+import { PlayersQueueingService } from '@/group/group-maker/players-queueing.service';
 import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
 import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
 import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
 
 @Controller()
 export class QueuedPlayerController {
-  constructor(private readonly groupQueueingService: GroupQueueingService) {}
+  constructor(private readonly groupQueueingService: PlayersQueueingService) {}
 
   @EventPattern('players-queued')
   async handleQueuedPlayer(
@@ -27,7 +27,7 @@ export class QueuedPlayerController {
   }
 
   @EventPattern('players-dequeued')
-  async handleRemovePlayer(
+  async handleDequeuePlayer(
     @Payload() data: unknown,
     @Ctx() context: RmqContext
   ) {
