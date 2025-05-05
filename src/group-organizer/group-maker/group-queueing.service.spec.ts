@@ -200,8 +200,9 @@ describe('GroupQueueingService', () => {
 
   describe('dequeue', () => {
     it('remove waiting players', async () => {
-      const body: PlayersDequeueMessage = {
+      const message: PlayersDequeueMessage = {
         playerIds: ['id1', 'id2'],
+        processedAt: timestamp,
       };
 
       mockedQueuedPlayersRepository.get.mockResolvedValueOnce([
@@ -223,7 +224,7 @@ describe('GroupQueueingService', () => {
 
       mockedQueuedPlayersRepository.remove.mockResolvedValueOnce(2);
 
-      const result = await service.dequeue(body);
+      const result = await service.dequeue(message);
 
       expect(result).toEqual(2);
     });
