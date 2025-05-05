@@ -46,7 +46,7 @@ export class GroupProducerService
 
       this.logger.debug(`Published ${groups.length} groups`);
     } else {
-      this.logger.debug('No groups  to Publish');
+      this.logger.debug('No groups to publish');
     }
   }
 

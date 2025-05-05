@@ -18,13 +18,17 @@ export class CoordinatorService {
 
   @Cron('*/15 * * * * *	')
   public async coordinate() {
-    const dungeonName = this.dungeonConf.dungeonName as DungeonName;
+    const dungeonNames = this.dungeonConf.dungeonNames?.split(
+      '|'
+    ) as DungeonName[];
 
-    if (!dungeons.includes(dungeonName)) {
+    if (!dungeons.every((d) => dungeonNames.includes(d))) {
       throw new Error('Invalid dungeon name');
     }
 
-    await this.run(dungeonName);
+    const promises = dungeonNames.map((dungeonName) => this.run(dungeonName));
+
+    await Promise.all(promises);
   }
 
   public async run(dungeonName: DungeonName) {
