@@ -35,7 +35,7 @@ describe('QueuedPlayerController', () => {
     it('resets player to waiting status and ack', async () => {
       let result = false;
 
-      mockedGroupQueueingService.return.mockResolvedValueOnce(1);
+      mockedGroupQueueingService.unGroup.mockResolvedValueOnce(1);
 
       mockedRabbitMQContext.getChannelRef.mockImplementationOnce(() => ({
         ack: () => (result = true),
@@ -54,7 +54,7 @@ describe('QueuedPlayerController', () => {
 
       expect(result).toEqual(true);
 
-      expect(mockedGroupQueueingService.return).toHaveBeenCalledWith({
+      expect(mockedGroupQueueingService.unGroup).toHaveBeenCalledWith({
         playerIds: ['id1'],
       });
     });

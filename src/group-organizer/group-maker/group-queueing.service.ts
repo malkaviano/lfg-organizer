@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonService } from '@/dungeon/dungeon.service';
-import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
+import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
 import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
-import { PlayersReturnMessage } from '@/group/dto/players-return.message';
+import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
 
 @Injectable()
 export class GroupQueueingService {
@@ -92,13 +92,13 @@ export class GroupQueueingService {
     return obj;
   }
 
-  async dequeue(request: GroupDequeueRequest): Promise<number> {
+  async dequeue(request: PlayersDequeueMessage): Promise<number> {
     const { playerIds } = request;
 
     return this.queuePlayersRepository.remove(playerIds);
   }
 
-  async return(message: PlayersReturnMessage): Promise<number> {
+  async unGroup(message: PlayersUnGroupMessage): Promise<number> {
     return this.queuePlayersRepository.return(message.playerIds);
   }
 }

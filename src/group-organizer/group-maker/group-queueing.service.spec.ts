@@ -7,12 +7,12 @@ import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { GroupDequeueRequest } from '@/group/dto/group-dequeue.request';
+import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { PlayersReturnMessage } from '@/group/dto/players-return.message';
+import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
 import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
 
 describe('GroupQueueingService', () => {
@@ -200,7 +200,7 @@ describe('GroupQueueingService', () => {
 
   describe('dequeue', () => {
     it('remove waiting players', async () => {
-      const body: GroupDequeueRequest = {
+      const body: PlayersDequeueMessage = {
         playerIds: ['id1', 'id2'],
       };
 
@@ -231,13 +231,13 @@ describe('GroupQueueingService', () => {
 
   describe('return', () => {
     it('change players back to waiting', async () => {
-      const message: PlayersReturnMessage = {
+      const message: PlayersUnGroupMessage = {
         playerIds: ['id1', 'id2'],
       };
 
       mockedQueuedPlayersRepository.return.mockResolvedValueOnce(2);
 
-      const result = await service.return(message);
+      const result = await service.unGroup(message);
 
       expect(result).toEqual(2);
     });

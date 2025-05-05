@@ -3,7 +3,8 @@ import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 
 import { GroupQueueingService } from '@/group/group-maker/group-queueing.service';
 import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
-import { PlayersReturnMessage } from '@/group/dto/players-return.message';
+import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
+import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
 
 @Controller()
 export class QueuedPlayerController {
@@ -25,11 +26,15 @@ export class QueuedPlayerController {
     channel.ack(originalMsg);
   }
 
-  @EventPattern('remove-player')
+  @EventPattern('dequeue-player')
   async handleRemovePlayer(
     @Payload() data: unknown,
     @Ctx() context: RmqContext
   ) {
+    const message = data as PlayersDequeueMessage;
+
+    await this.groupQueueingService.dequeue(message);
+
     const channel = context.getChannelRef();
 
     const originalMsg = context.getMessage();
@@ -37,14 +42,14 @@ export class QueuedPlayerController {
     channel.ack(originalMsg);
   }
 
-  @EventPattern('return-player')
+  @EventPattern('ungroup-player')
   async handleReturnPlayer(
     @Payload() data: unknown,
     @Ctx() context: RmqContext
   ) {
-    const message = data as PlayersReturnMessage;
+    const message = data as PlayersUnGroupMessage;
 
-    await this.groupQueueingService.return(message);
+    await this.groupQueueingService.unGroup(message);
 
     const channel = context.getChannelRef();
 
