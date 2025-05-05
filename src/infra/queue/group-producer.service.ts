@@ -1,4 +1,9 @@
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
 import {
@@ -10,7 +15,7 @@ import { GroupMakerService } from '@/group/group-maker/group-maker.service';
 
 @Injectable()
 export class GroupProducerService
-  implements GroupProducer, OnApplicationBootstrap
+  implements GroupProducer, OnApplicationBootstrap, OnApplicationShutdown
 {
   constructor(
     @Inject(QueueClientToken) private readonly client: ClientProxy,
@@ -19,6 +24,10 @@ export class GroupProducerService
 
   async onApplicationBootstrap() {
     await this.client.connect();
+  }
+
+  async onApplicationShutdown() {
+    await this.client.close();
   }
 
   async publish(): Promise<void> {
