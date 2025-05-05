@@ -7,7 +7,7 @@ export default registerAs('rmqOptions', () => ({
     urls: [
       `amqps://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_URI}/${process.env.RABBITMQ_USER}`,
     ],
-    queue: process.env.RABBITMQ_CLIENT_QUEUE,
+    queue: process.env.RABBITMQ_GROUPS_QUEUE,
     queueOptions: {
       durable: true,
     },

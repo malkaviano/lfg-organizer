@@ -10,7 +10,7 @@ import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
 export class QueuedPlayerController {
   constructor(private readonly groupQueueingService: GroupQueueingService) {}
 
-  @EventPattern('queue-player')
+  @EventPattern('players-queued')
   async handleQueuedPlayer(
     @Payload() data: unknown,
     @Ctx() context: RmqContext
@@ -26,7 +26,7 @@ export class QueuedPlayerController {
     channel.ack(originalMsg);
   }
 
-  @EventPattern('dequeue-player')
+  @EventPattern('players-dequeued')
   async handleRemovePlayer(
     @Payload() data: unknown,
     @Ctx() context: RmqContext
