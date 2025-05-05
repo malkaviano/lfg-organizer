@@ -146,17 +146,20 @@ describe('SQLQueuedPlayersRepository', () => {
   });
 
   afterAll(async () => {
-    await service.remove([
-      player1Id,
-      player2Id,
-      player3Id,
-      player4Id,
-      player5Id,
-      player6Id,
-      player7Id,
-      player8Id,
-      player9Id,
-    ]);
+    await service.remove(
+      [
+        player1Id,
+        player2Id,
+        player3Id,
+        player4Id,
+        player5Id,
+        player6Id,
+        player7Id,
+        player8Id,
+        player9Id,
+      ],
+      timestamp
+    );
 
     module.close();
   });
@@ -193,7 +196,7 @@ describe('SQLQueuedPlayersRepository', () => {
 
       expect(retrieved).toEqual([player1, player2, player3, player4, player5]);
 
-      const removed = await service.remove([player2.id, player3.id]);
+      const removed = await service.remove([player2.id, player3.id], timestamp);
 
       expect(removed).toEqual(2);
 
@@ -251,7 +254,7 @@ describe('SQLQueuedPlayersRepository', () => {
 
       await service.add([player6, player7, player8, player9]);
 
-      await service.remove([player7Id, player9Id]);
+      await service.remove([player7Id, player9Id], timestamp);
 
       const playerResult = await service.get([
         player6Id,

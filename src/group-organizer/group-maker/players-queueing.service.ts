@@ -95,9 +95,9 @@ export class PlayersQueueingService {
   async dequeue(
     request: PlayersDequeueMessage
   ): Promise<{ result: boolean; errorMsg?: string }> {
-    const { playerIds } = request;
+    const { playerIds, processedAt } = request;
 
-    await this.queuePlayersRepository.remove(playerIds);
+    await this.queuePlayersRepository.remove(playerIds, processedAt);
 
     return { result: true };
   }

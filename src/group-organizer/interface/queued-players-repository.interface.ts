@@ -14,7 +14,7 @@ export interface QueuedPlayersRepository {
 
   return(playerIds: string[]): Promise<number>;
 
-  remove(playerIds: string[]): Promise<number>;
+  remove(playerIds: string[], processedAt: string): Promise<number>;
 
   nextInQueue(
     dungeonName: DungeonName,

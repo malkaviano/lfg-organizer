@@ -69,10 +69,11 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
     return updated.count;
   }
 
-  async remove(playerIds: string[]): Promise<number> {
+  async remove(playerIds: string[], processedAt: string): Promise<number> {
     const deleted = await this.prismaService.queuedPlayer.deleteMany({
       where: {
         id: { in: playerIds },
+        queuedAt: { lte: processedAt },
       },
     });
 
