@@ -8,12 +8,10 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron } from '@nestjs/schedule';
 
-import {
-  GroupProducer,
-  QueueClientToken,
-} from '@/group/interface/group-producer.interface';
+import { GroupProducer } from '@/group/interface/group-producer.interface';
 import { PlayerGroupMessage } from '@/group/dto/player-group.message';
 import { GroupMakerService } from '@/group/group-maker/group-maker.service';
+import { GroupProducedProxyToken } from '../../tokens';
 
 @Injectable()
 export class GroupProducerService
@@ -22,7 +20,7 @@ export class GroupProducerService
   private readonly logger = new Logger(GroupProducerService.name);
 
   constructor(
-    @Inject(QueueClientToken) private readonly client: ClientProxy,
+    @Inject(GroupProducedProxyToken) private readonly client: ClientProxy,
     private readonly groupMakerService: GroupMakerService
   ) {}
 

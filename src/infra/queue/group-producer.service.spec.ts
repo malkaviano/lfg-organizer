@@ -4,8 +4,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { mock } from 'ts-jest-mocker';
 
 import { GroupProducerService } from '@/infra/queue/group-producer.service';
-import { QueueClientToken } from '@/group/interface/group-producer.interface';
 import { GroupMakerService } from '@/group/group-maker/group-maker.service';
+import { GroupProducedProxyToken } from '../../tokens';
 
 describe('GroupProducerService', () => {
   let service: GroupProducerService;
@@ -18,7 +18,7 @@ describe('GroupProducerService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GroupProducerService,
-        { provide: QueueClientToken, useValue: mockedRmqClient },
+        { provide: GroupProducedProxyToken, useValue: mockedRmqClient },
         {
           provide: GroupMakerService,
           useValue: mockedGroupMakerService,

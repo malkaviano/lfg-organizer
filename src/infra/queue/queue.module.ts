@@ -4,18 +4,15 @@ import { ConfigService } from '@nestjs/config';
 
 import { QueuedPlayerController } from '@/infra/queue/queued-player.controller';
 import { GroupProducerService } from '@/infra/queue/group-producer.service';
-import {
-  GroupProducedToken,
-  QueueClientToken,
-} from '@/group/interface/group-producer.interface';
 import { GroupMakerModule } from '@/group/group-maker/group-maker.module';
+import { GroupProducedToken, GroupProducedProxyToken } from '../../tokens';
 
 @Module({
   imports: [
     GroupMakerModule,
     ClientsModule.registerAsync([
       {
-        name: QueueClientToken,
+        name: GroupProducedProxyToken,
         useFactory: async (configService: ConfigService) =>
           configService.get<RmqOptions>('rmqOptions')!,
         inject: [ConfigService],
