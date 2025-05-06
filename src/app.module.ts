@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SequelizeModule } from '@nestjs/sequelize';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,19 +10,13 @@ import { DungeonModule } from '@/dungeon/dungeon.module';
 import { QueueModule } from '@/infra/queue/queue.module';
 import rabbitClientConfig from '@/config/rmq-proxy.config';
 import rabbitConfig from '@/config/rmq.config';
-import mongodbCollection from '@/config/mongo-collection.config';
 import dungeonConfig from '@/config/dungeon.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [
-        rabbitClientConfig,
-        rabbitConfig,
-        mongodbCollection,
-        dungeonConfig,
-      ],
+      load: [rabbitClientConfig, rabbitConfig, dungeonConfig],
     }),
     ScheduleModule.forRoot(),
     DungeonModule,
