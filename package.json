@@ -30,7 +30,6 @@
     "@prisma/client": "^6.6.0",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",
-    "mongodb": "^6.15.0",
     "pg": "^8.15.6",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
