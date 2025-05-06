@@ -54,7 +54,7 @@ describe('GroupProducerService', () => {
       await service.publish();
 
       expect(mockedRmqClient.emit).toHaveBeenCalledWith(
-        'player-groups',
+        'dungeon-groups',
         groups
       );
 

@@ -38,7 +38,7 @@ export class GroupProducerService
     const groups = await this.groupMakerService.groupsToSend();
 
     if (groups.length) {
-      this.client.emit<PlayerGroupMessage[]>('player-groups', groups);
+      this.client.emit<PlayerGroupMessage[]>('dungeon-groups', groups);
 
       const groupIds = groups.map((group) => group.groupId);
 
