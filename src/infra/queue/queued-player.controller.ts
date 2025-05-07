@@ -2,9 +2,9 @@ import { Controller } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 
 import { PlayersQueueingService } from '@/group/group-maker/players-queueing.service';
-import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
-import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
-import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
+import { PlayersQueuedMessage } from '@/group/dto/players-queued.message';
+import { PlayersReturnedMessage } from '@/group/dto/players-returned.message';
+import { PlayersDequeuedMessage } from '@/group/dto/players-dequeued.message';
 
 @Controller()
 export class QueuedPlayerController {
@@ -15,7 +15,7 @@ export class QueuedPlayerController {
     @Payload() data: object,
     @Ctx() context: RmqContext
   ) {
-    if (this.isPlayersQueueMessage(data)) {
+    if (this.isPlayersQueued(data)) {
       await this.groupQueueingService.queue(data);
     }
 
@@ -31,7 +31,7 @@ export class QueuedPlayerController {
     @Payload() data: object,
     @Ctx() context: RmqContext
   ) {
-    if (this.isPlayersDequeueMessage(data)) {
+    if (this.isPlayersDequeueOrReturned(data)) {
       await this.groupQueueingService.dequeue(data);
     }
 
@@ -42,14 +42,14 @@ export class QueuedPlayerController {
     channel.ack(originalMsg);
   }
 
-  @EventPattern('ungroup-player')
+  @EventPattern('players-returned')
   async handleReturnPlayer(
-    @Payload() data: unknown,
+    @Payload() data: object,
     @Ctx() context: RmqContext
   ) {
-    const message = data as PlayersUnGroupMessage;
-
-    await this.groupQueueingService.unGroup(message);
+    if (this.isPlayersDequeueOrReturned(data)) {
+      await this.groupQueueingService.return(data);
+    }
 
     const channel = context.getChannelRef();
 
@@ -58,17 +58,15 @@ export class QueuedPlayerController {
     channel.ack(originalMsg);
   }
 
-  private isPlayersQueueMessage(
-    message: object
-  ): message is PlayersQueueMessage {
+  private isPlayersQueued(message: object): message is PlayersQueuedMessage {
     return (
       'players' in message && 'dungeons' in message && 'queuedAt' in message
     );
   }
 
-  private isPlayersDequeueMessage(
+  private isPlayersDequeueOrReturned(
     message: object
-  ): message is PlayersDequeueMessage {
+  ): message is PlayersDequeuedMessage | PlayersReturnedMessage {
     return 'playerIds' in message && 'processedAt' in message;
   }
 }

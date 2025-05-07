@@ -7,13 +7,13 @@ import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { PlayerLevel } from '@/dungeon/player-level.literal';
 import { PlayerRole } from '@/dungeon/player-role.literal';
 import { DungeonName } from '@/dungeon/dungeon-name.literal';
-import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
+import { PlayersDequeuedMessage } from '@/group/dto/players-dequeued.message';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
-import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
+import { PlayersReturnedMessage } from '@/group/dto/players-returned.message';
+import { PlayersQueuedMessage } from '@/group/dto/players-queued.message';
 
 describe('PlayersQueueingService', () => {
   let service: PlayersQueueingService;
@@ -44,7 +44,7 @@ describe('PlayersQueueingService', () => {
 
   describe('queue', () => {
     it('sanitize values and queue', async () => {
-      const message: PlayersQueueMessage = {
+      const message: PlayersQueuedMessage = {
         queuedAt: timestamp,
         players: [
           {
@@ -90,7 +90,7 @@ describe('PlayersQueueingService', () => {
     });
 
     it('validate player level', async () => {
-      const body: PlayersQueueMessage = {
+      const body: PlayersQueuedMessage = {
         queuedAt: timestamp,
         players: [
           {
@@ -198,7 +198,7 @@ describe('PlayersQueueingService', () => {
 
   describe('dequeue', () => {
     it('remove waiting players', async () => {
-      const message: PlayersDequeueMessage = {
+      const message: PlayersDequeuedMessage = {
         playerIds: ['id1', 'id2'],
         processedAt: timestamp,
       };
@@ -230,15 +230,16 @@ describe('PlayersQueueingService', () => {
 
   describe('return', () => {
     it('change players back to waiting', async () => {
-      const message: PlayersUnGroupMessage = {
+      const message: PlayersReturnedMessage = {
         playerIds: ['id1', 'id2'],
+        processedAt: timestamp,
       };
 
       mockedQueuedPlayersRepository.return.mockResolvedValueOnce(2);
 
-      const result = await service.unGroup(message);
+      const result = await service.return(message);
 
-      expect(result).toEqual(2);
+      expect(result).toEqual({ result: true });
     });
   });
 });

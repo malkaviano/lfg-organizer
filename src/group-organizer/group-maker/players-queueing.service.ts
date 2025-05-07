@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { QueuedPlayerEntity } from '@/group/entity/queued-player.entity';
 import { DungeonService } from '@/dungeon/dungeon.service';
-import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
+import { PlayersDequeuedMessage } from '@/group/dto/players-dequeued.message';
 import {
   QueuedPlayersRepository,
   QueuedPlayersRepositoryToken,
 } from '@/group/interface/queued-players-repository.interface';
-import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
-import { PlayersUnGroupMessage } from '@/group/dto/players-ungroup.message';
+import { PlayersQueuedMessage } from '@/group/dto/players-queued.message';
+import { PlayersReturnedMessage } from '@/group/dto/players-returned.message';
 
 @Injectable()
 export class PlayersQueueingService {
@@ -18,7 +18,7 @@ export class PlayersQueueingService {
   ) {}
 
   async queue(
-    message: PlayersQueueMessage
+    message: PlayersQueuedMessage
   ): Promise<{ result: boolean; errorMsg?: string }> {
     const party = { tank: 0, healer: 0, damage: 0 };
 
@@ -93,7 +93,7 @@ export class PlayersQueueingService {
   }
 
   async dequeue(
-    request: PlayersDequeueMessage
+    request: PlayersDequeuedMessage
   ): Promise<{ result: boolean; errorMsg?: string }> {
     const { playerIds, processedAt } = request;
 
@@ -102,7 +102,11 @@ export class PlayersQueueingService {
     return { result: true };
   }
 
-  async unGroup(message: PlayersUnGroupMessage): Promise<number> {
-    return this.queuePlayersRepository.return(message.playerIds);
+  async return(
+    message: PlayersReturnedMessage
+  ): Promise<{ result: boolean; errorMsg?: string }> {
+    this.queuePlayersRepository.return(message.playerIds);
+
+    return { result: true };
   }
 }

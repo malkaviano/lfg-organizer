@@ -5,8 +5,9 @@ import { mock } from 'ts-jest-mocker';
 
 import { QueuedPlayerController } from '@/infra/queue/queued-player.controller';
 import { PlayersQueueingService } from '@/group/group-maker/players-queueing.service';
-import { PlayersDequeueMessage } from '@/group/dto/players-dequeue.message';
-import { PlayersQueueMessage } from '@/group/dto/players-queue.message';
+import { PlayersDequeuedMessage } from '@/group/dto/players-dequeued.message';
+import { PlayersQueuedMessage } from '@/group/dto/players-queued.message';
+import { PlayersReturnedMessage } from '@/group/dto/players-returned.message';
 
 describe('QueuedPlayerController', () => {
   let controller: QueuedPlayerController;
@@ -45,7 +46,7 @@ describe('QueuedPlayerController', () => {
         ack: () => (result = true),
       }));
 
-      const message: PlayersQueueMessage = {
+      const message: PlayersQueuedMessage = {
         queuedAt: timestamp,
         dungeons: ['Deadmines', 'RagefireChasm'],
         players: [{ id: 'id1', level: 21, roles: ['Damage', 'Tank'] }],
@@ -75,7 +76,7 @@ describe('QueuedPlayerController', () => {
         ack: () => (result = true),
       }));
 
-      const message: PlayersDequeueMessage = {
+      const message: PlayersDequeuedMessage = {
         playerIds: ['id1'],
         processedAt: timestamp,
       };
@@ -87,6 +88,35 @@ describe('QueuedPlayerController', () => {
       await controller.handleDequeuePlayer(message, mockedRabbitMQContext);
 
       expect(mockedGroupQueueingService.dequeue).toHaveBeenCalledWith(message);
+
+      expect(result).toEqual(true);
+    });
+  });
+
+  describe('handleReturnPlayer', () => {
+    it('return players and ack', async () => {
+      let result = false;
+
+      mockedGroupQueueingService.return.mockResolvedValueOnce({
+        result: true,
+      });
+
+      mockedRabbitMQContext.getChannelRef.mockImplementationOnce(() => ({
+        ack: () => (result = true),
+      }));
+
+      const message: PlayersReturnedMessage = {
+        playerIds: ['id1'],
+        processedAt: timestamp,
+      };
+
+      mockedRabbitMQContext.getMessage.mockImplementationOnce(() => ({
+        data: message,
+      }));
+
+      await controller.handleReturnPlayer(message, mockedRabbitMQContext);
+
+      expect(mockedGroupQueueingService.return).toHaveBeenCalledWith(message);
 
       expect(result).toEqual(true);
     });
