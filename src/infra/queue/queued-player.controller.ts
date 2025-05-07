@@ -12,12 +12,12 @@ export class QueuedPlayerController {
 
   @EventPattern('players-queued')
   async handleQueuedPlayer(
-    @Payload() data: unknown,
+    @Payload() data: object,
     @Ctx() context: RmqContext
   ) {
-    const message = data as PlayersQueueMessage;
-
-    await this.groupQueueingService.queue(message);
+    if (this.isPlayersQueueMessage(data)) {
+      await this.groupQueueingService.queue(data);
+    }
 
     const channel = context.getChannelRef();
 
@@ -28,12 +28,12 @@ export class QueuedPlayerController {
 
   @EventPattern('players-dequeued')
   async handleDequeuePlayer(
-    @Payload() data: unknown,
+    @Payload() data: object,
     @Ctx() context: RmqContext
   ) {
-    const message = data as PlayersDequeueMessage;
-
-    await this.groupQueueingService.dequeue(message);
+    if (this.isPlayersDequeueMessage(data)) {
+      await this.groupQueueingService.dequeue(data);
+    }
 
     const channel = context.getChannelRef();
 
@@ -56,5 +56,19 @@ export class QueuedPlayerController {
     const originalMsg = context.getMessage();
 
     channel.ack(originalMsg);
+  }
+
+  private isPlayersQueueMessage(
+    message: object
+  ): message is PlayersQueueMessage {
+    return (
+      'players' in message && 'dungeons' in message && 'queuedAt' in message
+    );
+  }
+
+  private isPlayersDequeueMessage(
+    message: object
+  ): message is PlayersDequeueMessage {
+    return 'playerIds' in message && 'processedAt' in message;
   }
 }
