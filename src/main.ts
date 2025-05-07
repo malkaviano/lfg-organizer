@@ -9,7 +9,9 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  const rmq = configService.get<MicroserviceOptions>('rabbitConnection')!;
+  const rmq = configService.get<MicroserviceOptions>(
+    'rabbitPlayersConnection'
+  )!;
 
   app.connectMicroservice<MicroserviceOptions>(rmq);
 

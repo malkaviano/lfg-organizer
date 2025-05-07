@@ -8,15 +8,16 @@ import { AppService } from './app.service';
 import { GroupOrganizerModule } from '@/group/group-organizer.module';
 import { DungeonModule } from '@/dungeon/dungeon.module';
 import { QueueModule } from '@/infra/queue/queue.module';
-import rabbitClientConfig from '@/config/rmq-proxy.config';
-import rabbitConfig from '@/config/rmq.config';
+
+import rabbitGroupsClientConfig from '@/config/rmq-groups-proxy.config';
+import rabbitPlayersConfig from '@/config/rmq-players.config';
 import dungeonConfig from '@/config/dungeon.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [rabbitClientConfig, rabbitConfig, dungeonConfig],
+      load: [rabbitGroupsClientConfig, rabbitPlayersConfig, dungeonConfig],
     }),
     ScheduleModule.forRoot(),
     DungeonModule,

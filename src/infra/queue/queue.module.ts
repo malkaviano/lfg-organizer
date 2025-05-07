@@ -14,7 +14,7 @@ import { GroupProducedToken, GroupProducedProxyToken } from '../../tokens';
       {
         name: GroupProducedProxyToken,
         useFactory: async (configService: ConfigService) =>
-          configService.get<RmqOptions>('rmqOptions')!,
+          configService.get<RmqOptions>('rmqGroupsOptions')!,
         inject: [ConfigService],
       },
     ]),
