@@ -12,7 +12,7 @@ export interface QueuedPlayersRepository {
 
   get(playerIds: string[]): Promise<QueuedPlayerEntity[]>;
 
-  return(playerIds: string[]): Promise<number>;
+  return(playerIds: string[], processedAt: string): Promise<number>;
 
   remove(playerIds: string[], processedAt: string): Promise<number>;
 

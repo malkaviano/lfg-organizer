@@ -60,13 +60,15 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
     });
   }
 
-  async return(playerIds: string[]): Promise<number> {
+  async return(playerIds: string[], processedAt: string): Promise<number> {
     const updated = await this.prismaService.queuedPlayer.updateMany({
       where: {
         id: { in: playerIds },
+        queuedAt: { lte: processedAt },
       },
       data: {
         status: 'WAITING',
+        queuedAt: processedAt,
       },
     });
 

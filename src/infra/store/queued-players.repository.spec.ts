@@ -258,11 +258,10 @@ describe('SQLQueuedPlayersRepository', () => {
 
       expect(unsent.length).toEqual(0);
 
-      const returned = await service.return([
-        player1.id,
-        player2.id,
-        player3.id,
-      ]);
+      const returned = await service.return(
+        [player1.id, player2.id, player3.id],
+        timestamp
+      );
 
       expect(returned).toEqual(3);
 

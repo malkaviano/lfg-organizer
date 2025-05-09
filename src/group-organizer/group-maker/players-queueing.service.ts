@@ -105,7 +105,10 @@ export class PlayersQueueingService {
   async return(
     message: PlayersReturnedMessage
   ): Promise<{ result: boolean; errorMsg?: string }> {
-    this.queuePlayersRepository.return(message.playerIds);
+    await this.queuePlayersRepository.return(
+      message.playerIds,
+      message.processedAt
+    );
 
     return { result: true };
   }
