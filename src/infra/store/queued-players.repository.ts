@@ -81,21 +81,33 @@ export class SQLQueuedPlayersRepository implements QueuedPlayersRepository {
       },
     });
 
-    const playWith = await this.prismaService.queuedPlayer.findMany({
-      where: {
-        playingWith: { hasSome: playerIds },
-      },
-    });
+    if (deleted.count) {
+      const notDeleted = await this.prismaService.queuedPlayer.findMany({
+        where: {
+          id: { in: playerIds },
+        },
+      });
 
-    for (const player of playWith) {
-      const newPlayingWith = player.playingWith.filter(
-        (id) => !playerIds.includes(id)
+      const filteredPlayerIds = playerIds.filter(
+        (id) => !notDeleted.some((p) => p.id === id)
       );
 
-      await this.prismaService.queuedPlayer.update({
-        where: { id: player.id },
-        data: { playingWith: newPlayingWith },
+      const playWith = await this.prismaService.queuedPlayer.findMany({
+        where: {
+          playingWith: { hasSome: filteredPlayerIds },
+        },
       });
+
+      for (const player of playWith) {
+        const newPlayingWith = player.playingWith.filter(
+          (id) => !filteredPlayerIds.includes(id)
+        );
+
+        await this.prismaService.queuedPlayer.update({
+          where: { id: player.id },
+          data: { playingWith: newPlayingWith },
+        });
+      }
     }
 
     return deleted.count;
